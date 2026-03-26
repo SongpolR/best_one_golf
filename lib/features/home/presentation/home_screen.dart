@@ -24,11 +24,7 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           FilledButton.icon(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.createGameComingSoon)),
-              );
-            },
+            onPressed: () => context.push('/create-game'),
             icon: const Icon(Icons.add),
             label: Text(l10n.newGame),
           ),
