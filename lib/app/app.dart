@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../data/local/app_database.dart';
 import '../data/repositories/app_settings_repository_impl.dart';
+import '../data/repositories/game_repository_impl.dart';
 import '../domain/entities/app_settings.dart';
 import '../domain/repositories/app_settings_repository.dart';
+import '../domain/repositories/game_repository.dart';
+import '../domain/usecases/create_game.dart';
 import '../l10n/app_localizations.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
@@ -21,6 +25,21 @@ final appSettingsRepositoryProvider = Provider<AppSettingsRepository>((ref) {
 
 final appSettingsProvider = StreamProvider<AppSettings>((ref) {
   return ref.watch(appSettingsRepositoryProvider).watchSettings();
+});
+
+final uuidProvider = Provider<Uuid>((ref) {
+  return const Uuid();
+});
+
+final gameRepositoryProvider = Provider<GameRepository>((ref) {
+  final db = ref.watch(appDatabaseProvider);
+  final uuid = ref.watch(uuidProvider);
+  return GameRepositoryImpl(db, uuid: uuid);
+});
+
+final createGameUseCaseProvider = Provider<CreateGameUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return CreateGameUseCase(repository);
 });
 
 class BestOneGolfApp extends ConsumerWidget {

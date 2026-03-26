@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'daos/app_settings_dao.dart';
+import 'daos/games_dao.dart';
 import 'tables/app_settings_table.dart';
 import 'tables/game_rule_settings_table.dart';
 import 'tables/games_table.dart';
@@ -26,6 +27,7 @@ part 'app_database.g.dart';
   ],
   daos: [
     AppSettingsDao,
+    GamesDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -36,10 +38,10 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    beforeOpen: (details) async {
-      await appSettingsDao.ensureSeeded();
-    },
-  );
+        beforeOpen: (details) async {
+          await appSettingsDao.ensureSeeded();
+        },
+      );
 }
 
 LazyDatabase _openConnection() {

@@ -1944,6 +1944,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $HoleConfigsTableTable(this);
   late final AppSettingsDao appSettingsDao =
       AppSettingsDao(this as AppDatabase);
+  late final GamesDao gamesDao = GamesDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
