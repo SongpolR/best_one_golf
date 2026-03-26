@@ -9,7 +9,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'BestOne',
+      title: 'BestOneGolf',
       actions: [
         IconButton(
           onPressed: () => context.push('/settings'),
@@ -39,7 +39,7 @@ class HomeScreen extends StatelessWidget {
             child: ListTile(
               leading: Icon(Icons.sports_golf),
               title: Text('No games yet'),
-              subtitle: Text('Start your first BestOne game'),
+              subtitle: Text('Start your first BestOneGolf game'),
             ),
           ),
         ],
