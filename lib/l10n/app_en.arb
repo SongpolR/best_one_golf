@@ -1,0 +1,16 @@
+{
+  "@@locale": "en",
+  "appName": "BestOneGolf",
+  "settings": "Settings",
+  "language": "Language",
+  "currency": "Currency",
+  "english": "English",
+  "thai": "Thai",
+  "usd": "USD",
+  "thb": "THB",
+  "newGame": "New Game",
+  "recentGames": "Recent Games",
+  "noGamesYet": "No games yet",
+  "startYourFirstGame": "Start your first BestOneGolf game",
+  "createGameComingSoon": "Create Game coming soon"
+}

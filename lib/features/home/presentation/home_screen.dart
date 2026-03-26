@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -8,13 +9,15 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AppScaffold(
-      title: 'BestOneGolf',
+      title: l10n.appName,
       actions: [
         IconButton(
           onPressed: () => context.push('/settings'),
           icon: const Icon(Icons.settings),
-          tooltip: 'Settings',
+          tooltip: l10n.settings,
         ),
       ],
       body: ListView(
@@ -23,23 +26,23 @@ class HomeScreen extends StatelessWidget {
           FilledButton.icon(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Create Game coming soon')),
+                SnackBar(content: Text(l10n.createGameComingSoon)),
               );
             },
             icon: const Icon(Icons.add),
-            label: const Text('New Game'),
+            label: Text(l10n.newGame),
           ),
           const SizedBox(height: 24),
           Text(
-            'Recent Games',
+            l10n.recentGames,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 12),
-          const Card(
+          Card(
             child: ListTile(
-              leading: Icon(Icons.sports_golf),
-              title: Text('No games yet'),
-              subtitle: Text('Start your first BestOneGolf game'),
+              leading: const Icon(Icons.sports_golf),
+              title: Text(l10n.noGamesYet),
+              subtitle: Text(l10n.startYourFirstGame),
             ),
           ),
         ],

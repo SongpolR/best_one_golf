@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/app.dart';
 import '../../../core/enums/app_currency.dart';
 import '../../../core/enums/app_language.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -13,16 +14,17 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(appSettingsProvider);
     final repository = ref.watch(appSettingsRepositoryProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return AppScaffold(
-      title: 'Settings',
+      title: l10n.settings,
       body: settingsAsync.when(
         data: (settings) {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
               Text(
-                'Language',
+                l10n.language,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
@@ -37,7 +39,7 @@ class SettingsScreen extends ConsumerWidget {
                           repository.updateLanguage(value);
                         }
                       },
-                      title: const Text('English'),
+                      title: Text(l10n.english),
                     ),
                     RadioListTile<AppLanguage>(
                       value: AppLanguage.th,
@@ -47,14 +49,14 @@ class SettingsScreen extends ConsumerWidget {
                           repository.updateLanguage(value);
                         }
                       },
-                      title: const Text('ไทย'),
+                      title: Text(l10n.thai),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
               Text(
-                'Currency',
+                l10n.currency,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
@@ -69,7 +71,7 @@ class SettingsScreen extends ConsumerWidget {
                           repository.updateCurrency(value);
                         }
                       },
-                      title: const Text('USD'),
+                      title: Text(l10n.usd),
                     ),
                     RadioListTile<AppCurrency>(
                       value: AppCurrency.thb,
@@ -79,7 +81,7 @@ class SettingsScreen extends ConsumerWidget {
                           repository.updateCurrency(value);
                         }
                       },
-                      title: const Text('THB'),
+                      title: Text(l10n.thb),
                     ),
                   ],
                 ),

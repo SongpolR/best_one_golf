@@ -6,6 +6,7 @@ import '../data/local/app_database.dart';
 import '../data/repositories/app_settings_repository_impl.dart';
 import '../domain/entities/app_settings.dart';
 import '../domain/repositories/app_settings_repository.dart';
+import '../l10n/app_localizations.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
 
@@ -38,11 +39,9 @@ class BestOneGolfApp extends ConsumerWidget {
           theme: AppTheme.light(),
           routerConfig: router,
           locale: Locale(settings.language.code),
-          supportedLocales: const [
-            Locale('en'),
-            Locale('th'),
-          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: const [
+            AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
