@@ -168,6 +168,12 @@ class FakeGameRepository implements GameRepository {
     await _completedController.close();
     await _gameAggregateController.close();
   }
+
+  @override
+  Future<void> recalculateGame(String gameId) {
+    // TODO: implement recalculateGame
+    throw UnimplementedError();
+  }
 }
 
 GameListItem fakeGameListItem({

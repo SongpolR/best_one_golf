@@ -17,6 +17,8 @@ abstract class GameRepository {
     required int? strokes,
   });
 
+  Future<void> recalculateGame(String gameId);
+
   Future<void> deleteGame(String gameId);
   Future<String> restartGame(String gameId);
   Future<void> finalizeGame(String gameId);
