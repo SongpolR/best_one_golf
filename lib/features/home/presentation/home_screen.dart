@@ -15,6 +15,11 @@ class HomeScreen extends StatelessWidget {
       title: l10n.appName,
       actions: [
         IconButton(
+          onPressed: () => context.push('/history'),
+          icon: const Icon(Icons.history),
+          tooltip: 'History',
+        ),
+        IconButton(
           onPressed: () => context.push('/settings'),
           icon: const Icon(Icons.settings),
           tooltip: l10n.settings,
@@ -24,11 +29,7 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           FilledButton.icon(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.createGameComingSoon)),
-              );
-            },
+            onPressed: () => context.push('/create-game'),
             icon: const Icon(Icons.add),
             label: Text(l10n.newGame),
           ),
