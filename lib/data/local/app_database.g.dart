@@ -1930,6 +1930,320 @@ class HoleConfigsTableCompanion extends UpdateCompanion<HoleConfigsTableData> {
   }
 }
 
+class $HoleScoresTableTable extends HoleScoresTable
+    with TableInfo<$HoleScoresTableTable, HoleScoresTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HoleScoresTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
+  @override
+  late final GeneratedColumn<String> gameId = GeneratedColumn<String>(
+      'game_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _holeNumberMeta =
+      const VerificationMeta('holeNumber');
+  @override
+  late final GeneratedColumn<int> holeNumber = GeneratedColumn<int>(
+      'hole_number', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _playerIdMeta =
+      const VerificationMeta('playerId');
+  @override
+  late final GeneratedColumn<String> playerId = GeneratedColumn<String>(
+      'player_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _strokesMeta =
+      const VerificationMeta('strokes');
+  @override
+  late final GeneratedColumn<int> strokes = GeneratedColumn<int>(
+      'strokes', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, gameId, holeNumber, playerId, strokes];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'hole_scores_table';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<HoleScoresTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('game_id')) {
+      context.handle(_gameIdMeta,
+          gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta));
+    } else if (isInserting) {
+      context.missing(_gameIdMeta);
+    }
+    if (data.containsKey('hole_number')) {
+      context.handle(
+          _holeNumberMeta,
+          holeNumber.isAcceptableOrUnknown(
+              data['hole_number']!, _holeNumberMeta));
+    } else if (isInserting) {
+      context.missing(_holeNumberMeta);
+    }
+    if (data.containsKey('player_id')) {
+      context.handle(_playerIdMeta,
+          playerId.isAcceptableOrUnknown(data['player_id']!, _playerIdMeta));
+    } else if (isInserting) {
+      context.missing(_playerIdMeta);
+    }
+    if (data.containsKey('strokes')) {
+      context.handle(_strokesMeta,
+          strokes.isAcceptableOrUnknown(data['strokes']!, _strokesMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  HoleScoresTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HoleScoresTableData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      gameId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}game_id'])!,
+      holeNumber: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}hole_number'])!,
+      playerId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}player_id'])!,
+      strokes: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}strokes']),
+    );
+  }
+
+  @override
+  $HoleScoresTableTable createAlias(String alias) {
+    return $HoleScoresTableTable(attachedDatabase, alias);
+  }
+}
+
+class HoleScoresTableData extends DataClass
+    implements Insertable<HoleScoresTableData> {
+  final String id;
+  final String gameId;
+  final int holeNumber;
+  final String playerId;
+  final int? strokes;
+  const HoleScoresTableData(
+      {required this.id,
+      required this.gameId,
+      required this.holeNumber,
+      required this.playerId,
+      this.strokes});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['game_id'] = Variable<String>(gameId);
+    map['hole_number'] = Variable<int>(holeNumber);
+    map['player_id'] = Variable<String>(playerId);
+    if (!nullToAbsent || strokes != null) {
+      map['strokes'] = Variable<int>(strokes);
+    }
+    return map;
+  }
+
+  HoleScoresTableCompanion toCompanion(bool nullToAbsent) {
+    return HoleScoresTableCompanion(
+      id: Value(id),
+      gameId: Value(gameId),
+      holeNumber: Value(holeNumber),
+      playerId: Value(playerId),
+      strokes: strokes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(strokes),
+    );
+  }
+
+  factory HoleScoresTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HoleScoresTableData(
+      id: serializer.fromJson<String>(json['id']),
+      gameId: serializer.fromJson<String>(json['gameId']),
+      holeNumber: serializer.fromJson<int>(json['holeNumber']),
+      playerId: serializer.fromJson<String>(json['playerId']),
+      strokes: serializer.fromJson<int?>(json['strokes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'gameId': serializer.toJson<String>(gameId),
+      'holeNumber': serializer.toJson<int>(holeNumber),
+      'playerId': serializer.toJson<String>(playerId),
+      'strokes': serializer.toJson<int?>(strokes),
+    };
+  }
+
+  HoleScoresTableData copyWith(
+          {String? id,
+          String? gameId,
+          int? holeNumber,
+          String? playerId,
+          Value<int?> strokes = const Value.absent()}) =>
+      HoleScoresTableData(
+        id: id ?? this.id,
+        gameId: gameId ?? this.gameId,
+        holeNumber: holeNumber ?? this.holeNumber,
+        playerId: playerId ?? this.playerId,
+        strokes: strokes.present ? strokes.value : this.strokes,
+      );
+  HoleScoresTableData copyWithCompanion(HoleScoresTableCompanion data) {
+    return HoleScoresTableData(
+      id: data.id.present ? data.id.value : this.id,
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+      holeNumber:
+          data.holeNumber.present ? data.holeNumber.value : this.holeNumber,
+      playerId: data.playerId.present ? data.playerId.value : this.playerId,
+      strokes: data.strokes.present ? data.strokes.value : this.strokes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HoleScoresTableData(')
+          ..write('id: $id, ')
+          ..write('gameId: $gameId, ')
+          ..write('holeNumber: $holeNumber, ')
+          ..write('playerId: $playerId, ')
+          ..write('strokes: $strokes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, gameId, holeNumber, playerId, strokes);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HoleScoresTableData &&
+          other.id == this.id &&
+          other.gameId == this.gameId &&
+          other.holeNumber == this.holeNumber &&
+          other.playerId == this.playerId &&
+          other.strokes == this.strokes);
+}
+
+class HoleScoresTableCompanion extends UpdateCompanion<HoleScoresTableData> {
+  final Value<String> id;
+  final Value<String> gameId;
+  final Value<int> holeNumber;
+  final Value<String> playerId;
+  final Value<int?> strokes;
+  final Value<int> rowid;
+  const HoleScoresTableCompanion({
+    this.id = const Value.absent(),
+    this.gameId = const Value.absent(),
+    this.holeNumber = const Value.absent(),
+    this.playerId = const Value.absent(),
+    this.strokes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  HoleScoresTableCompanion.insert({
+    required String id,
+    required String gameId,
+    required int holeNumber,
+    required String playerId,
+    this.strokes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        gameId = Value(gameId),
+        holeNumber = Value(holeNumber),
+        playerId = Value(playerId);
+  static Insertable<HoleScoresTableData> custom({
+    Expression<String>? id,
+    Expression<String>? gameId,
+    Expression<int>? holeNumber,
+    Expression<String>? playerId,
+    Expression<int>? strokes,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (gameId != null) 'game_id': gameId,
+      if (holeNumber != null) 'hole_number': holeNumber,
+      if (playerId != null) 'player_id': playerId,
+      if (strokes != null) 'strokes': strokes,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  HoleScoresTableCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? gameId,
+      Value<int>? holeNumber,
+      Value<String>? playerId,
+      Value<int?>? strokes,
+      Value<int>? rowid}) {
+    return HoleScoresTableCompanion(
+      id: id ?? this.id,
+      gameId: gameId ?? this.gameId,
+      holeNumber: holeNumber ?? this.holeNumber,
+      playerId: playerId ?? this.playerId,
+      strokes: strokes ?? this.strokes,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (gameId.present) {
+      map['game_id'] = Variable<String>(gameId.value);
+    }
+    if (holeNumber.present) {
+      map['hole_number'] = Variable<int>(holeNumber.value);
+    }
+    if (playerId.present) {
+      map['player_id'] = Variable<String>(playerId.value);
+    }
+    if (strokes.present) {
+      map['strokes'] = Variable<int>(strokes.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HoleScoresTableCompanion(')
+          ..write('id: $id, ')
+          ..write('gameId: $gameId, ')
+          ..write('holeNumber: $holeNumber, ')
+          ..write('playerId: $playerId, ')
+          ..write('strokes: $strokes, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1942,10 +2256,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $GameRuleSettingsTableTable(this);
   late final $HoleConfigsTableTable holeConfigsTable =
       $HoleConfigsTableTable(this);
+  late final $HoleScoresTableTable holeScoresTable =
+      $HoleScoresTableTable(this);
   late final AppSettingsDao appSettingsDao =
       AppSettingsDao(this as AppDatabase);
   late final GamesDao gamesDao = GamesDao(this as AppDatabase);
   late final HistoryDao historyDao = HistoryDao(this as AppDatabase);
+  late final ScoreEntryDao scoreEntryDao = ScoreEntryDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1956,7 +2273,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         playersTable,
         teamsTable,
         gameRuleSettingsTable,
-        holeConfigsTable
+        holeConfigsTable,
+        holeScoresTable
       ];
 }
 
@@ -3027,6 +3345,180 @@ typedef $$HoleConfigsTableTableProcessedTableManager = ProcessedTableManager<
     ),
     HoleConfigsTableData,
     PrefetchHooks Function()>;
+typedef $$HoleScoresTableTableCreateCompanionBuilder = HoleScoresTableCompanion
+    Function({
+  required String id,
+  required String gameId,
+  required int holeNumber,
+  required String playerId,
+  Value<int?> strokes,
+  Value<int> rowid,
+});
+typedef $$HoleScoresTableTableUpdateCompanionBuilder = HoleScoresTableCompanion
+    Function({
+  Value<String> id,
+  Value<String> gameId,
+  Value<int> holeNumber,
+  Value<String> playerId,
+  Value<int?> strokes,
+  Value<int> rowid,
+});
+
+class $$HoleScoresTableTableFilterComposer
+    extends Composer<_$AppDatabase, $HoleScoresTableTable> {
+  $$HoleScoresTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get gameId => $composableBuilder(
+      column: $table.gameId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get holeNumber => $composableBuilder(
+      column: $table.holeNumber, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get playerId => $composableBuilder(
+      column: $table.playerId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get strokes => $composableBuilder(
+      column: $table.strokes, builder: (column) => ColumnFilters(column));
+}
+
+class $$HoleScoresTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $HoleScoresTableTable> {
+  $$HoleScoresTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get gameId => $composableBuilder(
+      column: $table.gameId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get holeNumber => $composableBuilder(
+      column: $table.holeNumber, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get playerId => $composableBuilder(
+      column: $table.playerId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get strokes => $composableBuilder(
+      column: $table.strokes, builder: (column) => ColumnOrderings(column));
+}
+
+class $$HoleScoresTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $HoleScoresTableTable> {
+  $$HoleScoresTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get gameId =>
+      $composableBuilder(column: $table.gameId, builder: (column) => column);
+
+  GeneratedColumn<int> get holeNumber => $composableBuilder(
+      column: $table.holeNumber, builder: (column) => column);
+
+  GeneratedColumn<String> get playerId =>
+      $composableBuilder(column: $table.playerId, builder: (column) => column);
+
+  GeneratedColumn<int> get strokes =>
+      $composableBuilder(column: $table.strokes, builder: (column) => column);
+}
+
+class $$HoleScoresTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $HoleScoresTableTable,
+    HoleScoresTableData,
+    $$HoleScoresTableTableFilterComposer,
+    $$HoleScoresTableTableOrderingComposer,
+    $$HoleScoresTableTableAnnotationComposer,
+    $$HoleScoresTableTableCreateCompanionBuilder,
+    $$HoleScoresTableTableUpdateCompanionBuilder,
+    (
+      HoleScoresTableData,
+      BaseReferences<_$AppDatabase, $HoleScoresTableTable, HoleScoresTableData>
+    ),
+    HoleScoresTableData,
+    PrefetchHooks Function()> {
+  $$HoleScoresTableTableTableManager(
+      _$AppDatabase db, $HoleScoresTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HoleScoresTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HoleScoresTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$HoleScoresTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> gameId = const Value.absent(),
+            Value<int> holeNumber = const Value.absent(),
+            Value<String> playerId = const Value.absent(),
+            Value<int?> strokes = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              HoleScoresTableCompanion(
+            id: id,
+            gameId: gameId,
+            holeNumber: holeNumber,
+            playerId: playerId,
+            strokes: strokes,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String gameId,
+            required int holeNumber,
+            required String playerId,
+            Value<int?> strokes = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              HoleScoresTableCompanion.insert(
+            id: id,
+            gameId: gameId,
+            holeNumber: holeNumber,
+            playerId: playerId,
+            strokes: strokes,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$HoleScoresTableTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $HoleScoresTableTable,
+    HoleScoresTableData,
+    $$HoleScoresTableTableFilterComposer,
+    $$HoleScoresTableTableOrderingComposer,
+    $$HoleScoresTableTableAnnotationComposer,
+    $$HoleScoresTableTableCreateCompanionBuilder,
+    $$HoleScoresTableTableUpdateCompanionBuilder,
+    (
+      HoleScoresTableData,
+      BaseReferences<_$AppDatabase, $HoleScoresTableTable, HoleScoresTableData>
+    ),
+    HoleScoresTableData,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3043,4 +3535,6 @@ class $AppDatabaseManager {
       $$GameRuleSettingsTableTableTableManager(_db, _db.gameRuleSettingsTable);
   $$HoleConfigsTableTableTableManager get holeConfigsTable =>
       $$HoleConfigsTableTableTableManager(_db, _db.holeConfigsTable);
+  $$HoleScoresTableTableTableManager get holeScoresTable =>
+      $$HoleScoresTableTableTableManager(_db, _db.holeScoresTable);
 }

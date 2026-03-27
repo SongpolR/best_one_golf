@@ -1,9 +1,17 @@
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../core/enums/game_mode.dart';
 import '../../domain/entities/create_game_input.dart';
+import '../../domain/entities/game.dart';
+import '../../domain/entities/game_aggregate.dart';
 import '../../domain/entities/game_list_item.dart';
+import '../../domain/entities/game_rule_settings.dart';
+import '../../domain/entities/hole_config.dart';
+import '../../domain/entities/hole_score.dart';
+import '../../domain/entities/player.dart';
+import '../../domain/entities/team.dart';
 import '../../domain/repositories/game_repository.dart';
 import '../local/app_database.dart';
 
@@ -101,6 +109,105 @@ class GameRepositoryImpl implements GameRepository {
   @override
   Stream<List<GameListItem>> watchCompletedGames() {
     return db.historyDao.watchGamesByStatus('completed').map(_mapGameList);
+  }
+
+  @override
+  Stream<GameAggregate> watchGame(String gameId) {
+    return Rx.combineLatest6(
+      db.scoreEntryDao.watchGame(gameId),
+      db.scoreEntryDao.watchPlayers(gameId),
+      db.scoreEntryDao.watchTeams(gameId),
+      db.scoreEntryDao.watchRuleSettings(gameId),
+      db.scoreEntryDao.watchHoleConfigs(gameId),
+      db.scoreEntryDao.watchHoleScores(gameId),
+      (
+        gameRow,
+        playerRows,
+        teamRows,
+        ruleSettingsRow,
+        holeConfigRows,
+        holeScoreRows,
+      ) {
+        return GameAggregate(
+          game: Game(
+            id: gameRow.id,
+            title: gameRow.title,
+            mode: GameMode.fromValue(gameRow.mode),
+            status: gameRow.status,
+            totalHoles: gameRow.totalHoles,
+            createdAt: gameRow.createdAt,
+            updatedAt: gameRow.updatedAt,
+          ),
+          settings: GameRuleSettings(
+            gameId: ruleSettingsRow.gameId,
+            bestOneEnabled: ruleSettingsRow.bestOneEnabled,
+            bestTwoEnabled: ruleSettingsRow.bestTwoEnabled,
+            sharedBetDefault: ruleSettingsRow.sharedBetDefault,
+            bestOneAmount: ruleSettingsRow.bestOneAmount,
+            bestTwoAmount: ruleSettingsRow.bestTwoAmount,
+          ),
+          players: playerRows
+              .map(
+                (row) => Player(
+                  id: row.id,
+                  gameId: row.gameId,
+                  name: row.name,
+                  order: row.playerOrder,
+                  teamId: row.teamId,
+                ),
+              )
+              .toList(),
+          teams: teamRows
+              .map(
+                (row) => Team(
+                  id: row.id,
+                  gameId: row.gameId,
+                  name: row.name,
+                  order: row.teamOrder,
+                ),
+              )
+              .toList(),
+          holeConfigs: holeConfigRows
+              .map(
+                (row) => HoleConfig(
+                  id: row.id,
+                  gameId: row.gameId,
+                  holeNumber: row.holeNumber,
+                  par: row.par,
+                  isTurbo: row.isTurbo,
+                  isBirdieBonus: row.isBirdieBonus,
+                ),
+              )
+              .toList(),
+          holeScores: holeScoreRows
+              .map(
+                (row) => HoleScore(
+                  id: row.id,
+                  gameId: row.gameId,
+                  holeNumber: row.holeNumber,
+                  playerId: row.playerId,
+                  strokes: row.strokes,
+                ),
+              )
+              .toList(),
+        );
+      },
+    );
+  }
+
+  @override
+  Future<void> updateScore({
+    required String gameId,
+    required int holeNumber,
+    required String playerId,
+    required int? strokes,
+  }) {
+    return db.scoreEntryDao.updateScore(
+      gameId: gameId,
+      holeNumber: holeNumber,
+      playerId: playerId,
+      strokes: strokes,
+    );
   }
 
   @override

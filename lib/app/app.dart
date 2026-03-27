@@ -16,6 +16,8 @@ import '../domain/usecases/finalize_game.dart';
 import '../domain/usecases/list_completed_games.dart';
 import '../domain/usecases/list_ongoing_games.dart';
 import '../domain/usecases/restart_game.dart';
+import '../domain/usecases/load_game.dart';
+import '../domain/usecases/update_score.dart';
 import '../l10n/app_localizations.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
@@ -81,6 +83,16 @@ final ongoingGamesProvider = StreamProvider<List<GameListItem>>((ref) {
 
 final completedGamesProvider = StreamProvider<List<GameListItem>>((ref) {
   return ref.watch(listCompletedGamesUseCaseProvider).call();
+});
+
+final loadGameUseCaseProvider = Provider<LoadGameUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return LoadGameUseCase(repository);
+});
+
+final updateScoreUseCaseProvider = Provider<UpdateScoreUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return UpdateScoreUseCase(repository);
 });
 
 class BestOneGolfApp extends ConsumerWidget {
