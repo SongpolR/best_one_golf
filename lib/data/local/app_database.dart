@@ -8,10 +8,12 @@ import 'package:path_provider/path_provider.dart';
 import 'daos/app_settings_dao.dart';
 import 'daos/games_dao.dart';
 import 'daos/history_dao.dart';
+import 'daos/score_entry_dao.dart';
 import 'tables/app_settings_table.dart';
 import 'tables/game_rule_settings_table.dart';
 import 'tables/games_table.dart';
 import 'tables/hole_configs_table.dart';
+import 'tables/hole_scores_table.dart';
 import 'tables/players_table.dart';
 import 'tables/teams_table.dart';
 
@@ -25,21 +27,29 @@ part 'app_database.g.dart';
     TeamsTable,
     GameRuleSettingsTable,
     HoleConfigsTable,
+    HoleScoresTable,
   ],
   daos: [
     AppSettingsDao,
     GamesDao,
     HistoryDao,
+    ScoreEntryDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (Migrator m) async {
+          await m.createAll();
+        },
+        onUpgrade: (Migrator m, int from, int to) async {
+          await m.createAll();
+        },
         beforeOpen: (details) async {
           await appSettingsDao.ensureSeeded();
         },

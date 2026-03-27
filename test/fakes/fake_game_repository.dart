@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:best_one_golf/core/enums/game_mode.dart';
 import 'package:best_one_golf/domain/entities/create_game_input.dart';
+import 'package:best_one_golf/domain/entities/game_aggregate.dart';
 import 'package:best_one_golf/domain/entities/game_list_item.dart';
 import 'package:best_one_golf/domain/repositories/game_repository.dart';
 
@@ -94,6 +95,22 @@ class FakeGameRepository implements GameRepository {
   Future<void> dispose() async {
     await _ongoingController.close();
     await _completedController.close();
+  }
+
+  @override
+  Future<void> updateScore(
+      {required String gameId,
+      required int holeNumber,
+      required String playerId,
+      required int? strokes}) {
+    // TODO: implement updateScore
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<GameAggregate> watchGame(String gameId) {
+    // TODO: implement watchGame
+    throw UnimplementedError();
   }
 }
 

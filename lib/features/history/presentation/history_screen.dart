@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app.dart';
 import '../../../domain/entities/game_list_item.dart';
-import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 
 class HistoryScreen extends ConsumerWidget {
@@ -12,7 +11,6 @@ class HistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
     final ongoingAsync = ref.watch(ongoingGamesProvider);
     final completedAsync = ref.watch(completedGamesProvider);
 
