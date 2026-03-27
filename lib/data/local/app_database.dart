@@ -9,6 +9,7 @@ import 'daos/app_settings_dao.dart';
 import 'daos/calculation_dao.dart';
 import 'daos/games_dao.dart';
 import 'daos/history_dao.dart';
+import 'daos/result_view_dao.dart';
 import 'daos/score_entry_dao.dart';
 import 'tables/app_settings_table.dart';
 import 'tables/computed_hole_results_table.dart';
@@ -40,6 +41,7 @@ part 'app_database.g.dart';
     HistoryDao,
     ScoreEntryDao,
     CalculationDao,
+    ResultViewDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {

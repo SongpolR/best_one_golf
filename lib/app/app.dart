@@ -4,12 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../data/local/app_database.dart';
-import '../data/repositories/app_settings_repository_impl.dart';
-import '../data/repositories/game_repository_impl.dart';
 import '../domain/entities/app_settings.dart';
 import '../domain/entities/game_list_item.dart';
+import '../domain/entities/game_summary_view_data.dart';
+import '../domain/entities/hole_result_view_data.dart';
 import '../domain/repositories/app_settings_repository.dart';
 import '../domain/repositories/game_repository.dart';
+import '../data/repositories/app_settings_repository_impl.dart';
+import '../data/repositories/game_repository_impl.dart';
 import '../domain/usecases/create_game.dart';
 import '../domain/usecases/delete_game.dart';
 import '../domain/usecases/finalize_game.dart';
@@ -19,6 +21,8 @@ import '../domain/usecases/restart_game.dart';
 import '../domain/usecases/load_game.dart';
 import '../domain/usecases/update_score.dart';
 import '../domain/usecases/recalculate_game.dart';
+import '../domain/usecases/load_game_summary.dart';
+import '../domain/usecases/load_hole_result.dart';
 import '../l10n/app_localizations.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
@@ -99,6 +103,29 @@ final updateScoreUseCaseProvider = Provider<UpdateScoreUseCase>((ref) {
 final recalculateGameUseCaseProvider = Provider<RecalculateGameUseCase>((ref) {
   final repository = ref.watch(gameRepositoryProvider);
   return RecalculateGameUseCase(repository);
+});
+
+final loadHoleResultUseCaseProvider = Provider<LoadHoleResultUseCase>((ref) {
+  final db = ref.watch(appDatabaseProvider);
+  return LoadHoleResultUseCase(db);
+});
+
+final loadGameSummaryUseCaseProvider = Provider<LoadGameSummaryUseCase>((ref) {
+  final db = ref.watch(appDatabaseProvider);
+  return LoadGameSummaryUseCase(db);
+});
+
+final holeResultProvider = StreamProvider.family<HoleResultViewData?,
+    ({String gameId, int holeNumber})>((ref, params) {
+  return ref.watch(loadHoleResultUseCaseProvider).watch(
+        gameId: params.gameId,
+        holeNumber: params.holeNumber,
+      );
+});
+
+final gameSummaryProvider =
+    StreamProvider.family<GameSummaryViewData?, String>((ref, gameId) {
+  return ref.watch(loadGameSummaryUseCaseProvider).watch(gameId);
 });
 
 class BestOneGolfApp extends ConsumerWidget {
