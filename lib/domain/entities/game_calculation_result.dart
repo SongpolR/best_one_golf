@@ -27,11 +27,42 @@ class MoneyMovement {
   }
 }
 
+class TeamMovement {
+  final String fromTeamId;
+  final String toTeamId;
+  final int amount;
+  final int holeNumber;
+  final String rule;
+  final String note;
+
+  const TeamMovement({
+    required this.fromTeamId,
+    required this.toTeamId,
+    required this.amount,
+    required this.holeNumber,
+    required this.rule,
+    required this.note,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'fromTeamId': fromTeamId,
+      'toTeamId': toTeamId,
+      'amount': amount,
+      'holeNumber': holeNumber,
+      'rule': rule,
+      'note': note,
+    };
+  }
+}
+
 class HoleCalculationResult {
   final int holeNumber;
   final bool isComplete;
   final List<MoneyMovement> movements;
+  final List<TeamMovement> teamMovements;
   final Map<String, int> playerNet;
+  final Map<String, int> teamNet;
   final int? baseAmount;
   final bool isTurbo;
   final bool isBirdieBonus;
@@ -40,7 +71,9 @@ class HoleCalculationResult {
     required this.holeNumber,
     required this.isComplete,
     required this.movements,
+    required this.teamMovements,
     required this.playerNet,
+    required this.teamNet,
     required this.baseAmount,
     required this.isTurbo,
     required this.isBirdieBonus,
@@ -55,7 +88,9 @@ class HoleCalculationResult {
       holeNumber: holeNumber,
       isComplete: false,
       movements: const [],
+      teamMovements: const [],
       playerNet: const {},
+      teamNet: const {},
       baseAmount: null,
       isTurbo: isTurbo,
       isBirdieBonus: isBirdieBonus,
@@ -67,7 +102,9 @@ class HoleCalculationResult {
       'holeNumber': holeNumber,
       'isComplete': isComplete,
       'movements': movements.map((m) => m.toJson()).toList(),
+      'teamMovements': teamMovements.map((m) => m.toJson()).toList(),
       'playerNet': playerNet,
+      'teamNet': teamNet,
       'baseAmount': baseAmount,
       'isTurbo': isTurbo,
       'isBirdieBonus': isBirdieBonus,
