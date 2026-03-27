@@ -7,9 +7,15 @@ import '../data/local/app_database.dart';
 import '../data/repositories/app_settings_repository_impl.dart';
 import '../data/repositories/game_repository_impl.dart';
 import '../domain/entities/app_settings.dart';
+import '../domain/entities/game_list_item.dart';
 import '../domain/repositories/app_settings_repository.dart';
 import '../domain/repositories/game_repository.dart';
 import '../domain/usecases/create_game.dart';
+import '../domain/usecases/delete_game.dart';
+import '../domain/usecases/finalize_game.dart';
+import '../domain/usecases/list_completed_games.dart';
+import '../domain/usecases/list_ongoing_games.dart';
+import '../domain/usecases/restart_game.dart';
 import '../l10n/app_localizations.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
@@ -40,6 +46,41 @@ final gameRepositoryProvider = Provider<GameRepository>((ref) {
 final createGameUseCaseProvider = Provider<CreateGameUseCase>((ref) {
   final repository = ref.watch(gameRepositoryProvider);
   return CreateGameUseCase(repository);
+});
+
+final listOngoingGamesUseCaseProvider =
+    Provider<ListOngoingGamesUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return ListOngoingGamesUseCase(repository);
+});
+
+final listCompletedGamesUseCaseProvider =
+    Provider<ListCompletedGamesUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return ListCompletedGamesUseCase(repository);
+});
+
+final deleteGameUseCaseProvider = Provider<DeleteGameUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return DeleteGameUseCase(repository);
+});
+
+final restartGameUseCaseProvider = Provider<RestartGameUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return RestartGameUseCase(repository);
+});
+
+final finalizeGameUseCaseProvider = Provider<FinalizeGameUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return FinalizeGameUseCase(repository);
+});
+
+final ongoingGamesProvider = StreamProvider<List<GameListItem>>((ref) {
+  return ref.watch(listOngoingGamesUseCaseProvider).call();
+});
+
+final completedGamesProvider = StreamProvider<List<GameListItem>>((ref) {
+  return ref.watch(listCompletedGamesUseCaseProvider).call();
 });
 
 class BestOneGolfApp extends ConsumerWidget {

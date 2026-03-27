@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'daos/app_settings_dao.dart';
 import 'daos/games_dao.dart';
+import 'daos/history_dao.dart';
 import 'tables/app_settings_table.dart';
 import 'tables/game_rule_settings_table.dart';
 import 'tables/games_table.dart';
@@ -28,6 +29,7 @@ part 'app_database.g.dart';
   daos: [
     AppSettingsDao,
     GamesDao,
+    HistoryDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {

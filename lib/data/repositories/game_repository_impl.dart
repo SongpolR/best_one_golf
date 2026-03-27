@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/enums/game_mode.dart';
 import '../../domain/entities/create_game_input.dart';
+import '../../domain/entities/game_list_item.dart';
 import '../../domain/repositories/game_repository.dart';
 import '../local/app_database.dart';
 
@@ -90,5 +91,95 @@ class GameRepositoryImpl implements GameRepository {
     );
 
     return gameId;
+  }
+
+  @override
+  Stream<List<GameListItem>> watchOngoingGames() {
+    return db.historyDao.watchGamesByStatus('ongoing').map(_mapGameList);
+  }
+
+  @override
+  Stream<List<GameListItem>> watchCompletedGames() {
+    return db.historyDao.watchGamesByStatus('completed').map(_mapGameList);
+  }
+
+  @override
+  Future<void> deleteGame(String gameId) {
+    return db.historyDao.deleteGame(gameId);
+  }
+
+  @override
+  Future<void> finalizeGame(String gameId) {
+    return db.historyDao.finalizeGame(gameId);
+  }
+
+  @override
+  Future<String> restartGame(String gameId) async {
+    final game = await db.historyDao.getGameById(gameId);
+    final players = await db.historyDao.getPlayersByGameId(gameId);
+    final teams = await db.historyDao.getTeamsByGameId(gameId);
+    final ruleSettings = await db.historyDao.getRuleSettingsByGameId(gameId);
+    final holeConfigs = await db.historyDao.getHoleConfigsByGameId(gameId);
+
+    final teamIndexById = <String, int>{};
+    for (var i = 0; i < teams.length; i++) {
+      teamIndexById[teams[i].id] = i;
+    }
+
+    final input = CreateGameInput(
+      title: game.title,
+      mode: GameMode.fromValue(game.mode),
+      players: players
+          .map(
+            (player) => CreateGamePlayerInput(
+              name: player.name,
+              order: player.playerOrder,
+              teamIndex:
+                  player.teamId != null ? teamIndexById[player.teamId!] : null,
+            ),
+          )
+          .toList(),
+      teams: teams
+          .map(
+            (team) => CreateGameTeamInput(
+              name: team.name,
+              order: team.teamOrder,
+            ),
+          )
+          .toList(),
+      bestOneEnabled: ruleSettings.bestOneEnabled,
+      bestTwoEnabled: ruleSettings.bestTwoEnabled,
+      sharedBetDefault: ruleSettings.sharedBetDefault,
+      bestOneAmount: ruleSettings.bestOneAmount,
+      bestTwoAmount: ruleSettings.bestTwoAmount,
+      holes: holeConfigs
+          .map(
+            (hole) => CreateGameHoleInput(
+              holeNumber: hole.holeNumber,
+              par: hole.par,
+              isTurbo: hole.isTurbo,
+              isBirdieBonus: hole.isBirdieBonus,
+            ),
+          )
+          .toList(),
+    );
+
+    return createGame(input);
+  }
+
+  List<GameListItem> _mapGameList(List<GamesTableData> rows) {
+    return rows
+        .map(
+          (row) => GameListItem(
+            id: row.id,
+            title: row.title,
+            mode: GameMode.fromValue(row.mode),
+            status: row.status,
+            totalHoles: row.totalHoles,
+            createdAt: row.createdAt,
+            updatedAt: row.updatedAt,
+          ),
+        )
+        .toList();
   }
 }
