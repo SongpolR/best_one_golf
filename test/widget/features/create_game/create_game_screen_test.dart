@@ -13,6 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../helpers/pump_app.dart';
+
 void main() {
   Widget buildTestApp(FakeGameRepository fakeRepository) {
     final router = GoRouter(
@@ -137,6 +139,7 @@ void main() {
   testWidgets('submit valid form navigates to score entry', (tester) async {
     final fakeRepository = FakeGameRepository(
       createdGameId: 'game-999',
+      gameAggregate: fakeGameAggregate(gameId: 'game-999'),
     );
 
     await tester.pumpWidget(buildTestApp(fakeRepository));
@@ -147,10 +150,19 @@ void main() {
     await tester.enterText(find.byType(TextField).at(2), 'Bob');
     await tester.pumpAndSettle();
 
-    await scrollUntilVisible(tester, find.text('Start Game'));
-    await tester.tap(find.text('Start Game'));
+    final startGameFinder = find.text('Start Game');
+    await tester.scrollUntilVisible(
+      startGameFinder,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('game-999'), findsOneWidget);
+    await tester.tap(startGameFinder);
+    await tester.pumpForNavigation();
+
+    expect(find.text('Score Entry'), findsOneWidget);
+    expect(find.text('Saturday Match'), findsOneWidget);
+    expect(find.text('Hole 1 / 18'), findsOneWidget);
   });
 }
