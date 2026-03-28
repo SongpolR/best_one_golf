@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/enums/hole_state.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 import 'score_entry_controller.dart';
+import '../../hole_result/presentation/hole_result_sheet.dart';
 
 class ScoreEntryScreen extends ConsumerWidget {
   final String gameId;
@@ -157,8 +158,17 @@ class ScoreEntryScreen extends ConsumerWidget {
                           Expanded(
                             child: OutlinedButton(
                               onPressed: () {
-                                context
-                                    .push('/hole-result/$gameId/$selectedHole');
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  useSafeArea: true,
+                                  builder: (_) {
+                                    return HoleResultSheet(
+                                      gameId: gameId,
+                                      holeNumber: selectedHole,
+                                    );
+                                  },
+                                );
                               },
                               child: const Text('Hole Result'),
                             ),
