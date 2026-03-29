@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../score_entry/presentation/score_entry_controller.dart';
 
 enum HoleResultViewMode {
   summary,
@@ -34,6 +35,7 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
       ),
     );
     final settingsAsync = ref.watch(appSettingsProvider);
+    final aggregateAsync = ref.watch(gameAggregateProvider(widget.gameId));
 
     return SafeArea(
       top: false,
@@ -44,93 +46,126 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
         ),
         child: settingsAsync.when(
           data: (settings) {
-            return resultAsync.when(
-              data: (result) {
-                if (result == null) {
-                  return const _SheetFrame(
-                    title: 'Hole Result',
-                    child: Center(
-                      child: Text('No result available yet.'),
-                    ),
-                  );
-                }
+            return aggregateAsync.when(
+              data: (aggregate) {
+                final playerNameById = {
+                  for (final player in aggregate.players)
+                    player.id: player.name,
+                };
+                final teamNameById = {
+                  for (final team in aggregate.teams) team.id: team.name,
+                };
 
-                return _SheetFrame(
-                  title: 'Hole ${result.holeNumber} Result',
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _TopMeta(
-                        isComplete: result.isComplete,
-                        isTurbo: result.isTurbo,
-                        isBirdieBonus: result.isBirdieBonus,
-                        baseAmount: result.baseAmount == null
-                            ? null
-                            : CurrencyFormatter.format(
-                                result.baseAmount!,
-                                settings.currency,
-                              ),
-                      ),
-                      const SizedBox(height: 16),
-                      SegmentedButton<HoleResultViewMode>(
-                        segments: const [
-                          ButtonSegment(
-                            value: HoleResultViewMode.summary,
-                            label: Text('Summary'),
+                return resultAsync.when(
+                  data: (result) {
+                    if (result == null) {
+                      return const _SheetFrame(
+                        title: 'Hole Result',
+                        child: Center(
+                          child: Text('No result available yet.'),
+                        ),
+                      );
+                    }
+
+                    return _SheetFrame(
+                      title: 'Hole ${result.holeNumber} Result',
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _TopMeta(
+                            isComplete: result.isComplete,
+                            isTurbo: result.isTurbo,
+                            isBirdieBonus: result.isBirdieBonus,
+                            baseAmount: result.baseAmount == null
+                                ? null
+                                : CurrencyFormatter.format(
+                                    result.baseAmount!,
+                                    settings.currency,
+                                  ),
                           ),
-                          ButtonSegment(
-                            value: HoleResultViewMode.detail,
-                            label: Text('Detail'),
+                          const SizedBox(height: 16),
+                          SegmentedButton<HoleResultViewMode>(
+                            segments: const [
+                              ButtonSegment(
+                                value: HoleResultViewMode.summary,
+                                label: Text('Summary'),
+                              ),
+                              ButtonSegment(
+                                value: HoleResultViewMode.detail,
+                                label: Text('Detail'),
+                              ),
+                            ],
+                            selected: {mode},
+                            onSelectionChanged: (selection) {
+                              setState(() {
+                                mode = selection.first;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          Expanded(
+                            child: mode == HoleResultViewMode.summary
+                                ? _SummaryView(
+                                    playerNet: result.playerNet,
+                                    teamNet: result.teamNet,
+                                    playerNameById: playerNameById,
+                                    teamNameById: teamNameById,
+                                    formatter: (amount) =>
+                                        CurrencyFormatter.formatSigned(
+                                      amount,
+                                      settings.currency,
+                                    ),
+                                  )
+                                : _DetailView(
+                                    playerMovements: result.playerMovements
+                                        .map(
+                                          (move) => _MovementTileData(
+                                            title:
+                                                '${playerNameById[move.fromId] ?? move.fromId} → ${playerNameById[move.toId] ?? move.toId}',
+                                            subtitle: _formatRuleLabel(
+                                              move.rule,
+                                              move.note,
+                                            ),
+                                            amount: CurrencyFormatter.format(
+                                              move.amount,
+                                              settings.currency,
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    teamMovements: result.teamMovements
+                                        .map(
+                                          (move) => _MovementTileData(
+                                            title:
+                                                '${teamNameById[move.fromTeamId] ?? move.fromTeamId} → ${teamNameById[move.toTeamId] ?? move.toTeamId}',
+                                            subtitle: _formatRuleLabel(
+                                              move.rule,
+                                              move.note,
+                                            ),
+                                            amount: CurrencyFormatter.format(
+                                              move.amount,
+                                              settings.currency,
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
                           ),
                         ],
-                        selected: {mode},
-                        onSelectionChanged: (selection) {
-                          setState(() {
-                            mode = selection.first;
-                          });
-                        },
                       ),
-                      const SizedBox(height: 16),
-                      Expanded(
-                        child: mode == HoleResultViewMode.summary
-                            ? _SummaryView(
-                                playerNet: result.playerNet,
-                                teamNet: result.teamNet,
-                                formatter: (amount) =>
-                                    CurrencyFormatter.formatSigned(
-                                  amount,
-                                  settings.currency,
-                                ),
-                              )
-                            : _DetailView(
-                                playerMovements: result.playerMovements
-                                    .map(
-                                      (move) => _MovementTileData(
-                                        title: '${move.fromId} → ${move.toId}',
-                                        subtitle: '${move.rule} • ${move.note}',
-                                        amount: CurrencyFormatter.format(
-                                          move.amount,
-                                          settings.currency,
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                                teamMovements: result.teamMovements
-                                    .map(
-                                      (move) => _MovementTileData(
-                                        title:
-                                            '${move.fromTeamId} → ${move.toTeamId}',
-                                        subtitle: '${move.rule} • ${move.note}',
-                                        amount: CurrencyFormatter.format(
-                                          move.amount,
-                                          settings.currency,
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                      ),
-                    ],
+                    );
+                  },
+                  loading: () => const _SheetFrame(
+                    title: 'Hole Result',
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                  error: (error, stackTrace) => _SheetFrame(
+                    title: 'Hole Result',
+                    child: Center(
+                      child: Text('Failed to load hole result: $error'),
+                    ),
                   ),
                 );
               },
@@ -143,7 +178,7 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
               error: (error, stackTrace) => _SheetFrame(
                 title: 'Hole Result',
                 child: Center(
-                  child: Text('Failed to load hole result: $error'),
+                  child: Text('Failed to load game data: $error'),
                 ),
               ),
             );
@@ -163,6 +198,24 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
         ),
       ),
     );
+  }
+
+  String _formatRuleLabel(String rule, String note) {
+    final ruleLabel = switch (rule) {
+      'best_one' => 'Best One',
+      'best_two' => 'Best Two',
+      'individual' => 'Individual',
+      _ => rule,
+    };
+
+    final noteLabel = switch (note) {
+      'team' => 'Team',
+      'team_split' => 'Split',
+      'gross' => 'Gross',
+      _ => note,
+    };
+
+    return '$ruleLabel • $noteLabel';
   }
 }
 
@@ -246,48 +299,55 @@ class _MetaChip extends StatelessWidget {
 class _SummaryView extends StatelessWidget {
   final Map<String, int> playerNet;
   final Map<String, int> teamNet;
+  final Map<String, String> playerNameById;
+  final Map<String, String> teamNameById;
   final String Function(int amount) formatter;
 
   const _SummaryView({
     required this.playerNet,
     required this.teamNet,
+    required this.playerNameById,
+    required this.teamNameById,
     required this.formatter,
   });
 
   @override
   Widget build(BuildContext context) {
-    final hasTeam = teamNet.isNotEmpty;
-    final hasPlayer = playerNet.isNotEmpty;
+    final sortedTeamEntries = teamNet.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    final sortedPlayerEntries = playerNet.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
 
     return ListView(
       children: [
-        if (!hasPlayer && !hasTeam) const Text('No net result yet.'),
-        if (hasTeam) ...[
+        if (teamNet.isEmpty && playerNet.isEmpty) const Text('No result yet.'),
+        if (teamNet.isNotEmpty) ...[
           Text(
             'Team Net',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
-          ...teamNet.entries.map(
+          ...sortedTeamEntries.map(
             (entry) => Card(
               child: ListTile(
-                title: Text(entry.key),
+                title: Text(teamNameById[entry.key] ?? entry.key),
                 trailing: Text(formatter(entry.value)),
               ),
             ),
           ),
           const SizedBox(height: 16),
         ],
-        if (hasPlayer) ...[
+        if (playerNet.isNotEmpty) ...[
           Text(
             'Player Net',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
-          ...playerNet.entries.map(
+          ...sortedPlayerEntries.map(
             (entry) => Card(
               child: ListTile(
-                title: Text(entry.key),
+                title: Text(playerNameById[entry.key] ?? entry.key),
                 trailing: Text(formatter(entry.value)),
               ),
             ),
