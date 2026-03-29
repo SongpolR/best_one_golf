@@ -42,7 +42,9 @@ class ScoreEntryScreen extends ConsumerWidget {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
-                    Text('Hole $selectedHole / ${aggregate.game.totalHoles}'),
+                    Text(
+                        key: const Key('scoreEntryHoleLabel'),
+                        'Hole $selectedHole / ${aggregate.game.totalHoles}'),
                     const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,
@@ -157,6 +159,7 @@ class ScoreEntryScreen extends ConsumerWidget {
                         children: [
                           Expanded(
                             child: OutlinedButton(
+                              key: const Key('openHoleResultButton'),
                               onPressed: () {
                                 showModalBottomSheet(
                                   context: context,
@@ -176,6 +179,7 @@ class ScoreEntryScreen extends ConsumerWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: OutlinedButton(
+                              key: const Key('openGameSummaryButton'),
                               onPressed: () {
                                 context.push('/game-summary/$gameId');
                               },
@@ -189,6 +193,7 @@ class ScoreEntryScreen extends ConsumerWidget {
                         children: [
                           Expanded(
                             child: OutlinedButton(
+                              key: const Key('prevHoleButton'),
                               onPressed: selectedHole > 1
                                   ? controller.previousHole
                                   : null,
@@ -198,6 +203,7 @@ class ScoreEntryScreen extends ConsumerWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: FilledButton(
+                              key: const Key('nextHoleButton'),
                               onPressed:
                                   selectedHole < aggregate.game.totalHoles
                                       ? () => controller.nextHole(aggregate)

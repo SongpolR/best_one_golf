@@ -22,6 +22,7 @@ class CreateGameScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
+            key: const Key('createGameTitleField'),
             decoration: const InputDecoration(
               labelText: 'Game Title',
             ),
@@ -82,6 +83,7 @@ class CreateGameScreen extends ConsumerWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
+              key: const Key('addPlayerButton'),
               onPressed: state.players.length < 6 ? controller.addPlayer : null,
               icon: const Icon(Icons.person_add),
               label: const Text('Add Player'),
@@ -93,6 +95,7 @@ class CreateGameScreen extends ConsumerWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           RadioListTile<GameMode>(
+            key: const Key('individualModeRadio'),
             value: GameMode.individual,
             groupValue: state.mode,
             onChanged: (value) {
@@ -101,6 +104,7 @@ class CreateGameScreen extends ConsumerWidget {
             title: const Text('Individual'),
           ),
           RadioListTile<GameMode>(
+            key: const Key('teamModeRadio'),
             value: GameMode.team,
             groupValue: state.mode,
             onChanged: (value) {
@@ -134,6 +138,7 @@ class CreateGameScreen extends ConsumerWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: OutlinedButton.icon(
+                key: const Key('addTeamButton'),
                 onPressed: controller.addTeam,
                 icon: const Icon(Icons.group_add),
                 label: const Text('Add Team'),
@@ -195,6 +200,7 @@ class CreateGameScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           Text(
             'Hole Setup',
+            key: const Key('holeSetupSectionTitle'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -274,6 +280,7 @@ class CreateGameScreen extends ConsumerWidget {
           ],
           const SizedBox(height: 24),
           FilledButton(
+            key: const Key('startGameButton'),
             onPressed: state.isSubmitting
                 ? null
                 : () async {

@@ -105,13 +105,13 @@ void main() {
     expect(find.text('Holes'), findsOneWidget);
 
     await tester.scrollUntilVisible(
-      find.text('1'),
-      200,
+      find.byKey(const Key('summaryHole_1')),
+      300,
       scrollable: find.byType(Scrollable).first,
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('1').first);
+    await tester.tap(find.byKey(const Key('summaryHole_1')));
     await tester.pumpAndSettle();
 
     expect(find.text('Hole 1 Result'), findsOneWidget);

@@ -85,8 +85,11 @@ void main() {
     expect(find.text('Mode'), findsOneWidget);
     expect(find.text('Rules'), findsOneWidget);
 
-    await scrollUntilVisible(tester, find.text('Hole Setup'));
-    expect(find.text('Hole Setup'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('holeSetupSectionTitle')),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
 
     await scrollUntilVisible(tester, find.text('Start Game'));
     expect(find.text('Start Game'), findsOneWidget);
@@ -101,7 +104,7 @@ void main() {
     expect(find.text('Player 1'), findsOneWidget);
     expect(find.text('Player 2'), findsOneWidget);
 
-    await tester.tap(find.text('Add Player'));
+    await tester.tap(find.byKey(const Key('addPlayerButton')));
     await tester.pump();
 
     expect(find.text('Player 3'), findsOneWidget);
@@ -113,14 +116,14 @@ void main() {
     await tester.pumpWidget(buildTestApp(fakeRepository));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Team'));
+    await tester.tap(find.byKey(const Key('teamModeRadio')));
     await tester.pumpAndSettle();
 
     expect(find.text('Teams'), findsOneWidget);
     expect(find.text('Team 1'), findsOneWidget);
 
     await scrollUntilVisible(tester, find.text('Add Team'));
-    expect(find.text('Add Team'), findsOneWidget);
+    expect(find.byKey(const Key('addTeamButton')), findsOneWidget);
   });
 
   testWidgets('submit invalid form shows validation error', (tester) async {
@@ -145,12 +148,13 @@ void main() {
     await tester.pumpWidget(buildTestApp(fakeRepository));
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byType(TextField).at(0), 'Saturday Match');
+    await tester.enterText(
+        find.byKey(const Key('createGameTitleField')), 'Saturday Match');
     await tester.enterText(find.byType(TextField).at(1), 'Alice');
     await tester.enterText(find.byType(TextField).at(2), 'Bob');
     await tester.pumpAndSettle();
 
-    final startGameFinder = find.text('Start Game');
+    final startGameFinder = find.byKey(const Key('startGameButton'));
     await tester.scrollUntilVisible(
       startGameFinder,
       300,
