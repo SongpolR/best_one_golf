@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/enums/hole_state.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 import 'score_entry_controller.dart';
+import '../../hole_result/presentation/hole_result_sheet.dart';
 
 class ScoreEntryScreen extends ConsumerWidget {
   final String gameId;
@@ -149,23 +151,61 @@ class ScoreEntryScreen extends ConsumerWidget {
                 top: false,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Row(
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed:
-                              selectedHole > 1 ? controller.previousHole : null,
-                          child: const Text('Prev'),
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  useSafeArea: true,
+                                  builder: (_) {
+                                    return HoleResultSheet(
+                                      gameId: gameId,
+                                      holeNumber: selectedHole,
+                                    );
+                                  },
+                                );
+                              },
+                              child: const Text('Hole Result'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () {
+                                context.push('/game-summary/$gameId');
+                              },
+                              child: const Text('Game Summary'),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: selectedHole < aggregate.game.totalHoles
-                              ? () => controller.nextHole(aggregate)
-                              : null,
-                          child: const Text('Next'),
-                        ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: selectedHole > 1
+                                  ? controller.previousHole
+                                  : null,
+                              child: const Text('Prev'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: FilledButton(
+                              onPressed:
+                                  selectedHole < aggregate.game.totalHoles
+                                      ? () => controller.nextHole(aggregate)
+                                      : null,
+                              child: const Text('Next'),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

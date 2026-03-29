@@ -9,6 +9,7 @@ import 'package:best_one_golf/domain/entities/game_rule_settings.dart';
 import 'package:best_one_golf/domain/entities/hole_config.dart';
 import 'package:best_one_golf/domain/entities/hole_score.dart';
 import 'package:best_one_golf/domain/entities/player.dart';
+import 'package:best_one_golf/domain/entities/team.dart';
 import 'package:best_one_golf/domain/repositories/game_repository.dart';
 
 class FakeGameRepository implements GameRepository {
@@ -168,6 +169,12 @@ class FakeGameRepository implements GameRepository {
     await _completedController.close();
     await _gameAggregateController.close();
   }
+
+  @override
+  Future<void> recalculateGame(String gameId) {
+    // TODO: implement recalculateGame
+    throw UnimplementedError();
+  }
 }
 
 GameListItem fakeGameListItem({
@@ -228,8 +235,97 @@ GameAggregate fakeGameAggregate({
         order: 1,
         teamId: null,
       ),
+      Player(
+        id: 'p3',
+        gameId: 'game-1',
+        name: 'Charlie',
+        order: 2,
+        teamId: null,
+      ),
     ],
     teams: const [],
+    holeConfigs: List.generate(
+      18,
+      (index) => HoleConfig(
+        id: 'h${index + 1}',
+        gameId: 'game-1',
+        holeNumber: index + 1,
+        par: 4,
+        isTurbo: false,
+        isBirdieBonus: false,
+      ),
+    ),
+    holeScores: const [],
+  );
+}
+
+GameAggregate fakeGameAggregateForTeams({
+  String gameId = 'game-1',
+  String title = 'Team Match',
+  int totalHoles = 18,
+}) {
+  return GameAggregate(
+    game: Game(
+      id: gameId,
+      title: title,
+      mode: GameMode.team,
+      status: 'ongoing',
+      totalHoles: totalHoles,
+      createdAt: DateTime(2026, 1, 1),
+      updatedAt: DateTime(2026, 1, 1),
+    ),
+    settings: const GameRuleSettings(
+      gameId: 'game-1',
+      bestOneEnabled: true,
+      bestTwoEnabled: false,
+      sharedBetDefault: true,
+      bestOneAmount: 20,
+      bestTwoAmount: 20,
+    ),
+    players: const [
+      Player(
+        id: 'p1',
+        gameId: 'game-1',
+        name: 'Alice',
+        order: 0,
+        teamId: 't1',
+      ),
+      Player(
+        id: 'p2',
+        gameId: 'game-1',
+        name: 'Amy',
+        order: 1,
+        teamId: 't1',
+      ),
+      Player(
+        id: 'p3',
+        gameId: 'game-1',
+        name: 'Bob',
+        order: 2,
+        teamId: 't2',
+      ),
+      Player(
+        id: 'p4',
+        gameId: 'game-1',
+        name: 'Ben',
+        order: 3,
+        teamId: 't2',
+      ),
+    ],
+    teams: const [
+      Team(
+        id: 't1',
+        gameId: 'game-1',
+        name: 'Team A',
+        order: 0,
+      ),
+      Team(
+        id: 't2',
+        gameId: 'game-1',
+        name: 'Team B',
+        order: 1,
+      ),
+    ],
     holeConfigs: List.generate(
       18,
       (index) => HoleConfig(

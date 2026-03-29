@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
-import 'package:uuid/uuid.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../core/enums/game_mode.dart';
 import '../../domain/entities/create_game_input.dart';
@@ -13,16 +15,20 @@ import '../../domain/entities/hole_score.dart';
 import '../../domain/entities/player.dart';
 import '../../domain/entities/team.dart';
 import '../../domain/repositories/game_repository.dart';
+import '../../domain/services/calculation/game_calculator.dart';
 import '../local/app_database.dart';
 
 class GameRepositoryImpl implements GameRepository {
   final AppDatabase db;
   final Uuid uuid;
+  final GameCalculator gameCalculator;
 
   GameRepositoryImpl(
     this.db, {
     Uuid? uuid,
-  }) : uuid = uuid ?? const Uuid();
+    GameCalculator? gameCalculator,
+  })  : uuid = uuid ?? const Uuid(),
+        gameCalculator = gameCalculator ?? const GameCalculator();
 
   @override
   Future<String> createGame(CreateGameInput input) async {
@@ -201,12 +207,42 @@ class GameRepositoryImpl implements GameRepository {
     required int holeNumber,
     required String playerId,
     required int? strokes,
-  }) {
-    return db.scoreEntryDao.updateScore(
+  }) async {
+    await db.scoreEntryDao.updateScore(
       gameId: gameId,
       holeNumber: holeNumber,
       playerId: playerId,
       strokes: strokes,
+    );
+
+    await recalculateGame(gameId);
+  }
+
+  @override
+  Future<void> recalculateGame(String gameId) async {
+    final aggregate = await watchGame(gameId).first;
+    final result = gameCalculator.calculate(aggregate);
+
+    final holeRows = result.holeResults.map((hole) {
+      return ComputedHoleResultsTableCompanion(
+        id: Value('${gameId}_${hole.holeNumber}'),
+        gameId: Value(gameId),
+        holeNumber: Value(hole.holeNumber),
+        isComplete: Value(hole.isComplete),
+        summaryJson: Value(jsonEncode(hole.toJson())),
+      );
+    }).toList();
+
+    final settlementRow = SettlementSnapshotsTableCompanion(
+      gameId: Value(gameId),
+      summaryJson: Value(jsonEncode(result.toJson())),
+      updatedAt: Value(DateTime.now()),
+    );
+
+    await db.calculationDao.replaceCalculationResult(
+      gameId: gameId,
+      holeResults: holeRows,
+      settlement: settlementRow,
     );
   }
 

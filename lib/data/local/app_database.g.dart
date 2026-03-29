@@ -2244,6 +2244,575 @@ class HoleScoresTableCompanion extends UpdateCompanion<HoleScoresTableData> {
   }
 }
 
+class $ComputedHoleResultsTableTable extends ComputedHoleResultsTable
+    with
+        TableInfo<$ComputedHoleResultsTableTable,
+            ComputedHoleResultsTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ComputedHoleResultsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
+  @override
+  late final GeneratedColumn<String> gameId = GeneratedColumn<String>(
+      'game_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _holeNumberMeta =
+      const VerificationMeta('holeNumber');
+  @override
+  late final GeneratedColumn<int> holeNumber = GeneratedColumn<int>(
+      'hole_number', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _isCompleteMeta =
+      const VerificationMeta('isComplete');
+  @override
+  late final GeneratedColumn<bool> isComplete = GeneratedColumn<bool>(
+      'is_complete', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_complete" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _summaryJsonMeta =
+      const VerificationMeta('summaryJson');
+  @override
+  late final GeneratedColumn<String> summaryJson = GeneratedColumn<String>(
+      'summary_json', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, gameId, holeNumber, isComplete, summaryJson];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'computed_hole_results_table';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<ComputedHoleResultsTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('game_id')) {
+      context.handle(_gameIdMeta,
+          gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta));
+    } else if (isInserting) {
+      context.missing(_gameIdMeta);
+    }
+    if (data.containsKey('hole_number')) {
+      context.handle(
+          _holeNumberMeta,
+          holeNumber.isAcceptableOrUnknown(
+              data['hole_number']!, _holeNumberMeta));
+    } else if (isInserting) {
+      context.missing(_holeNumberMeta);
+    }
+    if (data.containsKey('is_complete')) {
+      context.handle(
+          _isCompleteMeta,
+          isComplete.isAcceptableOrUnknown(
+              data['is_complete']!, _isCompleteMeta));
+    }
+    if (data.containsKey('summary_json')) {
+      context.handle(
+          _summaryJsonMeta,
+          summaryJson.isAcceptableOrUnknown(
+              data['summary_json']!, _summaryJsonMeta));
+    } else if (isInserting) {
+      context.missing(_summaryJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ComputedHoleResultsTableData map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ComputedHoleResultsTableData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      gameId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}game_id'])!,
+      holeNumber: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}hole_number'])!,
+      isComplete: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_complete'])!,
+      summaryJson: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}summary_json'])!,
+    );
+  }
+
+  @override
+  $ComputedHoleResultsTableTable createAlias(String alias) {
+    return $ComputedHoleResultsTableTable(attachedDatabase, alias);
+  }
+}
+
+class ComputedHoleResultsTableData extends DataClass
+    implements Insertable<ComputedHoleResultsTableData> {
+  final String id;
+  final String gameId;
+  final int holeNumber;
+  final bool isComplete;
+  final String summaryJson;
+  const ComputedHoleResultsTableData(
+      {required this.id,
+      required this.gameId,
+      required this.holeNumber,
+      required this.isComplete,
+      required this.summaryJson});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['game_id'] = Variable<String>(gameId);
+    map['hole_number'] = Variable<int>(holeNumber);
+    map['is_complete'] = Variable<bool>(isComplete);
+    map['summary_json'] = Variable<String>(summaryJson);
+    return map;
+  }
+
+  ComputedHoleResultsTableCompanion toCompanion(bool nullToAbsent) {
+    return ComputedHoleResultsTableCompanion(
+      id: Value(id),
+      gameId: Value(gameId),
+      holeNumber: Value(holeNumber),
+      isComplete: Value(isComplete),
+      summaryJson: Value(summaryJson),
+    );
+  }
+
+  factory ComputedHoleResultsTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ComputedHoleResultsTableData(
+      id: serializer.fromJson<String>(json['id']),
+      gameId: serializer.fromJson<String>(json['gameId']),
+      holeNumber: serializer.fromJson<int>(json['holeNumber']),
+      isComplete: serializer.fromJson<bool>(json['isComplete']),
+      summaryJson: serializer.fromJson<String>(json['summaryJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'gameId': serializer.toJson<String>(gameId),
+      'holeNumber': serializer.toJson<int>(holeNumber),
+      'isComplete': serializer.toJson<bool>(isComplete),
+      'summaryJson': serializer.toJson<String>(summaryJson),
+    };
+  }
+
+  ComputedHoleResultsTableData copyWith(
+          {String? id,
+          String? gameId,
+          int? holeNumber,
+          bool? isComplete,
+          String? summaryJson}) =>
+      ComputedHoleResultsTableData(
+        id: id ?? this.id,
+        gameId: gameId ?? this.gameId,
+        holeNumber: holeNumber ?? this.holeNumber,
+        isComplete: isComplete ?? this.isComplete,
+        summaryJson: summaryJson ?? this.summaryJson,
+      );
+  ComputedHoleResultsTableData copyWithCompanion(
+      ComputedHoleResultsTableCompanion data) {
+    return ComputedHoleResultsTableData(
+      id: data.id.present ? data.id.value : this.id,
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+      holeNumber:
+          data.holeNumber.present ? data.holeNumber.value : this.holeNumber,
+      isComplete:
+          data.isComplete.present ? data.isComplete.value : this.isComplete,
+      summaryJson:
+          data.summaryJson.present ? data.summaryJson.value : this.summaryJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ComputedHoleResultsTableData(')
+          ..write('id: $id, ')
+          ..write('gameId: $gameId, ')
+          ..write('holeNumber: $holeNumber, ')
+          ..write('isComplete: $isComplete, ')
+          ..write('summaryJson: $summaryJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, gameId, holeNumber, isComplete, summaryJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ComputedHoleResultsTableData &&
+          other.id == this.id &&
+          other.gameId == this.gameId &&
+          other.holeNumber == this.holeNumber &&
+          other.isComplete == this.isComplete &&
+          other.summaryJson == this.summaryJson);
+}
+
+class ComputedHoleResultsTableCompanion
+    extends UpdateCompanion<ComputedHoleResultsTableData> {
+  final Value<String> id;
+  final Value<String> gameId;
+  final Value<int> holeNumber;
+  final Value<bool> isComplete;
+  final Value<String> summaryJson;
+  final Value<int> rowid;
+  const ComputedHoleResultsTableCompanion({
+    this.id = const Value.absent(),
+    this.gameId = const Value.absent(),
+    this.holeNumber = const Value.absent(),
+    this.isComplete = const Value.absent(),
+    this.summaryJson = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ComputedHoleResultsTableCompanion.insert({
+    required String id,
+    required String gameId,
+    required int holeNumber,
+    this.isComplete = const Value.absent(),
+    required String summaryJson,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        gameId = Value(gameId),
+        holeNumber = Value(holeNumber),
+        summaryJson = Value(summaryJson);
+  static Insertable<ComputedHoleResultsTableData> custom({
+    Expression<String>? id,
+    Expression<String>? gameId,
+    Expression<int>? holeNumber,
+    Expression<bool>? isComplete,
+    Expression<String>? summaryJson,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (gameId != null) 'game_id': gameId,
+      if (holeNumber != null) 'hole_number': holeNumber,
+      if (isComplete != null) 'is_complete': isComplete,
+      if (summaryJson != null) 'summary_json': summaryJson,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ComputedHoleResultsTableCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? gameId,
+      Value<int>? holeNumber,
+      Value<bool>? isComplete,
+      Value<String>? summaryJson,
+      Value<int>? rowid}) {
+    return ComputedHoleResultsTableCompanion(
+      id: id ?? this.id,
+      gameId: gameId ?? this.gameId,
+      holeNumber: holeNumber ?? this.holeNumber,
+      isComplete: isComplete ?? this.isComplete,
+      summaryJson: summaryJson ?? this.summaryJson,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (gameId.present) {
+      map['game_id'] = Variable<String>(gameId.value);
+    }
+    if (holeNumber.present) {
+      map['hole_number'] = Variable<int>(holeNumber.value);
+    }
+    if (isComplete.present) {
+      map['is_complete'] = Variable<bool>(isComplete.value);
+    }
+    if (summaryJson.present) {
+      map['summary_json'] = Variable<String>(summaryJson.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ComputedHoleResultsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('gameId: $gameId, ')
+          ..write('holeNumber: $holeNumber, ')
+          ..write('isComplete: $isComplete, ')
+          ..write('summaryJson: $summaryJson, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SettlementSnapshotsTableTable extends SettlementSnapshotsTable
+    with
+        TableInfo<$SettlementSnapshotsTableTable,
+            SettlementSnapshotsTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SettlementSnapshotsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
+  @override
+  late final GeneratedColumn<String> gameId = GeneratedColumn<String>(
+      'game_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _summaryJsonMeta =
+      const VerificationMeta('summaryJson');
+  @override
+  late final GeneratedColumn<String> summaryJson = GeneratedColumn<String>(
+      'summary_json', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [gameId, summaryJson, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'settlement_snapshots_table';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<SettlementSnapshotsTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('game_id')) {
+      context.handle(_gameIdMeta,
+          gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta));
+    } else if (isInserting) {
+      context.missing(_gameIdMeta);
+    }
+    if (data.containsKey('summary_json')) {
+      context.handle(
+          _summaryJsonMeta,
+          summaryJson.isAcceptableOrUnknown(
+              data['summary_json']!, _summaryJsonMeta));
+    } else if (isInserting) {
+      context.missing(_summaryJsonMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {gameId};
+  @override
+  SettlementSnapshotsTableData map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SettlementSnapshotsTableData(
+      gameId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}game_id'])!,
+      summaryJson: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}summary_json'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  $SettlementSnapshotsTableTable createAlias(String alias) {
+    return $SettlementSnapshotsTableTable(attachedDatabase, alias);
+  }
+}
+
+class SettlementSnapshotsTableData extends DataClass
+    implements Insertable<SettlementSnapshotsTableData> {
+  final String gameId;
+  final String summaryJson;
+  final DateTime updatedAt;
+  const SettlementSnapshotsTableData(
+      {required this.gameId,
+      required this.summaryJson,
+      required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['game_id'] = Variable<String>(gameId);
+    map['summary_json'] = Variable<String>(summaryJson);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  SettlementSnapshotsTableCompanion toCompanion(bool nullToAbsent) {
+    return SettlementSnapshotsTableCompanion(
+      gameId: Value(gameId),
+      summaryJson: Value(summaryJson),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory SettlementSnapshotsTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SettlementSnapshotsTableData(
+      gameId: serializer.fromJson<String>(json['gameId']),
+      summaryJson: serializer.fromJson<String>(json['summaryJson']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'gameId': serializer.toJson<String>(gameId),
+      'summaryJson': serializer.toJson<String>(summaryJson),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  SettlementSnapshotsTableData copyWith(
+          {String? gameId, String? summaryJson, DateTime? updatedAt}) =>
+      SettlementSnapshotsTableData(
+        gameId: gameId ?? this.gameId,
+        summaryJson: summaryJson ?? this.summaryJson,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  SettlementSnapshotsTableData copyWithCompanion(
+      SettlementSnapshotsTableCompanion data) {
+    return SettlementSnapshotsTableData(
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+      summaryJson:
+          data.summaryJson.present ? data.summaryJson.value : this.summaryJson,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SettlementSnapshotsTableData(')
+          ..write('gameId: $gameId, ')
+          ..write('summaryJson: $summaryJson, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(gameId, summaryJson, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SettlementSnapshotsTableData &&
+          other.gameId == this.gameId &&
+          other.summaryJson == this.summaryJson &&
+          other.updatedAt == this.updatedAt);
+}
+
+class SettlementSnapshotsTableCompanion
+    extends UpdateCompanion<SettlementSnapshotsTableData> {
+  final Value<String> gameId;
+  final Value<String> summaryJson;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const SettlementSnapshotsTableCompanion({
+    this.gameId = const Value.absent(),
+    this.summaryJson = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SettlementSnapshotsTableCompanion.insert({
+    required String gameId,
+    required String summaryJson,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  })  : gameId = Value(gameId),
+        summaryJson = Value(summaryJson),
+        updatedAt = Value(updatedAt);
+  static Insertable<SettlementSnapshotsTableData> custom({
+    Expression<String>? gameId,
+    Expression<String>? summaryJson,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (gameId != null) 'game_id': gameId,
+      if (summaryJson != null) 'summary_json': summaryJson,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SettlementSnapshotsTableCompanion copyWith(
+      {Value<String>? gameId,
+      Value<String>? summaryJson,
+      Value<DateTime>? updatedAt,
+      Value<int>? rowid}) {
+    return SettlementSnapshotsTableCompanion(
+      gameId: gameId ?? this.gameId,
+      summaryJson: summaryJson ?? this.summaryJson,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (gameId.present) {
+      map['game_id'] = Variable<String>(gameId.value);
+    }
+    if (summaryJson.present) {
+      map['summary_json'] = Variable<String>(summaryJson.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SettlementSnapshotsTableCompanion(')
+          ..write('gameId: $gameId, ')
+          ..write('summaryJson: $summaryJson, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2258,11 +2827,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $HoleConfigsTableTable(this);
   late final $HoleScoresTableTable holeScoresTable =
       $HoleScoresTableTable(this);
+  late final $ComputedHoleResultsTableTable computedHoleResultsTable =
+      $ComputedHoleResultsTableTable(this);
+  late final $SettlementSnapshotsTableTable settlementSnapshotsTable =
+      $SettlementSnapshotsTableTable(this);
   late final AppSettingsDao appSettingsDao =
       AppSettingsDao(this as AppDatabase);
   late final GamesDao gamesDao = GamesDao(this as AppDatabase);
   late final HistoryDao historyDao = HistoryDao(this as AppDatabase);
   late final ScoreEntryDao scoreEntryDao = ScoreEntryDao(this as AppDatabase);
+  late final CalculationDao calculationDao =
+      CalculationDao(this as AppDatabase);
+  late final ResultViewDao resultViewDao = ResultViewDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2274,7 +2850,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         teamsTable,
         gameRuleSettingsTable,
         holeConfigsTable,
-        holeScoresTable
+        holeScoresTable,
+        computedHoleResultsTable,
+        settlementSnapshotsTable
       ];
 }
 
@@ -3519,6 +4097,336 @@ typedef $$HoleScoresTableTableProcessedTableManager = ProcessedTableManager<
     ),
     HoleScoresTableData,
     PrefetchHooks Function()>;
+typedef $$ComputedHoleResultsTableTableCreateCompanionBuilder
+    = ComputedHoleResultsTableCompanion Function({
+  required String id,
+  required String gameId,
+  required int holeNumber,
+  Value<bool> isComplete,
+  required String summaryJson,
+  Value<int> rowid,
+});
+typedef $$ComputedHoleResultsTableTableUpdateCompanionBuilder
+    = ComputedHoleResultsTableCompanion Function({
+  Value<String> id,
+  Value<String> gameId,
+  Value<int> holeNumber,
+  Value<bool> isComplete,
+  Value<String> summaryJson,
+  Value<int> rowid,
+});
+
+class $$ComputedHoleResultsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ComputedHoleResultsTableTable> {
+  $$ComputedHoleResultsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get gameId => $composableBuilder(
+      column: $table.gameId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get holeNumber => $composableBuilder(
+      column: $table.holeNumber, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isComplete => $composableBuilder(
+      column: $table.isComplete, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get summaryJson => $composableBuilder(
+      column: $table.summaryJson, builder: (column) => ColumnFilters(column));
+}
+
+class $$ComputedHoleResultsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ComputedHoleResultsTableTable> {
+  $$ComputedHoleResultsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get gameId => $composableBuilder(
+      column: $table.gameId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get holeNumber => $composableBuilder(
+      column: $table.holeNumber, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isComplete => $composableBuilder(
+      column: $table.isComplete, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get summaryJson => $composableBuilder(
+      column: $table.summaryJson, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ComputedHoleResultsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ComputedHoleResultsTableTable> {
+  $$ComputedHoleResultsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get gameId =>
+      $composableBuilder(column: $table.gameId, builder: (column) => column);
+
+  GeneratedColumn<int> get holeNumber => $composableBuilder(
+      column: $table.holeNumber, builder: (column) => column);
+
+  GeneratedColumn<bool> get isComplete => $composableBuilder(
+      column: $table.isComplete, builder: (column) => column);
+
+  GeneratedColumn<String> get summaryJson => $composableBuilder(
+      column: $table.summaryJson, builder: (column) => column);
+}
+
+class $$ComputedHoleResultsTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ComputedHoleResultsTableTable,
+    ComputedHoleResultsTableData,
+    $$ComputedHoleResultsTableTableFilterComposer,
+    $$ComputedHoleResultsTableTableOrderingComposer,
+    $$ComputedHoleResultsTableTableAnnotationComposer,
+    $$ComputedHoleResultsTableTableCreateCompanionBuilder,
+    $$ComputedHoleResultsTableTableUpdateCompanionBuilder,
+    (
+      ComputedHoleResultsTableData,
+      BaseReferences<_$AppDatabase, $ComputedHoleResultsTableTable,
+          ComputedHoleResultsTableData>
+    ),
+    ComputedHoleResultsTableData,
+    PrefetchHooks Function()> {
+  $$ComputedHoleResultsTableTableTableManager(
+      _$AppDatabase db, $ComputedHoleResultsTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ComputedHoleResultsTableTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ComputedHoleResultsTableTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ComputedHoleResultsTableTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> gameId = const Value.absent(),
+            Value<int> holeNumber = const Value.absent(),
+            Value<bool> isComplete = const Value.absent(),
+            Value<String> summaryJson = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ComputedHoleResultsTableCompanion(
+            id: id,
+            gameId: gameId,
+            holeNumber: holeNumber,
+            isComplete: isComplete,
+            summaryJson: summaryJson,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String gameId,
+            required int holeNumber,
+            Value<bool> isComplete = const Value.absent(),
+            required String summaryJson,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ComputedHoleResultsTableCompanion.insert(
+            id: id,
+            gameId: gameId,
+            holeNumber: holeNumber,
+            isComplete: isComplete,
+            summaryJson: summaryJson,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ComputedHoleResultsTableTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $ComputedHoleResultsTableTable,
+        ComputedHoleResultsTableData,
+        $$ComputedHoleResultsTableTableFilterComposer,
+        $$ComputedHoleResultsTableTableOrderingComposer,
+        $$ComputedHoleResultsTableTableAnnotationComposer,
+        $$ComputedHoleResultsTableTableCreateCompanionBuilder,
+        $$ComputedHoleResultsTableTableUpdateCompanionBuilder,
+        (
+          ComputedHoleResultsTableData,
+          BaseReferences<_$AppDatabase, $ComputedHoleResultsTableTable,
+              ComputedHoleResultsTableData>
+        ),
+        ComputedHoleResultsTableData,
+        PrefetchHooks Function()>;
+typedef $$SettlementSnapshotsTableTableCreateCompanionBuilder
+    = SettlementSnapshotsTableCompanion Function({
+  required String gameId,
+  required String summaryJson,
+  required DateTime updatedAt,
+  Value<int> rowid,
+});
+typedef $$SettlementSnapshotsTableTableUpdateCompanionBuilder
+    = SettlementSnapshotsTableCompanion Function({
+  Value<String> gameId,
+  Value<String> summaryJson,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+
+class $$SettlementSnapshotsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $SettlementSnapshotsTableTable> {
+  $$SettlementSnapshotsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get gameId => $composableBuilder(
+      column: $table.gameId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get summaryJson => $composableBuilder(
+      column: $table.summaryJson, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$SettlementSnapshotsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $SettlementSnapshotsTableTable> {
+  $$SettlementSnapshotsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get gameId => $composableBuilder(
+      column: $table.gameId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get summaryJson => $composableBuilder(
+      column: $table.summaryJson, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$SettlementSnapshotsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SettlementSnapshotsTableTable> {
+  $$SettlementSnapshotsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get gameId =>
+      $composableBuilder(column: $table.gameId, builder: (column) => column);
+
+  GeneratedColumn<String> get summaryJson => $composableBuilder(
+      column: $table.summaryJson, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$SettlementSnapshotsTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $SettlementSnapshotsTableTable,
+    SettlementSnapshotsTableData,
+    $$SettlementSnapshotsTableTableFilterComposer,
+    $$SettlementSnapshotsTableTableOrderingComposer,
+    $$SettlementSnapshotsTableTableAnnotationComposer,
+    $$SettlementSnapshotsTableTableCreateCompanionBuilder,
+    $$SettlementSnapshotsTableTableUpdateCompanionBuilder,
+    (
+      SettlementSnapshotsTableData,
+      BaseReferences<_$AppDatabase, $SettlementSnapshotsTableTable,
+          SettlementSnapshotsTableData>
+    ),
+    SettlementSnapshotsTableData,
+    PrefetchHooks Function()> {
+  $$SettlementSnapshotsTableTableTableManager(
+      _$AppDatabase db, $SettlementSnapshotsTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SettlementSnapshotsTableTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SettlementSnapshotsTableTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SettlementSnapshotsTableTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> gameId = const Value.absent(),
+            Value<String> summaryJson = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SettlementSnapshotsTableCompanion(
+            gameId: gameId,
+            summaryJson: summaryJson,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String gameId,
+            required String summaryJson,
+            required DateTime updatedAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SettlementSnapshotsTableCompanion.insert(
+            gameId: gameId,
+            summaryJson: summaryJson,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$SettlementSnapshotsTableTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $SettlementSnapshotsTableTable,
+        SettlementSnapshotsTableData,
+        $$SettlementSnapshotsTableTableFilterComposer,
+        $$SettlementSnapshotsTableTableOrderingComposer,
+        $$SettlementSnapshotsTableTableAnnotationComposer,
+        $$SettlementSnapshotsTableTableCreateCompanionBuilder,
+        $$SettlementSnapshotsTableTableUpdateCompanionBuilder,
+        (
+          SettlementSnapshotsTableData,
+          BaseReferences<_$AppDatabase, $SettlementSnapshotsTableTable,
+              SettlementSnapshotsTableData>
+        ),
+        SettlementSnapshotsTableData,
+        PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3537,4 +4445,10 @@ class $AppDatabaseManager {
       $$HoleConfigsTableTableTableManager(_db, _db.holeConfigsTable);
   $$HoleScoresTableTableTableManager get holeScoresTable =>
       $$HoleScoresTableTableTableManager(_db, _db.holeScoresTable);
+  $$ComputedHoleResultsTableTableTableManager get computedHoleResultsTable =>
+      $$ComputedHoleResultsTableTableTableManager(
+          _db, _db.computedHoleResultsTable);
+  $$SettlementSnapshotsTableTableTableManager get settlementSnapshotsTable =>
+      $$SettlementSnapshotsTableTableTableManager(
+          _db, _db.settlementSnapshotsTable);
 }
