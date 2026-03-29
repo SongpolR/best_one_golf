@@ -82,6 +82,13 @@ void main() {
             playerId: 'p2',
             strokes: 5,
           ),
+          HoleScore(
+            id: '3',
+            gameId: 'game-1',
+            holeNumber: 1,
+            playerId: 'p3',
+            strokes: 5,
+          ),
         ],
       );
 
