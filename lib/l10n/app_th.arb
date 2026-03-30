@@ -1,5 +1,6 @@
 {
   "@@locale": "th",
+
   "appName": "BestOneGolf",
   "settings": "ตั้งค่า",
   "language": "ภาษา",
@@ -12,5 +13,196 @@
   "recentGames": "เกมล่าสุด",
   "noGamesYet": "ยังไม่มีเกม",
   "startYourFirstGame": "เริ่มเกม BestOneGolf เกมแรกของคุณ",
-  "createGameComingSoon": "ฟีเจอร์สร้างเกมกำลังจะมา"
+  "createGameComingSoon": "ฟีเจอร์สร้างเกมกำลังจะมา",
+
+  "history": "ประวัติ",
+  "ongoing": "กำลังเล่น",
+  "completed": "เสร็จสิ้น",
+  "view": "ดู",
+  "continueGame": "เล่นต่อ",
+  "restart": "เริ่มใหม่",
+  "delete": "ลบ",
+  "cancel": "ยกเลิก",
+  "finish": "เสร็จ",
+
+  "score": "คะแนน",
+  "par": "พาร์",
+  "mode": "โหมด",
+  "individual": "บุคคล",
+  "team": "ทีม",
+  "teams": "ทีม",
+  "players": "ผู้เล่น",
+  "rules": "กฎ",
+  "bestOne": "เบสต์วัน",
+  "bestTwo": "เบสต์ทู",
+  "holes": "หลุม",
+  "summary": "สรุป",
+  "detail": "รายละเอียด",
+  "split": "แบ่ง",
+  "gross": "กรอส",
+
+  "gameTitle": "ชื่อเกม",
+  "addPlayer": "เพิ่มผู้เล่น",
+  "addTeam": "เพิ่มทีม",
+  "startGame": "เริ่มเกม",
+  "holeSetup": "ตั้งค่าหลุม",
+  "setTurbo9And18": "ตั้งเทอร์โบหลุม 9 และ 18",
+  "setBirdie9And18": "ตั้งเบิร์ดี้หลุม 9 และ 18",
+  "turboX2": "เทอร์โบ x2",
+  "birdieBonusX2": "โบนัสเบิร์ดี้ x2",
+  "useSameAmountForAllRules": "ใช้จำนวนเงินเดียวกันสำหรับทุกกฎ",
+  "bestOneAmount": "จำนวนเงินเบสต์วัน",
+  "bestTwoAmount": "จำนวนเงินเบสต์ทู",
+  "bestTwoAmountOptional": "จำนวนเงินเบสต์ทู (ไม่บังคับ)",
+
+  "scoreEntry": "บันทึกคะแนน",
+  "holeResult": "ผลหลุม",
+  "gameSummary": "สรุปเกม",
+  "prev": "ก่อนหน้า",
+  "next": "ถัดไป",
+  "finishGame": "จบเกม",
+  "teamAssigned": "กำหนดทีมแล้ว",
+
+  "complete": "สมบูรณ์",
+  "incomplete": "ไม่สมบูรณ์",
+  "turboOn": "เทอร์โบ: เปิด",
+  "turboOff": "เทอร์โบ: ปิด",
+  "birdieOn": "โบนัสเบิร์ดี้: เปิด",
+  "birdieOff": "โบนัสเบิร์ดี้: ปิด",
+  "turboOnShort": "เทอร์โบ เปิด",
+  "turboOffShort": "เทอร์โบ ปิด",
+  "birdieOnShort": "เบิร์ดี้ เปิด",
+  "birdieOffShort": "เบิร์ดี้ ปิด",
+
+  "playerNet": "ยอดสุทธิผู้เล่น",
+  "teamNet": "ยอดสุทธิทีม",
+  "playerMovements": "การเคลื่อนไหวผู้เล่น",
+  "teamMovements": "การเคลื่อนไหวทีม",
+  "totalsByPlayer": "ยอดรวมตามผู้เล่น",
+  "settlements": "การชำระเงิน",
+
+  "noResultAvailable": "ยังไม่มีผลลัพธ์",
+  "noPlayerNetResult": "ไม่มีผลยอดสุทธิผู้เล่น",
+  "noTeamNetResult": "ไม่มีผลยอดสุทธิทีม",
+  "noPlayerMovements": "ไม่มีการเคลื่อนไหวผู้เล่น",
+  "noTeamMovements": "ไม่มีการเคลื่อนไหวทีม",
+  "noResultYet": "ยังไม่มีผลลัพธ์",
+  "noOngoingGames": "ไม่มีเกมที่กำลังเล่น",
+  "noCompletedGames": "ไม่มีเกมที่เสร็จสิ้น",
+  "noTotalsYet": "ยังไม่มียอดรวม",
+  "noSettlementsYet": "ยังไม่มีการชำระเงิน",
+  "noSummaryAvailable": "ยังไม่มีสรุปเกม",
+
+  "deleteGame": "ลบเกม",
+  "deleteGameConfirmation": "คุณต้องการลบเกมนี้อย่างถาวรหรือไม่?",
+  "restartGame": "เริ่มเกมใหม่",
+  "restartGameConfirmation": "คุณต้องการสร้างเกมใหม่โดยใช้การตั้งค่าเดิมหรือไม่?",
+  "finishGameConfirmation": "คุณต้องการทำเครื่องหมายว่าเกมนี้เสร็จสิ้นและไปที่สรุปหรือไม่?",
+
+  "playerN": "ผู้เล่น {n}",
+  "@playerN": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "teamN": "ทีม {n}",
+  "@teamN": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "holeN": "หลุม {n}",
+  "@holeN": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "holeNResult": "ผลหลุม {n}",
+  "@holeNResult": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "holeProgress": "หลุม {current} / {total}",
+  "@holeProgress": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "gameInfo": "{mode} • {totalHoles} หลุม",
+  "@gameInfo": {
+    "placeholders": {
+      "mode": { "type": "String" },
+      "totalHoles": { "type": "int" }
+    }
+  },
+  "baseAmount": "จำนวนเงินฐาน: {amount}",
+  "@baseAmount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "baseWithAmount": "ฐาน {amount}",
+  "@baseWithAmount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "pays": "{from} จ่ายให้ {to}",
+  "@pays": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+
+  "failedToLoadSettings": "โหลดการตั้งค่าไม่สำเร็จ: {error}",
+  "@failedToLoadSettings": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadOngoingGames": "โหลดเกมที่กำลังเล่นไม่สำเร็จ: {error}",
+  "@failedToLoadOngoingGames": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadCompletedGames": "โหลดเกมที่เสร็จสิ้นไม่สำเร็จ: {error}",
+  "@failedToLoadCompletedGames": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadHoleResult": "โหลดผลหลุมไม่สำเร็จ: {error}",
+  "@failedToLoadHoleResult": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadAppSettings": "โหลดการตั้งค่าแอปไม่สำเร็จ: {error}",
+  "@failedToLoadAppSettings": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadGame": "โหลดเกมไม่สำเร็จ: {error}",
+  "@failedToLoadGame": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadGameSummary": "โหลดสรุปเกมไม่สำเร็จ: {error}",
+  "@failedToLoadGameSummary": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadGameData": "โหลดข้อมูลเกมไม่สำเร็จ: {error}",
+  "@failedToLoadGameData": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  }
 }

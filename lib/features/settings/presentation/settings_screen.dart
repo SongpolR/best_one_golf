@@ -91,7 +91,7 @@ class SettingsScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
-          child: Text('Failed to load settings: $error'),
+          child: Text(l10n.failedToLoadSettings(error)),
         ),
       ),
     );

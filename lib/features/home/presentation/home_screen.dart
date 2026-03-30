@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
         IconButton(
           onPressed: () => context.push('/history'),
           icon: const Icon(Icons.history),
-          tooltip: 'History',
+          tooltip: l10n.history,
         ),
         IconButton(
           onPressed: () => context.push('/settings'),

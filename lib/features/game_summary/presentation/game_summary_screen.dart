@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app.dart';
+import '../../../core/enums/game_mode.dart';
 import '../../../core/enums/hole_state.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../hole_result/presentation/hole_result_sheet.dart';
 import '../../score_entry/presentation/score_entry_controller.dart';
 import '../../../shared/widgets/app_scaffold.dart';
@@ -18,12 +20,13 @@ class GameSummaryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final summaryAsync = ref.watch(gameSummaryProvider(gameId));
     final settingsAsync = ref.watch(appSettingsProvider);
     final aggregateAsync = ref.watch(gameAggregateProvider(gameId));
 
     return AppScaffold(
-      title: 'Game Summary',
+      title: l10n.gameSummary,
       body: settingsAsync.when(
         data: (settings) {
           return aggregateAsync.when(
@@ -35,8 +38,8 @@ class GameSummaryScreen extends ConsumerWidget {
               return summaryAsync.when(
                 data: (summary) {
                   if (summary == null) {
-                    return const Center(
-                      child: Text('No summary available yet.'),
+                    return Center(
+                      child: Text(l10n.noSummaryAvailable),
                     );
                   }
 
@@ -55,18 +58,23 @@ class GameSummaryScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '${aggregate.game.mode.name} • ${aggregate.game.totalHoles} holes',
+                        l10n.gameInfo(
+                          aggregate.game.mode == GameMode.individual
+                              ? l10n.individual
+                              : l10n.team,
+                          aggregate.game.totalHoles,
+                        ),
                       ),
                       const SizedBox(height: 24),
 
                       /// Totals
                       Text(
-                        'Totals by Player',
+                        l10n.totalsByPlayer,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 8),
                       if (sortedTotals.isEmpty)
-                        const Text('No totals yet.')
+                        Text(l10n.noTotalsYet)
                       else
                         ...sortedTotals.map(
                           (entry) => Card(
@@ -88,18 +96,21 @@ class GameSummaryScreen extends ConsumerWidget {
 
                       /// Settlements
                       Text(
-                        'Settlements',
+                        l10n.settlements,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 8),
                       if (settlements.isEmpty)
-                        const Text('No settlements yet.')
+                        Text(l10n.noSettlementsYet)
                       else
                         ...settlements.map(
                           (entry) => Card(
                             child: ListTile(
                               title: Text(
-                                '${playerNameById[entry.fromId] ?? entry.fromId} pays ${playerNameById[entry.toId] ?? entry.toId}',
+                                l10n.pays(
+                                  playerNameById[entry.fromId] ?? entry.fromId,
+                                  playerNameById[entry.toId] ?? entry.toId,
+                                ),
                               ),
                               trailing: Text(
                                 CurrencyFormatter.format(
@@ -115,7 +126,7 @@ class GameSummaryScreen extends ConsumerWidget {
 
                       /// Holes
                       Text(
-                        'Holes',
+                        l10n.holes,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 8),
@@ -180,7 +191,7 @@ class GameSummaryScreen extends ConsumerWidget {
                   child: CircularProgressIndicator(),
                 ),
                 error: (error, stackTrace) => Center(
-                  child: Text('Failed to load game summary: $error'),
+                  child: Text(l10n.failedToLoadGameSummary(error)),
                 ),
               );
             },
@@ -188,7 +199,7 @@ class GameSummaryScreen extends ConsumerWidget {
               child: CircularProgressIndicator(),
             ),
             error: (error, stackTrace) => Center(
-              child: Text('Failed to load game data: $error'),
+              child: Text(l10n.failedToLoadGameData(error)),
             ),
           );
         },
@@ -196,7 +207,7 @@ class GameSummaryScreen extends ConsumerWidget {
           child: CircularProgressIndicator(),
         ),
         error: (error, stackTrace) => Center(
-          child: Text('Failed to load app settings: $error'),
+          child: Text(l10n.failedToLoadAppSettings(error)),
         ),
       ),
     );

@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app.dart';
+import '../../../core/enums/game_mode.dart';
 import '../../../domain/entities/game_list_item.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 
 class HistoryScreen extends ConsumerWidget {
@@ -11,25 +13,26 @@ class HistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final ongoingAsync = ref.watch(ongoingGamesProvider);
     final completedAsync = ref.watch(completedGamesProvider);
 
     return AppScaffold(
-      title: 'History',
+      title: l10n.history,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            'Ongoing',
+            l10n.ongoing,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 12),
           ongoingAsync.when(
             data: (items) {
               if (items.isEmpty) {
-                return const Card(
+                return Card(
                   child: ListTile(
-                    title: Text('No ongoing games'),
+                    title: Text(l10n.noOngoingGames),
                   ),
                 );
               }
@@ -56,22 +59,22 @@ class HistoryScreen extends ConsumerWidget {
             ),
             error: (error, stackTrace) => Card(
               child: ListTile(
-                title: Text('Failed to load ongoing games: $error'),
+                title: Text(l10n.failedToLoadOngoingGames(error)),
               ),
             ),
           ),
           const SizedBox(height: 24),
           Text(
-            'Completed',
+            l10n.completed,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 12),
           completedAsync.when(
             data: (items) {
               if (items.isEmpty) {
-                return const Card(
+                return Card(
                   child: ListTile(
-                    title: Text('No completed games'),
+                    title: Text(l10n.noCompletedGames),
                   ),
                 );
               }
@@ -98,7 +101,7 @@ class HistoryScreen extends ConsumerWidget {
             ),
             error: (error, stackTrace) => Card(
               child: ListTile(
-                title: Text('Failed to load completed games: $error'),
+                title: Text(l10n.failedToLoadCompletedGames(error)),
               ),
             ),
           ),
@@ -119,6 +122,8 @@ class _GameCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -128,10 +133,15 @@ class _GameCard extends ConsumerWidget {
               contentPadding: EdgeInsets.zero,
               title: Text(game.title),
               subtitle: Text(
-                '${game.mode.name} • ${game.totalHoles} holes',
+                l10n.gameInfo(
+                  game.mode == GameMode.individual
+                      ? l10n.individual
+                      : l10n.team,
+                  game.totalHoles,
+                ),
               ),
               trailing: Text(
-                isCompleted ? 'Completed' : 'Ongoing',
+                isCompleted ? l10n.completed : l10n.ongoing,
               ),
             ),
             const SizedBox(height: 8),
@@ -144,14 +154,14 @@ class _GameCard extends ConsumerWidget {
                     onPressed: () {
                       context.push('/score-entry/${game.id}');
                     },
-                    child: const Text('View'),
+                    child: Text(l10n.view),
                   )
                 else
                   OutlinedButton(
                     onPressed: () {
                       context.push('/score-entry/${game.id}');
                     },
-                    child: const Text('Continue'),
+                    child: Text(l10n.continueGame),
                   ),
                 if (!isCompleted)
                   OutlinedButton(
@@ -166,7 +176,7 @@ class _GameCard extends ConsumerWidget {
                         context.go('/score-entry/$newGameId');
                       }
                     },
-                    child: const Text('Restart'),
+                    child: Text(l10n.restart),
                   ),
                 OutlinedButton(
                   onPressed: () async {
@@ -176,7 +186,7 @@ class _GameCard extends ConsumerWidget {
                     final deleteGame = ref.read(deleteGameUseCaseProvider);
                     await deleteGame(game.id);
                   },
-                  child: const Text('Delete'),
+                  child: Text(l10n.delete),
                 ),
               ],
             ),
@@ -187,20 +197,21 @@ class _GameCard extends ConsumerWidget {
   }
 
   Future<bool?> _showDeleteDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Delete Game'),
-          content: const Text('Do you want to delete this game permanently?'),
+          title: Text(l10n.deleteGame),
+          content: Text(l10n.deleteGameConfirmation),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Delete'),
+              child: Text(l10n.delete),
             ),
           ],
         );
@@ -209,22 +220,21 @@ class _GameCard extends ConsumerWidget {
   }
 
   Future<bool?> _showRestartDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Restart Game'),
-          content: const Text(
-            'Do you want to create a new game using the same settings?',
-          ),
+          title: Text(l10n.restartGame),
+          content: Text(l10n.restartGameConfirmation),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Restart'),
+              child: Text(l10n.restart),
             ),
           ],
         );

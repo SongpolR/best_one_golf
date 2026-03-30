@@ -192,14 +192,14 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
           TextField(
             key: const Key('createGameTitleField'),
             controller: _titleController,
-            decoration: const InputDecoration(
-              labelText: 'Game Title',
+            decoration: InputDecoration(
+              labelText: l10n.gameTitle,
             ),
             onChanged: controller.updateTitle,
           ),
           const SizedBox(height: 24),
           Text(
-            'Players',
+            l10n.players,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -215,7 +215,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                     child: TextField(
                       controller: _playerControllers[player.order],
                       decoration: InputDecoration(
-                        labelText: 'Player ${index + 1}',
+                        labelText: l10n.playerN(index + 1),
                       ),
                       onChanged: (value) =>
                           controller.updatePlayerName(index, value),
@@ -226,8 +226,8 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                     Expanded(
                       child: DropdownButtonFormField<int>(
                         value: player.teamIndex,
-                        decoration: const InputDecoration(
-                          labelText: 'Team',
+                        decoration: InputDecoration(
+                          labelText: l10n.team,
                         ),
                         items: List.generate(state.teams.length, (teamIndex) {
                           return DropdownMenuItem(
@@ -256,12 +256,12 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
               key: const Key('addPlayerButton'),
               onPressed: state.players.length < 6 ? controller.addPlayer : null,
               icon: const Icon(Icons.person_add),
-              label: const Text('Add Player'),
+              label: Text(l10n.addPlayer),
             ),
           ),
           const SizedBox(height: 24),
           Text(
-            'Mode',
+            l10n.mode,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           RadioListTile<GameMode>(
@@ -271,7 +271,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
             onChanged: (value) {
               if (value != null) controller.updateMode(value);
             },
-            title: const Text('Individual'),
+            title: Text(l10n.individual),
           ),
           RadioListTile<GameMode>(
             key: const Key('teamModeRadio'),
@@ -280,12 +280,12 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
             onChanged: (value) {
               if (value != null) controller.updateMode(value);
             },
-            title: const Text('Team'),
+            title: Text(l10n.team),
           ),
           if (state.mode == GameMode.team) ...[
             const SizedBox(height: 16),
             Text(
-              'Teams',
+              l10n.teams,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -297,7 +297,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                 child: TextField(
                   controller: _teamControllers[team.order],
                   decoration: InputDecoration(
-                    labelText: 'Team ${index + 1}',
+                    labelText: l10n.teamN(index + 1),
                   ),
                   onChanged: (value) => controller.updateTeamName(index, value),
                 ),
@@ -309,40 +309,40 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                 key: const Key('addTeamButton'),
                 onPressed: controller.addTeam,
                 icon: const Icon(Icons.group_add),
-                label: const Text('Add Team'),
+                label: Text(l10n.addTeam),
               ),
             ),
           ],
           const SizedBox(height: 24),
           Text(
-            'Rules',
+            l10n.rules,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           CheckboxListTile(
             value: state.bestOneEnabled,
             onChanged: (value) => controller.setBestOneEnabled(value ?? false),
-            title: const Text('Best One'),
+            title: Text(l10n.bestOne),
             contentPadding: EdgeInsets.zero,
           ),
           CheckboxListTile(
             value: state.bestTwoEnabled,
             onChanged: (value) => controller.setBestTwoEnabled(value ?? false),
-            title: const Text('Best Two'),
+            title: Text(l10n.bestTwo),
             contentPadding: EdgeInsets.zero,
           ),
           const SizedBox(height: 16),
           SwitchListTile(
             value: state.sharedBetDefault,
             onChanged: controller.setSharedBetDefault,
-            title: const Text('Use same amount for all rules'),
+            title: Text(l10n.useSameAmountForAllRules),
             contentPadding: EdgeInsets.zero,
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _bestOneAmountController,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Best One Amount',
+            decoration: InputDecoration(
+              labelText: l10n.bestOneAmount,
             ),
             onChanged: controller.updateBestOneAmount,
           ),
@@ -352,14 +352,14 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: state.sharedBetDefault
-                  ? 'Best Two Amount (optional)'
-                  : 'Best Two Amount',
+                  ? l10n.bestTwoAmountOptional
+                  : l10n.bestTwoAmount,
             ),
             onChanged: controller.updateBestTwoAmount,
           ),
           const SizedBox(height: 24),
           Text(
-            'Hole Setup',
+            l10n.holeSetup,
             key: const Key('holeSetupSectionTitle'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
@@ -370,11 +370,11 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
             children: [
               OutlinedButton(
                 onPressed: controller.applyTurboFor9And18,
-                child: const Text('Set Turbo 9 & 18'),
+                child: Text(l10n.setTurbo9And18),
               ),
               OutlinedButton(
                 onPressed: controller.applyBirdieBonusFor9And18,
-                child: const Text('Set Birdie 9 & 18'),
+                child: Text(l10n.setBirdie9And18),
               ),
             ],
           ),
@@ -391,7 +391,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Hole ${hole.holeNumber}',
+                        l10n.holeN(hole.holeNumber),
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ),
@@ -399,8 +399,8 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                     TextField(
                       controller: _holeParControllers[hole.holeNumber],
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Par',
+                      decoration: InputDecoration(
+                        labelText: l10n.par,
                       ),
                       onChanged: (value) =>
                           controller.updateHolePar(index, value),
@@ -410,14 +410,14 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                       value: hole.isTurbo,
                       onChanged: (value) =>
                           controller.updateHoleTurbo(index, value),
-                      title: const Text('Turbo x2'),
+                      title: Text(l10n.turboX2),
                       contentPadding: EdgeInsets.zero,
                     ),
                     SwitchListTile(
                       value: hole.isBirdieBonus,
                       onChanged: (value) =>
                           controller.updateHoleBirdieBonus(index, value),
-                      title: const Text('Birdie Bonus x2'),
+                      title: Text(l10n.birdieBonusX2),
                       contentPadding: EdgeInsets.zero,
                     ),
                   ],
@@ -451,7 +451,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Start Game'),
+                : Text(l10n.startGame),
           ),
         ],
       ),
