@@ -56,7 +56,22 @@ class AppDatabase extends _$AppDatabase {
           await m.createAll();
         },
         onUpgrade: (Migrator m, int from, int to) async {
-          await m.createAll();
+          if (from < 2) {
+            await m.createTable(gamesTable);
+            await m.createTable(playersTable);
+            await m.createTable(teamsTable);
+            await m.createTable(gameRuleSettingsTable);
+            await m.createTable(holeConfigsTable);
+          }
+
+          if (from < 3) {
+            await m.createTable(holeScoresTable);
+          }
+
+          if (from < 4) {
+            await m.createTable(computedHoleResultsTable);
+            await m.createTable(settlementSnapshotsTable);
+          }
         },
         beforeOpen: (details) async {
           await appSettingsDao.ensureSeeded();

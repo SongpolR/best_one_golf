@@ -91,7 +91,7 @@ void main() {
     await tester.pumpWidget(buildTestApp(repository));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Next'));
+    await tester.tap(find.byKey(const Key('nextHoleButton')));
     await tester.pumpAndSettle();
 
     expect(find.text('Hole 2 / 18'), findsOneWidget);
@@ -105,11 +105,12 @@ void main() {
     await tester.pumpWidget(buildTestApp(repository));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Next'));
+    await tester.tap(find.byKey(const Key('nextHoleButton')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Prev'));
+    await tester.tap(find.byKey(const Key('prevHoleButton')));
     await tester.pumpAndSettle();
 
+    expect(find.byKey(const Key('scoreEntryHoleLabel')), findsOneWidget);
     expect(find.text('Hole 1 / 18'), findsOneWidget);
   });
 

@@ -146,6 +146,7 @@ class GameSummaryScreen extends ConsumerWidget {
                           }
 
                           return InkWell(
+                            key: Key('summaryHole_$holeNumber'),
                             onTap: () {
                               showModalBottomSheet(
                                 context: context,
