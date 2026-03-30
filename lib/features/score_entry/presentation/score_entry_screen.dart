@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app.dart';
 import '../../../core/enums/hole_state.dart';
+import '../../../domain/entities/game_aggregate.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
+import '../../../shared/widgets/number_stepper.dart';
 import '../../hole_result/presentation/hole_result_sheet.dart';
 import 'score_entry_controller.dart';
 
@@ -22,42 +24,16 @@ class ScoreEntryScreen extends ConsumerStatefulWidget {
 }
 
 class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
-  final Map<String, TextEditingController> _controllers = {};
+  bool _initialHoleSet = false;
 
-  @override
-  void dispose() {
-    for (final controller in _controllers.values) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  void _syncControllers(Map<String, int?> scores) {
-    for (final entry in scores.entries) {
-      final playerId = entry.key;
-      final value = entry.value;
-      final text = value?.toString() ?? '';
-
-      final existing = _controllers[playerId];
-      if (existing == null) {
-        _controllers[playerId] = TextEditingController(text: text);
-      } else if (existing.text != text) {
-        existing.value = existing.value.copyWith(
-          text: text,
-          selection: TextSelection.collapsed(offset: text.length),
-          composing: TextRange.empty,
-        );
+  void _onInitialData(GameAggregate aggregate) {
+    if (_initialHoleSet) return;
+    _initialHoleSet = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(scoreEntryControllerProvider).jumpToFirstIncompleteHole(aggregate);
       }
-    }
-
-    final validIds = scores.keys.toSet();
-    final toRemove =
-        _controllers.keys.where((id) => !validIds.contains(id)).toList();
-
-    for (final id in toRemove) {
-      _controllers[id]?.dispose();
-      _controllers.remove(id);
-    }
+    });
   }
 
   Future<void> _finishGame(String gameId) async {
@@ -104,17 +80,36 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
 
     return aggregateAsync.when(
       data: (aggregate) {
+        _onInitialData(aggregate);
+
         final currentHoleScores = <String, int?>{
           for (final score in aggregate.holeScores
               .where((score) => score.holeNumber == selectedHole))
             score.playerId: score.strokes,
         };
 
-        _syncControllers(currentHoleScores);
+        final holeConfig = aggregate.holeConfigs.firstWhere(
+          (h) => h.holeNumber == selectedHole,
+        );
+
+        final teamNameById = {
+          for (final team in aggregate.teams) team.id: team.name,
+        };
 
         return AppScaffold(
           title: l10n.scoreEntry,
-          body: Column(
+          leading: BackButton(onPressed: () => context.go('/')),
+          body: GestureDetector(
+            onHorizontalDragEnd: (details) {
+              const velocityThreshold = 300.0;
+              final vx = details.primaryVelocity ?? 0;
+              if (vx < -velocityThreshold) {
+                controller.nextHole(aggregate);
+              } else if (vx > velocityThreshold) {
+                controller.previousHole();
+              }
+            },
+            child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -126,8 +121,9 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      l10n.holeProgress(selectedHole, aggregate.game.totalHoles),
+                      '${l10n.holeProgress(selectedHole, aggregate.game.totalHoles)}  •  ${l10n.par} ${holeConfig.par}',
                       key: const Key('scoreEntryHoleLabel'),
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 12),
                     Wrap(
@@ -189,8 +185,6 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                   itemBuilder: (context, index) {
                     final player = aggregate.players[index];
                     final value = currentHoleScores[player.id];
-                    final textController = _controllers[player.id] ??
-                        TextEditingController(text: value?.toString() ?? '');
 
                     return Card(
                       child: Padding(
@@ -204,23 +198,30 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                             ),
                             if (player.teamId != null) ...[
                               const SizedBox(height: 4),
-                              Text(l10n.teamAssigned),
+                              Text(
+                                '${l10n.team}: ${teamNameById[player.teamId] ?? player.teamId}',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
                             ],
                             const SizedBox(height: 12),
-                            TextField(
+                            NumberStepper(
                               key: Key(
                                   'scoreField_${selectedHole}_${player.id}'),
-                              controller: textController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: l10n.score,
-                              ),
-                              onChanged: (text) {
-                                controller.updateScore(
+                              value: value,
+                              min: 1,
+                              max: 12,
+                              label: l10n.score,
+                              nullable: true,
+                              incrementKey: Key(
+                                  'scoreField_${selectedHole}_${player.id}_increment'),
+                              decrementKey: Key(
+                                  'scoreField_${selectedHole}_${player.id}_decrement'),
+                              onChanged: (v) {
+                                controller.updateScoreInt(
                                   gameId: gameId,
                                   holeNumber: selectedHole,
                                   playerId: player.id,
-                                  value: text,
+                                  strokes: v,
                                 );
                               },
                             ),
@@ -311,6 +312,7 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                 ),
               ),
             ],
+          ),
           ),
         );
       },
