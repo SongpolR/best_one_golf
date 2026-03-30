@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../score_entry/presentation/score_entry_controller.dart';
 
 enum HoleResultViewMode {
@@ -29,6 +30,7 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final resultAsync = ref.watch(
       holeResultProvider(
         (gameId: widget.gameId, holeNumber: widget.holeNumber),
@@ -59,16 +61,16 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
                 return resultAsync.when(
                   data: (result) {
                     if (result == null) {
-                      return const _SheetFrame(
-                        title: 'Hole Result',
+                      return _SheetFrame(
+                        title: l10n.holeResult,
                         child: Center(
-                          child: Text('No result available yet.'),
+                          child: Text(l10n.noResultAvailable),
                         ),
                       );
                     }
 
                     return _SheetFrame(
-                      title: 'Hole ${result.holeNumber} Result',
+                      title: l10n.holeNResult(result.holeNumber),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -85,14 +87,14 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
                           ),
                           const SizedBox(height: 16),
                           SegmentedButton<HoleResultViewMode>(
-                            segments: const [
+                            segments: [
                               ButtonSegment(
                                 value: HoleResultViewMode.summary,
-                                label: Text('Summary'),
+                                label: Text(l10n.summary),
                               ),
                               ButtonSegment(
                                 value: HoleResultViewMode.detail,
-                                label: Text('Detail'),
+                                label: Text(l10n.detail),
                               ),
                             ],
                             selected: {mode},
@@ -123,6 +125,7 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
                                             title:
                                                 '${playerNameById[move.fromId] ?? move.fromId} → ${playerNameById[move.toId] ?? move.toId}',
                                             subtitle: _formatRuleLabel(
+                                              l10n,
                                               move.rule,
                                               move.note,
                                             ),
@@ -139,6 +142,7 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
                                             title:
                                                 '${teamNameById[move.fromTeamId] ?? move.fromTeamId} → ${teamNameById[move.toTeamId] ?? move.toTeamId}',
                                             subtitle: _formatRuleLabel(
+                                              l10n,
                                               move.rule,
                                               move.note,
                                             ),
@@ -155,44 +159,44 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
                       ),
                     );
                   },
-                  loading: () => const _SheetFrame(
-                    title: 'Hole Result',
-                    child: Center(
+                  loading: () => _SheetFrame(
+                    title: l10n.holeResult,
+                    child: const Center(
                       child: CircularProgressIndicator(),
                     ),
                   ),
                   error: (error, stackTrace) => _SheetFrame(
-                    title: 'Hole Result',
+                    title: l10n.holeResult,
                     child: Center(
-                      child: Text('Failed to load hole result: $error'),
+                      child: Text(l10n.failedToLoadHoleResult(error)),
                     ),
                   ),
                 );
               },
-              loading: () => const _SheetFrame(
-                title: 'Hole Result',
-                child: Center(
+              loading: () => _SheetFrame(
+                title: l10n.holeResult,
+                child: const Center(
                   child: CircularProgressIndicator(),
                 ),
               ),
               error: (error, stackTrace) => _SheetFrame(
-                title: 'Hole Result',
+                title: l10n.holeResult,
                 child: Center(
-                  child: Text('Failed to load game data: $error'),
+                  child: Text(l10n.failedToLoadGameData(error)),
                 ),
               ),
             );
           },
-          loading: () => const _SheetFrame(
-            title: 'Hole Result',
-            child: Center(
+          loading: () => _SheetFrame(
+            title: l10n.holeResult,
+            child: const Center(
               child: CircularProgressIndicator(),
             ),
           ),
           error: (error, stackTrace) => _SheetFrame(
-            title: 'Hole Result',
+            title: l10n.holeResult,
             child: Center(
-              child: Text('Failed to load app settings: $error'),
+              child: Text(l10n.failedToLoadAppSettings(error)),
             ),
           ),
         ),
@@ -200,18 +204,18 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
     );
   }
 
-  String _formatRuleLabel(String rule, String note) {
+  String _formatRuleLabel(AppLocalizations l10n, String rule, String note) {
     final ruleLabel = switch (rule) {
-      'best_one' => 'Best One',
-      'best_two' => 'Best Two',
-      'individual' => 'Individual',
+      'best_one' => l10n.bestOne,
+      'best_two' => l10n.bestTwo,
+      'individual' => l10n.individual,
       _ => rule,
     };
 
     final noteLabel = switch (note) {
-      'team' => 'Team',
-      'team_split' => 'Split',
-      'gross' => 'Gross',
+      'team' => l10n.team,
+      'team_split' => l10n.split,
+      'gross' => l10n.gross,
       _ => note,
     };
 
@@ -270,14 +274,18 @@ class _TopMeta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: [
-        _MetaChip(label: isComplete ? 'Complete' : 'Incomplete'),
-        _MetaChip(label: isTurbo ? 'Turbo ON' : 'Turbo OFF'),
-        _MetaChip(label: isBirdieBonus ? 'Birdie ON' : 'Birdie OFF'),
-        if (baseAmount != null) _MetaChip(label: 'Base $baseAmount'),
+        _MetaChip(label: isComplete ? l10n.complete : l10n.incomplete),
+        _MetaChip(label: isTurbo ? l10n.turboOnShort : l10n.turboOffShort),
+        _MetaChip(
+          label: isBirdieBonus ? l10n.birdieOnShort : l10n.birdieOffShort,
+        ),
+        if (baseAmount != null)
+          _MetaChip(label: l10n.baseWithAmount(baseAmount!)),
       ],
     );
   }
@@ -313,6 +321,7 @@ class _SummaryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final sortedTeamEntries = teamNet.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
@@ -321,10 +330,10 @@ class _SummaryView extends StatelessWidget {
 
     return ListView(
       children: [
-        if (teamNet.isEmpty && playerNet.isEmpty) const Text('No result yet.'),
+        if (teamNet.isEmpty && playerNet.isEmpty) Text(l10n.noResultYet),
         if (teamNet.isNotEmpty) ...[
           Text(
-            'Team Net',
+            l10n.teamNet,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -340,7 +349,7 @@ class _SummaryView extends StatelessWidget {
         ],
         if (playerNet.isNotEmpty) ...[
           Text(
-            'Player Net',
+            l10n.playerNet,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -369,15 +378,16 @@ class _DetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return ListView(
       children: [
         Text(
-          'Player Movements',
+          l10n.playerMovements,
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
         if (playerMovements.isEmpty)
-          const Text('No player movements.')
+          Text(l10n.noPlayerMovements)
         else
           ...playerMovements.map(
             (move) => Card(
@@ -390,12 +400,12 @@ class _DetailView extends StatelessWidget {
           ),
         const SizedBox(height: 16),
         Text(
-          'Team Movements',
+          l10n.teamMovements,
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
         if (teamMovements.isEmpty)
-          const Text('No team movements.')
+          Text(l10n.noTeamMovements)
         else
           ...teamMovements.map(
             (move) => Card(

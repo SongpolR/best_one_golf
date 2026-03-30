@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/app.dart';
 import '../../../core/enums/hole_state.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 import '../../hole_result/presentation/hole_result_sheet.dart';
 import 'score_entry_controller.dart';
@@ -60,22 +61,21 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
   }
 
   Future<void> _finishGame(String gameId) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
-      context: context, // ✅ ใช้ context ของ State
+      context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Finish Game'),
-          content: const Text(
-            'Do you want to mark this game as completed and go to the summary?',
-          ),
+          title: Text(l10n.finishGame),
+          content: Text(l10n.finishGameConfirmation),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Finish'),
+              child: Text(l10n.finish),
             ),
           ],
         );
@@ -100,6 +100,8 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
     final selectedHole = ref.watch(selectedHoleProvider);
     final controller = ref.read(scoreEntryControllerProvider);
 
+    final l10n = AppLocalizations.of(context)!;
+
     return aggregateAsync.when(
       data: (aggregate) {
         final currentHoleScores = <String, int?>{
@@ -111,7 +113,7 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
         _syncControllers(currentHoleScores);
 
         return AppScaffold(
-          title: 'Score Entry',
+          title: l10n.scoreEntry,
           body: Column(
             children: [
               Padding(
@@ -124,7 +126,7 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Hole $selectedHole / ${aggregate.game.totalHoles}',
+                      l10n.holeProgress(selectedHole, aggregate.game.totalHoles),
                       key: const Key('scoreEntryHoleLabel'),
                     ),
                     const SizedBox(height: 12),
@@ -202,7 +204,7 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                             ),
                             if (player.teamId != null) ...[
                               const SizedBox(height: 4),
-                              const Text('Team assigned'),
+                              Text(l10n.teamAssigned),
                             ],
                             const SizedBox(height: 12),
                             TextField(
@@ -210,8 +212,8 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                                   'scoreField_${selectedHole}_${player.id}'),
                               controller: textController,
                               keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                labelText: 'Score',
+                              decoration: InputDecoration(
+                                labelText: l10n.score,
                               ),
                               onChanged: (text) {
                                 controller.updateScore(
@@ -253,7 +255,7 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                                   },
                                 );
                               },
-                              child: const Text('Hole Result'),
+                              child: Text(l10n.holeResult),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -263,7 +265,7 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                               onPressed: () {
                                 context.push('/game-summary/$gameId');
                               },
-                              child: const Text('Game Summary'),
+                              child: Text(l10n.gameSummary),
                             ),
                           ),
                         ],
@@ -277,7 +279,7 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                               onPressed: selectedHole > 1
                                   ? controller.previousHole
                                   : null,
-                              child: const Text('Prev'),
+                              child: Text(l10n.prev),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -288,7 +290,7 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                                   selectedHole < aggregate.game.totalHoles
                                       ? () => controller.nextHole(aggregate)
                                       : null,
-                              child: const Text('Next'),
+                              child: Text(l10n.next),
                             ),
                           ),
                         ],
@@ -301,7 +303,7 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                           onPressed: aggregate.game.status == 'completed'
                               ? null
                               : () => _finishGame(gameId),
-                          child: const Text('Finish Game'),
+                          child: Text(l10n.finishGame),
                         ),
                       ),
                     ],
@@ -312,16 +314,16 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
           ),
         );
       },
-      loading: () => const AppScaffold(
-        title: 'Score Entry',
-        body: Center(
+      loading: () => AppScaffold(
+        title: l10n.scoreEntry,
+        body: const Center(
           child: CircularProgressIndicator(),
         ),
       ),
       error: (error, stackTrace) => AppScaffold(
-        title: 'Score Entry',
+        title: l10n.scoreEntry,
         body: Center(
-          child: Text('Failed to load game: $error'),
+          child: Text(l10n.failedToLoadGame(error)),
         ),
       ),
     );

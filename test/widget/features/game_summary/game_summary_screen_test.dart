@@ -3,11 +3,13 @@ import 'package:best_one_golf/core/enums/app_currency.dart';
 import 'package:best_one_golf/core/enums/app_language.dart';
 import 'package:best_one_golf/domain/entities/app_settings.dart';
 import 'package:best_one_golf/features/game_summary/presentation/game_summary_screen.dart';
+import 'package:best_one_golf/l10n/app_localizations.dart';
 import '../../../fakes/fake_game_repository.dart';
 import '../../../fakes/fake_load_game_summary_usecase.dart';
 import '../../../fakes/fake_load_hole_result_usecase.dart';
 import '../../../helpers/result_view_fixtures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -36,6 +38,13 @@ void main() {
         ),
       ],
       child: const MaterialApp(
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
         home: GameSummaryScreen(
           gameId: 'game-1',
         ),

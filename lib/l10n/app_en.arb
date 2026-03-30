@@ -1,5 +1,6 @@
 {
   "@@locale": "en",
+
   "appName": "BestOneGolf",
   "settings": "Settings",
   "language": "Language",
@@ -12,5 +13,196 @@
   "recentGames": "Recent Games",
   "noGamesYet": "No games yet",
   "startYourFirstGame": "Start your first BestOneGolf game",
-  "createGameComingSoon": "Create Game coming soon"
+  "createGameComingSoon": "Create Game coming soon",
+
+  "history": "History",
+  "ongoing": "Ongoing",
+  "completed": "Completed",
+  "view": "View",
+  "continueGame": "Continue",
+  "restart": "Restart",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  "finish": "Finish",
+
+  "score": "Score",
+  "par": "Par",
+  "mode": "Mode",
+  "individual": "Individual",
+  "team": "Team",
+  "teams": "Teams",
+  "players": "Players",
+  "rules": "Rules",
+  "bestOne": "Best One",
+  "bestTwo": "Best Two",
+  "holes": "Holes",
+  "summary": "Summary",
+  "detail": "Detail",
+  "split": "Split",
+  "gross": "Gross",
+
+  "gameTitle": "Game Title",
+  "addPlayer": "Add Player",
+  "addTeam": "Add Team",
+  "startGame": "Start Game",
+  "holeSetup": "Hole Setup",
+  "setTurbo9And18": "Set Turbo 9 & 18",
+  "setBirdie9And18": "Set Birdie 9 & 18",
+  "turboX2": "Turbo x2",
+  "birdieBonusX2": "Birdie Bonus x2",
+  "useSameAmountForAllRules": "Use same amount for all rules",
+  "bestOneAmount": "Best One Amount",
+  "bestTwoAmount": "Best Two Amount",
+  "bestTwoAmountOptional": "Best Two Amount (optional)",
+
+  "scoreEntry": "Score Entry",
+  "holeResult": "Hole Result",
+  "gameSummary": "Game Summary",
+  "prev": "Prev",
+  "next": "Next",
+  "finishGame": "Finish Game",
+  "teamAssigned": "Team assigned",
+
+  "complete": "Complete",
+  "incomplete": "Incomplete",
+  "turboOn": "Turbo: ON",
+  "turboOff": "Turbo: OFF",
+  "birdieOn": "Birdie Bonus: ON",
+  "birdieOff": "Birdie Bonus: OFF",
+  "turboOnShort": "Turbo ON",
+  "turboOffShort": "Turbo OFF",
+  "birdieOnShort": "Birdie ON",
+  "birdieOffShort": "Birdie OFF",
+
+  "playerNet": "Player Net",
+  "teamNet": "Team Net",
+  "playerMovements": "Player Movements",
+  "teamMovements": "Team Movements",
+  "totalsByPlayer": "Totals by Player",
+  "settlements": "Settlements",
+
+  "noResultAvailable": "No result available yet.",
+  "noPlayerNetResult": "No player net result.",
+  "noTeamNetResult": "No team net result.",
+  "noPlayerMovements": "No player movements.",
+  "noTeamMovements": "No team movements.",
+  "noResultYet": "No result yet.",
+  "noOngoingGames": "No ongoing games",
+  "noCompletedGames": "No completed games",
+  "noTotalsYet": "No totals yet.",
+  "noSettlementsYet": "No settlements yet.",
+  "noSummaryAvailable": "No summary available yet.",
+
+  "deleteGame": "Delete Game",
+  "deleteGameConfirmation": "Do you want to delete this game permanently?",
+  "restartGame": "Restart Game",
+  "restartGameConfirmation": "Do you want to create a new game using the same settings?",
+  "finishGameConfirmation": "Do you want to mark this game as completed and go to the summary?",
+
+  "playerN": "Player {n}",
+  "@playerN": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "teamN": "Team {n}",
+  "@teamN": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "holeN": "Hole {n}",
+  "@holeN": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "holeNResult": "Hole {n} Result",
+  "@holeNResult": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "holeProgress": "Hole {current} / {total}",
+  "@holeProgress": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "gameInfo": "{mode} • {totalHoles} holes",
+  "@gameInfo": {
+    "placeholders": {
+      "mode": { "type": "String" },
+      "totalHoles": { "type": "int" }
+    }
+  },
+  "baseAmount": "Base Amount: {amount}",
+  "@baseAmount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "baseWithAmount": "Base {amount}",
+  "@baseWithAmount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "pays": "{from} pays {to}",
+  "@pays": {
+    "placeholders": {
+      "from": { "type": "String" },
+      "to": { "type": "String" }
+    }
+  },
+
+  "failedToLoadSettings": "Failed to load settings: {error}",
+  "@failedToLoadSettings": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadOngoingGames": "Failed to load ongoing games: {error}",
+  "@failedToLoadOngoingGames": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadCompletedGames": "Failed to load completed games: {error}",
+  "@failedToLoadCompletedGames": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadHoleResult": "Failed to load hole result: {error}",
+  "@failedToLoadHoleResult": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadAppSettings": "Failed to load app settings: {error}",
+  "@failedToLoadAppSettings": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadGame": "Failed to load game: {error}",
+  "@failedToLoadGame": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadGameSummary": "Failed to load game summary: {error}",
+  "@failedToLoadGameSummary": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  },
+  "failedToLoadGameData": "Failed to load game data: {error}",
+  "@failedToLoadGameData": {
+    "placeholders": {
+      "error": { "type": "Object" }
+    }
+  }
 }
