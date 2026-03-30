@@ -46,6 +46,16 @@ class ScoreEntryController {
     ref.read(selectedHoleProvider.notifier).state = holeNumber;
   }
 
+  void jumpToFirstIncompleteHole(GameAggregate aggregate) {
+    for (var i = 1; i <= aggregate.game.totalHoles; i++) {
+      if (getHoleState(aggregate: aggregate, holeNumber: i) !=
+          HoleState.complete) {
+        ref.read(selectedHoleProvider.notifier).state = i;
+        return;
+      }
+    }
+  }
+
   Future<void> updateScore({
     required String gameId,
     required int holeNumber,
@@ -59,6 +69,20 @@ class ScoreEntryController {
           holeNumber: holeNumber,
           playerId: playerId,
           strokes: parsed,
+        );
+  }
+
+  Future<void> updateScoreInt({
+    required String gameId,
+    required int holeNumber,
+    required String playerId,
+    required int? strokes,
+  }) async {
+    await ref.read(updateScoreUseCaseProvider).call(
+          gameId: gameId,
+          holeNumber: holeNumber,
+          playerId: playerId,
+          strokes: strokes,
         );
   }
 

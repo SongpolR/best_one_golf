@@ -77,15 +77,18 @@ class GameSummaryScreen extends ConsumerWidget {
                         Text(l10n.noTotalsYet)
                       else
                         ...sortedTotals.map(
-                          (entry) => Card(
-                            child: ListTile(
-                              title: Text(
-                                playerNameById[entry.key] ?? entry.key,
-                              ),
-                              trailing: Text(
-                                CurrencyFormatter.formatSigned(
-                                  entry.value,
-                                  settings.currency,
+                          (entry) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Card(
+                              child: ListTile(
+                                title: Text(
+                                  playerNameById[entry.key] ?? entry.key,
+                                ),
+                                trailing: Text(
+                                  CurrencyFormatter.formatSigned(
+                                    entry.value,
+                                    settings.currency,
+                                  ),
                                 ),
                               ),
                             ),
@@ -104,18 +107,21 @@ class GameSummaryScreen extends ConsumerWidget {
                         Text(l10n.noSettlementsYet)
                       else
                         ...settlements.map(
-                          (entry) => Card(
-                            child: ListTile(
-                              title: Text(
-                                l10n.pays(
-                                  playerNameById[entry.fromId] ?? entry.fromId,
-                                  playerNameById[entry.toId] ?? entry.toId,
+                          (entry) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Card(
+                              child: ListTile(
+                                title: Text(
+                                  l10n.pays(
+                                    playerNameById[entry.fromId] ?? entry.fromId,
+                                    playerNameById[entry.toId] ?? entry.toId,
+                                  ),
                                 ),
-                              ),
-                              trailing: Text(
-                                CurrencyFormatter.format(
-                                  entry.amount,
-                                  settings.currency,
+                                trailing: Text(
+                                  CurrencyFormatter.format(
+                                    entry.amount,
+                                    settings.currency,
+                                  ),
                                 ),
                               ),
                             ),

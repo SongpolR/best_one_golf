@@ -329,6 +329,7 @@ class _SummaryView extends StatelessWidget {
       ..sort((a, b) => b.value.compareTo(a.value));
 
     return ListView(
+      padding: const EdgeInsets.only(bottom: 8),
       children: [
         if (teamNet.isEmpty && playerNet.isEmpty) Text(l10n.noResultYet),
         if (teamNet.isNotEmpty) ...[
@@ -338,14 +339,17 @@ class _SummaryView extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           ...sortedTeamEntries.map(
-            (entry) => Card(
-              child: ListTile(
-                title: Text(teamNameById[entry.key] ?? entry.key),
-                trailing: Text(formatter(entry.value)),
+            (entry) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Card(
+                child: ListTile(
+                  title: Text(teamNameById[entry.key] ?? entry.key),
+                  trailing: Text(formatter(entry.value)),
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
         ],
         if (playerNet.isNotEmpty) ...[
           Text(
@@ -354,10 +358,13 @@ class _SummaryView extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           ...sortedPlayerEntries.map(
-            (entry) => Card(
-              child: ListTile(
-                title: Text(playerNameById[entry.key] ?? entry.key),
-                trailing: Text(formatter(entry.value)),
+            (entry) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Card(
+                child: ListTile(
+                  title: Text(playerNameById[entry.key] ?? entry.key),
+                  trailing: Text(formatter(entry.value)),
+                ),
               ),
             ),
           ),
@@ -380,6 +387,7 @@ class _DetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return ListView(
+      padding: const EdgeInsets.only(bottom: 8),
       children: [
         Text(
           l10n.playerMovements,
@@ -390,15 +398,18 @@ class _DetailView extends StatelessWidget {
           Text(l10n.noPlayerMovements)
         else
           ...playerMovements.map(
-            (move) => Card(
-              child: ListTile(
-                title: Text(move.title),
-                subtitle: Text(move.subtitle),
-                trailing: Text(move.amount),
+            (move) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Card(
+                child: ListTile(
+                  title: Text(move.title),
+                  subtitle: Text(move.subtitle),
+                  trailing: Text(move.amount),
+                ),
               ),
             ),
           ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         Text(
           l10n.teamMovements,
           style: Theme.of(context).textTheme.titleMedium,
@@ -408,11 +419,14 @@ class _DetailView extends StatelessWidget {
           Text(l10n.noTeamMovements)
         else
           ...teamMovements.map(
-            (move) => Card(
-              child: ListTile(
-                title: Text(move.title),
-                subtitle: Text(move.subtitle),
-                trailing: Text(move.amount),
+            (move) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Card(
+                child: ListTile(
+                  title: Text(move.title),
+                  subtitle: Text(move.subtitle),
+                  trailing: Text(move.amount),
+                ),
               ),
             ),
           ),

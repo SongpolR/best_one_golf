@@ -139,6 +139,13 @@ class CreateGameController extends Notifier<CreateGameState> {
     state = state.copyWith(holes: updatedHoles, errorMessage: null);
   }
 
+  void updateHoleParInt(int holeIndex, int par) {
+    final updatedHoles = [...state.holes];
+    updatedHoles[holeIndex] = updatedHoles[holeIndex].copyWith(par: par);
+
+    state = state.copyWith(holes: updatedHoles, errorMessage: null);
+  }
+
   void updateHoleTurbo(int holeIndex, bool value) {
     final updatedHoles = [...state.holes];
     updatedHoles[holeIndex] = updatedHoles[holeIndex].copyWith(isTurbo: value);

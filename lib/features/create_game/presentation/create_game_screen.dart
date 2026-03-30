@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/enums/game_mode.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
+import '../../../shared/widgets/number_stepper.dart';
 import 'create_game_controller.dart';
 import 'create_game_state.dart';
 
@@ -19,7 +20,6 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
   late final TextEditingController _titleController;
   final Map<int, TextEditingController> _playerControllers = {};
   final Map<int, TextEditingController> _teamControllers = {};
-  final Map<int, TextEditingController> _holeParControllers = {};
   late final TextEditingController _bestOneAmountController;
   late final TextEditingController _bestTwoAmountController;
 
@@ -39,7 +39,6 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
 
     _syncPlayerControllers(state.players);
     _syncTeamControllers(state.teams);
-    _syncHoleParControllers(state.holes);
   }
 
   @override
@@ -53,10 +52,6 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
     }
 
     for (final controller in _teamControllers.values) {
-      controller.dispose();
-    }
-
-    for (final controller in _holeParControllers.values) {
       controller.dispose();
     }
 
@@ -116,35 +111,6 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
     }
   }
 
-  void _syncHoleParControllers(List<HoleConfigDraft> holes) {
-    for (final hole in holes) {
-      final existing = _holeParControllers[hole.holeNumber];
-      final textValue = hole.par.toString();
-
-      if (existing == null) {
-        _holeParControllers[hole.holeNumber] = TextEditingController(
-          text: textValue,
-        );
-      } else if (existing.text != textValue) {
-        existing.value = existing.value.copyWith(
-          text: textValue,
-          selection: TextSelection.collapsed(offset: textValue.length),
-          composing: TextRange.empty,
-        );
-      }
-    }
-
-    final validKeys = holes.map((e) => e.holeNumber).toSet();
-    final toRemove = _holeParControllers.keys
-        .where((key) => !validKeys.contains(key))
-        .toList();
-
-    for (final key in toRemove) {
-      _holeParControllers[key]?.dispose();
-      _holeParControllers.remove(key);
-    }
-  }
-
   void _syncTopLevelControllers(CreateGameState state) {
     if (_titleController.text != state.title) {
       _titleController.value = _titleController.value.copyWith(
@@ -182,7 +148,6 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
     _syncTopLevelControllers(state);
     _syncPlayerControllers(state.players);
     _syncTeamControllers(state.teams);
-    _syncHoleParControllers(state.holes);
 
     return AppScaffold(
       title: l10n.newGame,
@@ -396,14 +361,12 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    TextField(
-                      controller: _holeParControllers[hole.holeNumber],
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: l10n.par,
-                      ),
-                      onChanged: (value) =>
-                          controller.updateHolePar(index, value),
+                    NumberStepper(
+                      value: hole.par,
+                      min: 3,
+                      max: 5,
+                      label: l10n.par,
+                      onChanged: (v) => controller.updateHoleParInt(index, v!),
                     ),
                     const SizedBox(height: 8),
                     SwitchListTile(

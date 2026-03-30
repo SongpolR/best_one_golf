@@ -63,8 +63,14 @@ void main() {
 
     expect(find.text('Score Entry'), findsOneWidget);
     expect(find.text('Saturday Match'), findsOneWidget);
-    expect(find.text('Hole 1 / 18'), findsOneWidget);
+    expect(find.textContaining('Hole 1 / 18'), findsOneWidget);
     expect(find.text('Alice'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Bob'),
+      100,
+      scrollable: find.byType(Scrollable).last,
+    );
     expect(find.text('Bob'), findsOneWidget);
   });
 
@@ -77,7 +83,7 @@ void main() {
     await tester.pumpWidget(buildTestApp(repository));
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byKey(const Key('scoreField_1_p1')), '4');
+    await tester.tap(find.byKey(const Key('scoreField_1_p1_increment')));
     await tester.pumpAndSettle();
 
     expect(find.text('1'), findsWidgets);
@@ -94,7 +100,7 @@ void main() {
     await tester.tap(find.byKey(const Key('nextHoleButton')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Hole 2 / 18'), findsOneWidget);
+    expect(find.textContaining('Hole 2 / 18'), findsOneWidget);
   });
 
   testWidgets('Prev button goes back to previous hole', (tester) async {
@@ -111,7 +117,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('scoreEntryHoleLabel')), findsOneWidget);
-    expect(find.text('Hole 1 / 18'), findsOneWidget);
+    expect(find.textContaining('Hole 1 / 18'), findsOneWidget);
   });
 
   testWidgets('Tap hole indicator jumps to selected hole', (tester) async {
@@ -125,6 +131,6 @@ void main() {
     await tester.tap(find.text('7').last);
     await tester.pumpAndSettle();
 
-    expect(find.text('Hole 7 / 18'), findsOneWidget);
+    expect(find.textContaining('Hole 7 / 18'), findsOneWidget);
   });
 }

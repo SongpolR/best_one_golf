@@ -101,7 +101,7 @@ void main() {
 
     expect(find.text('Score Entry'), findsOneWidget);
     expect(find.text('Saturday Match'), findsOneWidget);
-    expect(find.text('Hole 1 / 18'), findsOneWidget);
+    expect(find.textContaining('Hole 1 / 18'), findsOneWidget);
   });
 
   testWidgets('View button navigates to score entry', (tester) async {
@@ -124,7 +124,7 @@ void main() {
 
     expect(find.text('Score Entry'), findsOneWidget);
     expect(find.text('Saturday Match'), findsOneWidget);
-    expect(find.text('Hole 1 / 18'), findsOneWidget);
+    expect(find.textContaining('Hole 1 / 18'), findsOneWidget);
   });
 
   testWidgets('Delete button shows confirmation dialog', (tester) async {
@@ -206,6 +206,6 @@ void main() {
     expect(repository.restartedFromGameId, 'game-1');
     expect(find.text('Score Entry'), findsOneWidget);
     expect(find.text('Saturday Match'), findsOneWidget);
-    expect(find.text('Hole 1 / 18'), findsOneWidget);
+    expect(find.textContaining('Hole 1 / 18'), findsOneWidget);
   });
 }

@@ -167,6 +167,6 @@ void main() {
 
     expect(find.text('Score Entry'), findsOneWidget);
     expect(find.text('Saturday Match'), findsOneWidget);
-    expect(find.text('Hole 1 / 18'), findsOneWidget);
+    expect(find.textContaining('Hole 1 / 18'), findsOneWidget);
   });
 }
