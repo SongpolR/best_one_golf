@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/enums/hole_state.dart';
 import '../../../shared/widgets/app_scaffold.dart';
-import 'score_entry_controller.dart';
 import '../../hole_result/presentation/hole_result_sheet.dart';
+import 'score_entry_controller.dart';
 
-class ScoreEntryScreen extends ConsumerWidget {
+class ScoreEntryScreen extends ConsumerStatefulWidget {
   final String gameId;
 
   const ScoreEntryScreen({
@@ -16,18 +16,65 @@ class ScoreEntryScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ScoreEntryScreen> createState() => _ScoreEntryScreenState();
+}
+
+class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
+  final Map<String, TextEditingController> _controllers = {};
+
+  @override
+  void dispose() {
+    for (final controller in _controllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  void _syncControllers(Map<String, int?> scores) {
+    for (final entry in scores.entries) {
+      final playerId = entry.key;
+      final value = entry.value;
+      final text = value?.toString() ?? '';
+
+      final existing = _controllers[playerId];
+      if (existing == null) {
+        _controllers[playerId] = TextEditingController(text: text);
+      } else if (existing.text != text) {
+        existing.value = existing.value.copyWith(
+          text: text,
+          selection: TextSelection.collapsed(offset: text.length),
+          composing: TextRange.empty,
+        );
+      }
+    }
+
+    final validIds = scores.keys.toSet();
+    final toRemove =
+        _controllers.keys.where((id) => !validIds.contains(id)).toList();
+
+    for (final id in toRemove) {
+      _controllers[id]?.dispose();
+      _controllers.remove(id);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final gameId = widget.gameId;
+
     final aggregateAsync = ref.watch(gameAggregateProvider(gameId));
     final selectedHole = ref.watch(selectedHoleProvider);
     final controller = ref.read(scoreEntryControllerProvider);
 
     return aggregateAsync.when(
       data: (aggregate) {
-        final currentHoleScores = {
+        final currentHoleScores = <String, int?>{
           for (final score in aggregate.holeScores
               .where((score) => score.holeNumber == selectedHole))
             score.playerId: score.strokes,
         };
+
+        _syncControllers(currentHoleScores);
 
         return AppScaffold(
           title: 'Score Entry',
@@ -43,8 +90,9 @@ class ScoreEntryScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                        key: const Key('scoreEntryHoleLabel'),
-                        'Hole $selectedHole / ${aggregate.game.totalHoles}'),
+                      'Hole $selectedHole / ${aggregate.game.totalHoles}',
+                      key: const Key('scoreEntryHoleLabel'),
+                    ),
                     const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,
@@ -52,13 +100,13 @@ class ScoreEntryScreen extends ConsumerWidget {
                       children:
                           List.generate(aggregate.game.totalHoles, (index) {
                         final holeNumber = index + 1;
-                        final state = controller.getHoleState(
+                        final holeState = controller.getHoleState(
                           aggregate: aggregate,
                           holeNumber: holeNumber,
                         );
 
                         Color? color;
-                        switch (state) {
+                        switch (holeState) {
                           case HoleState.empty:
                             color = Colors.grey.shade300;
                             break;
@@ -105,6 +153,8 @@ class ScoreEntryScreen extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final player = aggregate.players[index];
                     final value = currentHoleScores[player.id];
+                    final textController = _controllers[player.id] ??
+                        TextEditingController(text: value?.toString() ?? '');
 
                     return Card(
                       child: Padding(
@@ -124,15 +174,11 @@ class ScoreEntryScreen extends ConsumerWidget {
                             TextField(
                               key: Key(
                                   'scoreField_${selectedHole}_${player.id}'),
+                              controller: textController,
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
                                 labelText: 'Score',
                               ),
-                              controller: TextEditingController(
-                                text: value?.toString() ?? '',
-                              )..selection = TextSelection.collapsed(
-                                  offset: (value?.toString() ?? '').length,
-                                ),
                               onChanged: (text) {
                                 controller.updateScore(
                                   gameId: gameId,
