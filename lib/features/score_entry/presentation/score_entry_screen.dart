@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/app.dart';
 import '../../../core/enums/hole_state.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 import '../../hole_result/presentation/hole_result_sheet.dart';
@@ -56,6 +57,39 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
       _controllers[id]?.dispose();
       _controllers.remove(id);
     }
+  }
+
+  Future<void> _finishGame(String gameId) async {
+    final confirmed = await showDialog<bool>(
+      context: context, // ✅ ใช้ context ของ State
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Finish Game'),
+          content: const Text(
+            'Do you want to mark this game as completed and go to the summary?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Finish'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final finalizeGame = ref.read(finalizeGameUseCaseProvider);
+    await finalizeGame(gameId);
+
+    if (!mounted) return;
+
+    context.push('/game-summary/$gameId');
   }
 
   @override
@@ -258,6 +292,17 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          key: const Key('finishGameButton'),
+                          onPressed: aggregate.game.status == 'completed'
+                              ? null
+                              : () => _finishGame(gameId),
+                          child: const Text('Finish Game'),
+                        ),
                       ),
                     ],
                   ),
