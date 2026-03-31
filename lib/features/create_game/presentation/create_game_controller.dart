@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/app.dart';
 import '../../../core/enums/game_mode.dart';
 import '../../../domain/entities/create_game_input.dart';
+import '../../../domain/entities/game_aggregate.dart';
 import '../../../domain/services/validation/game_setup_validator.dart';
 import 'create_game_state.dart';
 
@@ -11,14 +12,18 @@ final gameSetupValidatorProvider = Provider<GameSetupValidator>((ref) {
 });
 
 final createGameControllerProvider =
-    NotifierProvider<CreateGameController, CreateGameState>(
+    AutoDisposeNotifierProvider<CreateGameController, CreateGameState>(
   CreateGameController.new,
 );
 
-class CreateGameController extends Notifier<CreateGameState> {
+class CreateGameController extends AutoDisposeNotifier<CreateGameState> {
   @override
   CreateGameState build() {
     return CreateGameState.initial();
+  }
+
+  void loadFromAggregate(GameAggregate aggregate) {
+    state = CreateGameState.fromAggregate(aggregate);
   }
 
   void updateTitle(String value) {

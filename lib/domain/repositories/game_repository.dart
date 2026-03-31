@@ -21,5 +21,6 @@ abstract class GameRepository {
 
   Future<void> deleteGame(String gameId);
   Future<String> restartGame(String gameId);
+  Future<String> duplicateGame(String gameId);
   Future<void> finalizeGame(String gameId);
 }

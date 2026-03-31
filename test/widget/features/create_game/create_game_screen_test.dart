@@ -3,6 +3,7 @@ import 'package:best_one_golf/app/router.dart';
 import 'package:best_one_golf/core/enums/app_currency.dart';
 import 'package:best_one_golf/core/enums/app_language.dart';
 import 'package:best_one_golf/domain/entities/app_settings.dart';
+import 'package:best_one_golf/domain/entities/game_aggregate.dart';
 import 'package:best_one_golf/features/create_game/presentation/create_game_screen.dart';
 import 'package:best_one_golf/features/score_entry/presentation/score_entry_screen.dart';
 import 'package:best_one_golf/l10n/app_localizations.dart';
@@ -16,13 +17,19 @@ import 'package:go_router/go_router.dart';
 import '../../../helpers/pump_app.dart';
 
 void main() {
-  Widget buildTestApp(FakeGameRepository fakeRepository) {
+  Widget buildTestApp(
+    FakeGameRepository fakeRepository, {
+    GameAggregate? template,
+  }) {
     final router = GoRouter(
       initialLocation: '/create-game',
       routes: [
         GoRoute(
           path: '/create-game',
-          builder: (context, state) => const CreateGameScreen(),
+          pageBuilder: (context, state) {
+            final tmpl = state.extra as GameAggregate?;
+            return MaterialPage(child: CreateGameScreen(template: tmpl));
+          },
         ),
         GoRoute(
           path: '/score-entry/:gameId',
@@ -32,6 +39,7 @@ void main() {
           },
         ),
       ],
+      initialExtra: template,
     );
 
     return ProviderScope(
@@ -168,5 +176,42 @@ void main() {
     expect(find.text('Score Entry'), findsOneWidget);
     expect(find.text('Saturday Match'), findsOneWidget);
     expect(find.textContaining('Hole 1 / 18'), findsOneWidget);
+  });
+
+  testWidgets('pre-fills form fields from template when duplicating',
+      (tester) async {
+    final template = fakeGameAggregate(
+      gameId: 'orig-1',
+      title: 'Weekend Classic',
+    );
+    final fakeRepository = FakeGameRepository(
+      createdGameId: 'new-game-1',
+      gameAggregate: fakeGameAggregate(gameId: 'new-game-1'),
+    );
+
+    await tester.pumpWidget(buildTestApp(fakeRepository, template: template));
+    await tester.pumpAndSettle();
+
+    // Title field should be pre-filled from the template.
+    expect(find.text('Weekend Classic'), findsOneWidget);
+
+    // Players from the template should appear.
+    expect(find.text('Alice'), findsOneWidget);
+    expect(find.text('Bob'), findsOneWidget);
+    expect(find.text('Charlie'), findsOneWidget);
+
+    // The form can still be submitted after duplication.
+    final startGameFinder = find.byKey(const Key('startGameButton'));
+    await tester.scrollUntilVisible(
+      startGameFinder,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(startGameFinder);
+    await tester.pumpForNavigation();
+
+    expect(find.text('Score Entry'), findsOneWidget);
   });
 }

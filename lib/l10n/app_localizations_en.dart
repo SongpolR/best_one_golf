@@ -271,6 +271,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restartGameConfirmation => 'Do you want to create a new game using the same settings?';
 
   @override
+  String get duplicateGame => 'Duplicate Game';
+
+  @override
+  String get duplicateGameConfirmation => 'Do you want to create a copy of this game with the same settings?';
+
+  @override
+  String get duplicate => 'Duplicate';
+
+  @override
   String get finishGameConfirmation => 'Do you want to mark this game as completed and go to the summary?';
 
   @override

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../domain/entities/game_aggregate.dart';
 import '../features/create_game/presentation/create_game_screen.dart';
 import '../features/history/presentation/history_screen.dart';
 import '../features/home/presentation/home_screen.dart';
@@ -98,8 +99,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/create-game',
-        pageBuilder: (context, state) =>
-            _slidePage(state, const CreateGameScreen()),
+        pageBuilder: (context, state) {
+          final template = state.extra as GameAggregate?;
+          return _slidePage(state, CreateGameScreen(template: template));
+        },
       ),
       GoRoute(
         path: '/history',

@@ -623,6 +623,24 @@ abstract class AppLocalizations {
   /// **'Do you want to create a new game using the same settings?'**
   String get restartGameConfirmation;
 
+  /// No description provided for @duplicateGame.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate Game'**
+  String get duplicateGame;
+
+  /// No description provided for @duplicateGameConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to create a copy of this game with the same settings?'**
+  String get duplicateGameConfirmation;
+
+  /// No description provided for @duplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get duplicate;
+
   /// No description provided for @finishGameConfirmation.
   ///
   /// In en, this message translates to:

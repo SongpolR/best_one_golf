@@ -7,6 +7,7 @@ import '../../../core/enums/game_mode.dart';
 import '../../../domain/entities/game_list_item.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
+import '../../score_entry/presentation/score_entry_controller.dart';
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
@@ -180,6 +181,18 @@ class _GameCard extends ConsumerWidget {
                   ),
                 OutlinedButton(
                   onPressed: () async {
+                    final aggregate = await ref.read(
+                      gameAggregateProvider(game.id).future,
+                    );
+
+                    if (context.mounted) {
+                      context.push('/create-game', extra: aggregate);
+                    }
+                  },
+                  child: Text(l10n.duplicate),
+                ),
+                OutlinedButton(
+                  onPressed: () async {
                     final confirmed = await _showDeleteDialog(context);
                     if (confirmed != true) return;
 
@@ -241,4 +254,5 @@ class _GameCard extends ConsumerWidget {
       },
     );
   }
+
 }

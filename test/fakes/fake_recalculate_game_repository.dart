@@ -32,6 +32,11 @@ class FakeRecalculateGameRepository implements GameRepository {
   }
 
   @override
+  Future<String> duplicateGame(String gameId) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<void> updateScore({
     required String gameId,
     required int holeNumber,
