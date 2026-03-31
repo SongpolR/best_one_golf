@@ -123,7 +123,7 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
                                         .map(
                                           (move) => _MovementTileData(
                                             title:
-                                                '${playerNameById[move.fromId] ?? move.fromId} → ${playerNameById[move.toId] ?? move.toId}',
+                                                '${playerNameById[move.fromId] ?? move.fromId} → ${playerNameById[move.toId] ?? teamNameById[move.toId] ?? move.toId}',
                                             subtitle: _formatRuleLabel(
                                               l10n,
                                               move.rule,
@@ -215,6 +215,8 @@ class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
     final noteLabel = switch (note) {
       'team' => l10n.team,
       'team_split' => l10n.split,
+      'team_match' => l10n.team,
+      'team_payment' => l10n.team,
       'gross' => l10n.gross,
       _ => note,
     };

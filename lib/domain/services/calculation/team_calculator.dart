@@ -146,7 +146,9 @@ class TeamCalculator {
     final decidingScore =
         rankedA.score < rankedB.score ? rankedA.score : rankedB.score;
 
-    final amount = multiplierCalculator.apply(
+    // perLoserAmount is what each losing player pays individually.
+    // The total team movement is perLoserAmount × number of losing players.
+    final perLoserAmount = multiplierCalculator.apply(
       baseAmount: baseAmount,
       decidingScore: decidingScore,
       par: holeConfig.par,
@@ -154,46 +156,69 @@ class TeamCalculator {
       isBirdieBonus: holeConfig.isBirdieBonus,
     );
 
+    final winnerPlayers =
+        rankedTeamScores[winnerTeam.id]!.map((e) => e.player).toList();
+    final loserPlayers =
+        rankedTeamScores[loserTeam.id]!.map((e) => e.player).toList();
+
+    final teamAmount = perLoserAmount * loserPlayers.length;
+
     teamMovements.add(
       TeamMovement(
         fromTeamId: loserTeam.id,
         toTeamId: winnerTeam.id,
-        amount: amount,
+        amount: teamAmount,
         holeNumber: holeConfig.holeNumber,
         rule: ruleName,
         note: 'team',
       ),
     );
 
-    teamNet[winnerTeam.id] = (teamNet[winnerTeam.id] ?? 0) + amount;
-    teamNet[loserTeam.id] = (teamNet[loserTeam.id] ?? 0) - amount;
+    teamNet[winnerTeam.id] = (teamNet[winnerTeam.id] ?? 0) + teamAmount;
+    teamNet[loserTeam.id] = (teamNet[loserTeam.id] ?? 0) - teamAmount;
 
-    final winnerPlayers =
-        rankedTeamScores[winnerTeam.id]!.map((e) => e.player).toList();
-    final loserPlayers =
-        rankedTeamScores[loserTeam.id]!.map((e) => e.player).toList();
+    final winnerShare = teamAmount ~/ winnerPlayers.length;
 
-    final winnerShare = amount ~/ winnerPlayers.length;
-    final loserShare = amount ~/ loserPlayers.length;
+    // Sort each side by player order for consistent position-based display.
+    final winnerSorted = winnerPlayers.toList()
+      ..sort((a, b) => a.order.compareTo(b.order));
+    final loserSorted = loserPlayers.toList()
+      ..sort((a, b) => a.order.compareTo(b.order));
 
-    for (final loser in loserPlayers) {
-      for (final winner in winnerPlayers) {
-        final splitAmount =
-            amount ~/ (winnerPlayers.length * loserPlayers.length);
-
+    if (loserSorted.length == winnerSorted.length) {
+      // Equal teams: match each loser 1-to-1 with the winner at the same
+      // position so the display reads "A pays D, B pays E, C pays F".
+      for (var k = 0; k < loserSorted.length; k++) {
         playerMovements.add(
           MoneyMovement(
-            fromId: loser.id,
-            toId: winner.id,
-            amount: splitAmount,
+            fromId: loserSorted[k].id,
+            toId: winnerSorted[k].id,
+            amount: perLoserAmount,
             holeNumber: holeConfig.holeNumber,
             rule: ruleName,
-            note: 'team_split',
+            note: 'team_match',
           ),
         );
       }
+    } else {
+      // Unequal teams: each loser pays the winning team as a whole.
+      // toId is the team ID so the UI can resolve it to a team name.
+      for (final loser in loserSorted) {
+        playerMovements.add(
+          MoneyMovement(
+            fromId: loser.id,
+            toId: winnerTeam.id,
+            amount: perLoserAmount,
+            holeNumber: holeConfig.holeNumber,
+            rule: ruleName,
+            note: 'team_payment',
+          ),
+        );
+      }
+    }
 
-      playerNet[loser.id] = (playerNet[loser.id] ?? 0) - loserShare;
+    for (final loser in loserPlayers) {
+      playerNet[loser.id] = (playerNet[loser.id] ?? 0) - perLoserAmount;
     }
 
     for (final winner in winnerPlayers) {
