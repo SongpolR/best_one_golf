@@ -271,6 +271,15 @@ class AppLocalizationsTh extends AppLocalizations {
   String get restartGameConfirmation => 'คุณต้องการสร้างเกมใหม่โดยใช้การตั้งค่าเดิมหรือไม่?';
 
   @override
+  String get duplicateGame => 'คัดลอกเกม';
+
+  @override
+  String get duplicateGameConfirmation => 'คุณต้องการสร้างสำเนาเกมนี้โดยใช้การตั้งค่าเดิมหรือไม่?';
+
+  @override
+  String get duplicate => 'คัดลอก';
+
+  @override
   String get finishGameConfirmation => 'คุณต้องการทำเครื่องหมายว่าเกมนี้เสร็จสิ้นและไปที่สรุปหรือไม่?';
 
   @override

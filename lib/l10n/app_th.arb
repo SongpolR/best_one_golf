@@ -97,6 +97,9 @@
   "deleteGameConfirmation": "คุณต้องการลบเกมนี้อย่างถาวรหรือไม่?",
   "restartGame": "เริ่มเกมใหม่",
   "restartGameConfirmation": "คุณต้องการสร้างเกมใหม่โดยใช้การตั้งค่าเดิมหรือไม่?",
+  "duplicateGame": "คัดลอกเกม",
+  "duplicateGameConfirmation": "คุณต้องการสร้างสำเนาเกมนี้โดยใช้การตั้งค่าเดิมหรือไม่?",
+  "duplicate": "คัดลอก",
   "finishGameConfirmation": "คุณต้องการทำเครื่องหมายว่าเกมนี้เสร็จสิ้นและไปที่สรุปหรือไม่?",
 
   "playerN": "ผู้เล่น {n}",

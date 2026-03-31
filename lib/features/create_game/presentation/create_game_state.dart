@@ -1,4 +1,5 @@
 import '../../../core/enums/game_mode.dart';
+import '../../../domain/entities/game_aggregate.dart';
 
 class PlayerDraft {
   final String name;
@@ -99,6 +100,57 @@ class CreateGameState {
     required this.isSubmitting,
     required this.errorMessage,
   });
+
+  factory CreateGameState.fromAggregate(GameAggregate aggregate) {
+    final teamIdToIndex = {
+      for (var i = 0; i < aggregate.teams.length; i++)
+        aggregate.teams[i].id: i,
+    };
+
+    final players = (aggregate.players.toList()
+          ..sort((a, b) => a.order.compareTo(b.order)))
+        .map(
+          (p) => PlayerDraft(
+            name: p.name,
+            order: p.order,
+            teamIndex:
+                p.teamId != null ? teamIdToIndex[p.teamId!] : null,
+          ),
+        )
+        .toList();
+
+    final teams = (aggregate.teams.toList()
+          ..sort((a, b) => a.order.compareTo(b.order)))
+        .map((t) => TeamDraft(name: t.name, order: t.order))
+        .toList();
+
+    final holes = (aggregate.holeConfigs.toList()
+          ..sort((a, b) => a.holeNumber.compareTo(b.holeNumber)))
+        .map(
+          (h) => HoleConfigDraft(
+            holeNumber: h.holeNumber,
+            par: h.par,
+            isTurbo: h.isTurbo,
+            isBirdieBonus: h.isBirdieBonus,
+          ),
+        )
+        .toList();
+
+    return CreateGameState(
+      title: aggregate.game.title,
+      mode: aggregate.game.mode,
+      players: players,
+      teams: teams,
+      bestOneEnabled: aggregate.settings.bestOneEnabled,
+      bestTwoEnabled: aggregate.settings.bestTwoEnabled,
+      sharedBetDefault: aggregate.settings.sharedBetDefault,
+      bestOneAmount: aggregate.settings.bestOneAmount,
+      bestTwoAmount: aggregate.settings.bestTwoAmount,
+      holes: holes,
+      isSubmitting: false,
+      errorMessage: null,
+    );
+  }
 
   factory CreateGameState.initial() {
     return CreateGameState(

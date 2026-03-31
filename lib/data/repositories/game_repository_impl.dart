@@ -257,7 +257,12 @@ class GameRepositoryImpl implements GameRepository {
   }
 
   @override
-  Future<String> restartGame(String gameId) async {
+  Future<String> restartGame(String gameId) => _copyGame(gameId);
+
+  @override
+  Future<String> duplicateGame(String gameId) => _copyGame(gameId);
+
+  Future<String> _copyGame(String gameId) async {
     final game = await db.historyDao.getGameById(gameId);
     final players = await db.historyDao.getPlayersByGameId(gameId);
     final teams = await db.historyDao.getTeamsByGameId(gameId);

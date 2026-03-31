@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/enums/game_mode.dart';
+import '../../../domain/entities/game_aggregate.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 import '../../../shared/widgets/number_stepper.dart';
@@ -10,7 +11,9 @@ import 'create_game_controller.dart';
 import 'create_game_state.dart';
 
 class CreateGameScreen extends ConsumerStatefulWidget {
-  const CreateGameScreen({super.key});
+  final GameAggregate? template;
+
+  const CreateGameScreen({super.key, this.template});
 
   @override
   ConsumerState<CreateGameScreen> createState() => _CreateGameScreenState();
@@ -23,22 +26,40 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
   late final TextEditingController _bestOneAmountController;
   late final TextEditingController _bestTwoAmountController;
 
+  // Holds template state for the first frame while the provider loads asynchronously.
+  CreateGameState? _templateState;
+
   @override
   void initState() {
     super.initState();
 
-    final state = ref.read(createGameControllerProvider);
+    final CreateGameState initialState;
+    if (widget.template != null) {
+      _templateState = CreateGameState.fromAggregate(widget.template!);
+      initialState = _templateState!;
+      // Defer provider mutation until after the current build phase.
+      Future(() {
+        if (mounted) {
+          ref
+              .read(createGameControllerProvider.notifier)
+              .loadFromAggregate(widget.template!);
+          setState(() => _templateState = null);
+        }
+      });
+    } else {
+      initialState = ref.read(createGameControllerProvider);
+    }
 
-    _titleController = TextEditingController(text: state.title);
+    _titleController = TextEditingController(text: initialState.title);
     _bestOneAmountController = TextEditingController(
-      text: state.bestOneAmount?.toString() ?? '',
+      text: initialState.bestOneAmount?.toString() ?? '',
     );
     _bestTwoAmountController = TextEditingController(
-      text: state.bestTwoAmount?.toString() ?? '',
+      text: initialState.bestTwoAmount?.toString() ?? '',
     );
 
-    _syncPlayerControllers(state.players);
-    _syncTeamControllers(state.teams);
+    _syncPlayerControllers(initialState.players);
+    _syncTeamControllers(initialState.teams);
   }
 
   @override
@@ -141,7 +162,9 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(createGameControllerProvider);
+    final providerState = ref.watch(createGameControllerProvider);
+    // Use the locally-computed template state until the provider has been loaded.
+    final state = _templateState ?? providerState;
     final controller = ref.read(createGameControllerProvider.notifier);
     final l10n = AppLocalizations.of(context)!;
 

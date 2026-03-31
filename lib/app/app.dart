@@ -14,6 +14,7 @@ import '../data/repositories/app_settings_repository_impl.dart';
 import '../data/repositories/game_repository_impl.dart';
 import '../domain/usecases/create_game.dart';
 import '../domain/usecases/delete_game.dart';
+import '../domain/usecases/duplicate_game.dart';
 import '../domain/usecases/finalize_game.dart';
 import '../domain/usecases/list_completed_games.dart';
 import '../domain/usecases/list_ongoing_games.dart';
@@ -75,6 +76,11 @@ final deleteGameUseCaseProvider = Provider<DeleteGameUseCase>((ref) {
 final restartGameUseCaseProvider = Provider<RestartGameUseCase>((ref) {
   final repository = ref.watch(gameRepositoryProvider);
   return RestartGameUseCase(repository);
+});
+
+final duplicateGameUseCaseProvider = Provider<DuplicateGameUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return DuplicateGameUseCase(repository);
 });
 
 final finalizeGameUseCaseProvider = Provider<FinalizeGameUseCase>((ref) {

@@ -44,6 +44,7 @@ class FakeGameRepository implements GameRepository {
 
   String? deletedGameId;
   String? restartedFromGameId;
+  String? duplicatedFromGameId;
   String? finalizedGameId;
 
   @override
@@ -162,6 +163,12 @@ class FakeGameRepository implements GameRepository {
   Future<String> restartGame(String gameId) async {
     restartedFromGameId = gameId;
     return 'restarted-$gameId';
+  }
+
+  @override
+  Future<String> duplicateGame(String gameId) async {
+    duplicatedFromGameId = gameId;
+    return 'duplicated-$gameId';
   }
 
   Future<void> dispose() async {
