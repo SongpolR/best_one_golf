@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:best_one_golf/core/enums/app_currency.dart';
 import 'package:best_one_golf/core/enums/app_language.dart';
+import 'package:best_one_golf/core/enums/app_theme_mode.dart';
 import 'package:best_one_golf/domain/entities/app_settings.dart';
 import 'package:best_one_golf/domain/repositories/app_settings_repository.dart';
 
@@ -12,6 +13,7 @@ class FakeAppSettingsRepository implements AppSettingsRepository {
             const AppSettings(
               language: AppLanguage.en,
               currency: AppCurrency.usd,
+              themeMode: AppThemeMode.system,
             );
 
   AppSettings _settings;
@@ -36,6 +38,12 @@ class FakeAppSettingsRepository implements AppSettingsRepository {
   @override
   Future<void> updateLanguage(AppLanguage language) async {
     _settings = _settings.copyWith(language: language);
+    _controller.add(_settings);
+  }
+
+  @override
+  Future<void> updateThemeMode(AppThemeMode mode) async {
+    _settings = _settings.copyWith(themeMode: mode);
     _controller.add(_settings);
   }
 

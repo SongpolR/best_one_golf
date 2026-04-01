@@ -48,7 +48,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -72,11 +72,53 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(computedHoleResultsTable);
             await m.createTable(settlementSnapshotsTable);
           }
+
+          if (from < 5) {
+            final hasThemeModeCode = await _hasColumn(
+              appSettingsTable.actualTableName,
+              'theme_mode_code',
+            );
+
+            if (!hasThemeModeCode) {
+              await m.addColumn(
+                appSettingsTable,
+                appSettingsTable.themeModeCode,
+              );
+            }
+          }
         },
         beforeOpen: (details) async {
           await appSettingsDao.ensureSeeded();
+
+          final hasThemeModeCode = await _hasColumn(
+            appSettingsTable.actualTableName,
+            'theme_mode_code',
+          );
+
+          if (hasThemeModeCode) {
+            await customStatement(
+              'UPDATE ${appSettingsTable.actualTableName} '
+              "SET theme_mode_code = 'system' "
+              'WHERE theme_mode_code IS NULL',
+            );
+          }
         },
       );
+
+  Future<bool> _hasColumn(String tableName, String columnName) async {
+    final result = await customSelect(
+      'PRAGMA table_info("$tableName")',
+    ).get();
+
+    for (final row in result) {
+      final name = row.read<String>('name');
+      if (name == columnName) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }
 
 LazyDatabase _openConnection() {

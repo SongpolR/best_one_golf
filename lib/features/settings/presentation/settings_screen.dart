@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/app.dart';
 import '../../../core/enums/app_currency.dart';
 import '../../../core/enums/app_language.dart';
+import '../../../core/enums/app_theme_mode.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 
@@ -23,6 +24,48 @@ class SettingsScreen extends ConsumerWidget {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              // ── Theme ──────────────────────────────────────────────────────
+              Text(
+                l10n.theme,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Card(
+                child: Column(
+                  children: [
+                    RadioListTile<AppThemeMode>(
+                      value: AppThemeMode.system,
+                      groupValue: settings.themeMode,
+                      onChanged: (value) {
+                        if (value != null) repository.updateThemeMode(value);
+                      },
+                      title: Text(l10n.systemTheme),
+                      secondary: const Icon(Icons.brightness_auto_outlined),
+                    ),
+                    RadioListTile<AppThemeMode>(
+                      value: AppThemeMode.light,
+                      groupValue: settings.themeMode,
+                      onChanged: (value) {
+                        if (value != null) repository.updateThemeMode(value);
+                      },
+                      title: Text(l10n.lightTheme),
+                      secondary: const Icon(Icons.light_mode_outlined),
+                    ),
+                    RadioListTile<AppThemeMode>(
+                      value: AppThemeMode.dark,
+                      groupValue: settings.themeMode,
+                      onChanged: (value) {
+                        if (value != null) repository.updateThemeMode(value);
+                      },
+                      title: Text(l10n.darkTheme),
+                      secondary: const Icon(Icons.dark_mode_outlined),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── Language ───────────────────────────────────────────────────
               Text(
                 l10n.language,
                 style: Theme.of(context).textTheme.titleMedium,
@@ -35,9 +78,7 @@ class SettingsScreen extends ConsumerWidget {
                       value: AppLanguage.en,
                       groupValue: settings.language,
                       onChanged: (value) {
-                        if (value != null) {
-                          repository.updateLanguage(value);
-                        }
+                        if (value != null) repository.updateLanguage(value);
                       },
                       title: Text(l10n.english),
                     ),
@@ -45,9 +86,7 @@ class SettingsScreen extends ConsumerWidget {
                       value: AppLanguage.th,
                       groupValue: settings.language,
                       onChanged: (value) {
-                        if (value != null) {
-                          repository.updateLanguage(value);
-                        }
+                        if (value != null) repository.updateLanguage(value);
                       },
                       title: Text(l10n.thai),
                     ),
@@ -55,6 +94,8 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 24),
+
+              // ── Currency ───────────────────────────────────────────────────
               Text(
                 l10n.currency,
                 style: Theme.of(context).textTheme.titleMedium,
@@ -67,9 +108,7 @@ class SettingsScreen extends ConsumerWidget {
                       value: AppCurrency.usd,
                       groupValue: settings.currency,
                       onChanged: (value) {
-                        if (value != null) {
-                          repository.updateCurrency(value);
-                        }
+                        if (value != null) repository.updateCurrency(value);
                       },
                       title: Text(l10n.usd),
                     ),
@@ -77,9 +116,7 @@ class SettingsScreen extends ConsumerWidget {
                       value: AppCurrency.thb,
                       groupValue: settings.currency,
                       onChanged: (value) {
-                        if (value != null) {
-                          repository.updateCurrency(value);
-                        }
+                        if (value != null) repository.updateCurrency(value);
                       },
                       title: Text(l10n.thb),
                     ),

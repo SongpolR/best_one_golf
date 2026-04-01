@@ -376,17 +376,27 @@ void main() {
       ];
 
       const scores = [
-        HoleScore(id: 's1', gameId: 'g1', holeNumber: 1, playerId: 'a', strokes: 4),
-        HoleScore(id: 's2', gameId: 'g1', holeNumber: 1, playerId: 'b', strokes: 5),
-        HoleScore(id: 's3', gameId: 'g1', holeNumber: 1, playerId: 'c', strokes: 5),
-        HoleScore(id: 's4', gameId: 'g1', holeNumber: 1, playerId: 'd', strokes: 6),
-        HoleScore(id: 's5', gameId: 'g1', holeNumber: 1, playerId: 'e', strokes: 4),
-        HoleScore(id: 's6', gameId: 'g1', holeNumber: 1, playerId: 'f', strokes: 6),
+        HoleScore(
+            id: 's1', gameId: 'g1', holeNumber: 1, playerId: 'a', strokes: 4),
+        HoleScore(
+            id: 's2', gameId: 'g1', holeNumber: 1, playerId: 'b', strokes: 5),
+        HoleScore(
+            id: 's3', gameId: 'g1', holeNumber: 1, playerId: 'c', strokes: 5),
+        HoleScore(
+            id: 's4', gameId: 'g1', holeNumber: 1, playerId: 'd', strokes: 6),
+        HoleScore(
+            id: 's5', gameId: 'g1', holeNumber: 1, playerId: 'e', strokes: 4),
+        HoleScore(
+            id: 's6', gameId: 'g1', holeNumber: 1, playerId: 'f', strokes: 6),
       ];
 
       const hole1 = HoleConfig(
-        id: 'h1', gameId: 'g1', holeNumber: 1, par: 4,
-        isTurbo: false, isBirdieBonus: false,
+        id: 'h1',
+        gameId: 'g1',
+        holeNumber: 1,
+        par: 4,
+        isTurbo: false,
+        isBirdieBonus: false,
       );
 
       final result = calculator.compute(
@@ -432,7 +442,9 @@ void main() {
     // Best One: Y=2 wins (birdie vs par 3) → perLoser=20×2×2=80, 3 losers → 240
     // Best Two: Y=2 wins (birdie) → another 240
     // Each X player pays 80+80=160 total
-    test('3v3 scenario hole 9: turbo+birdie best one and two both won by team Y', () {
+    test(
+        '3v3 scenario hole 9: turbo+birdie best one and two both won by team Y',
+        () {
       const teams = [
         Team(id: 'x', gameId: 'g1', name: 'Team X', order: 0),
         Team(id: 'y', gameId: 'g1', name: 'Team Y', order: 1),
@@ -448,17 +460,27 @@ void main() {
       ];
 
       const scores = [
-        HoleScore(id: 's1', gameId: 'g1', holeNumber: 9, playerId: 'a', strokes: 3),
-        HoleScore(id: 's2', gameId: 'g1', holeNumber: 9, playerId: 'b', strokes: 3),
-        HoleScore(id: 's3', gameId: 'g1', holeNumber: 9, playerId: 'c', strokes: 5),
-        HoleScore(id: 's4', gameId: 'g1', holeNumber: 9, playerId: 'd', strokes: 2),
-        HoleScore(id: 's5', gameId: 'g1', holeNumber: 9, playerId: 'e', strokes: 2),
-        HoleScore(id: 's6', gameId: 'g1', holeNumber: 9, playerId: 'f', strokes: 7),
+        HoleScore(
+            id: 's1', gameId: 'g1', holeNumber: 9, playerId: 'a', strokes: 3),
+        HoleScore(
+            id: 's2', gameId: 'g1', holeNumber: 9, playerId: 'b', strokes: 3),
+        HoleScore(
+            id: 's3', gameId: 'g1', holeNumber: 9, playerId: 'c', strokes: 5),
+        HoleScore(
+            id: 's4', gameId: 'g1', holeNumber: 9, playerId: 'd', strokes: 2),
+        HoleScore(
+            id: 's5', gameId: 'g1', holeNumber: 9, playerId: 'e', strokes: 2),
+        HoleScore(
+            id: 's6', gameId: 'g1', holeNumber: 9, playerId: 'f', strokes: 7),
       ];
 
       const hole9 = HoleConfig(
-        id: 'h9', gameId: 'g1', holeNumber: 9, par: 3,
-        isTurbo: true, isBirdieBonus: true,
+        id: 'h9',
+        gameId: 'g1',
+        holeNumber: 9,
+        par: 3,
+        isTurbo: true,
+        isBirdieBonus: true,
       );
 
       final result = calculator.compute(
@@ -473,12 +495,14 @@ void main() {
       // Y second=2 < X second=3, same multipliers → perLoser=80
       expect(result.teamMovements.length, 2);
 
-      final bestOneMove = result.teamMovements.firstWhere((m) => m.rule == 'best_one');
+      final bestOneMove =
+          result.teamMovements.firstWhere((m) => m.rule == 'best_one');
       expect(bestOneMove.fromTeamId, 'x');
       expect(bestOneMove.toTeamId, 'y');
       expect(bestOneMove.amount, 240); // 80 × 3
 
-      final bestTwoMove = result.teamMovements.firstWhere((m) => m.rule == 'best_two');
+      final bestTwoMove =
+          result.teamMovements.firstWhere((m) => m.rule == 'best_two');
       expect(bestTwoMove.fromTeamId, 'x');
       expect(bestTwoMove.toTeamId, 'y');
       expect(bestTwoMove.amount, 240); // 80 × 3

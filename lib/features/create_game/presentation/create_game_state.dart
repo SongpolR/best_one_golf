@@ -103,21 +103,19 @@ class CreateGameState {
 
   factory CreateGameState.fromAggregate(GameAggregate aggregate) {
     final teamIdToIndex = {
-      for (var i = 0; i < aggregate.teams.length; i++)
-        aggregate.teams[i].id: i,
+      for (var i = 0; i < aggregate.teams.length; i++) aggregate.teams[i].id: i,
     };
 
-    final players = (aggregate.players.toList()
-          ..sort((a, b) => a.order.compareTo(b.order)))
-        .map(
-          (p) => PlayerDraft(
-            name: p.name,
-            order: p.order,
-            teamIndex:
-                p.teamId != null ? teamIdToIndex[p.teamId!] : null,
-          ),
-        )
-        .toList();
+    final players =
+        (aggregate.players.toList()..sort((a, b) => a.order.compareTo(b.order)))
+            .map(
+              (p) => PlayerDraft(
+                name: p.name,
+                order: p.order,
+                teamIndex: p.teamId != null ? teamIdToIndex[p.teamId!] : null,
+              ),
+            )
+            .toList();
 
     final teams = (aggregate.teams.toList()
           ..sort((a, b) => a.order.compareTo(b.order)))

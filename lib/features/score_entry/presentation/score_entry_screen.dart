@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../core/enums/hole_state.dart';
 import '../../../domain/entities/game_aggregate.dart';
 import '../../../l10n/app_localizations.dart';
@@ -31,7 +32,9 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
     _initialHoleSet = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        ref.read(scoreEntryControllerProvider).jumpToFirstIncompleteHole(aggregate);
+        ref
+            .read(scoreEntryControllerProvider)
+            .jumpToFirstIncompleteHole(aggregate);
       }
     });
   }
@@ -110,209 +113,218 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
               }
             },
             child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Text(
-                      aggregate.game.title,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${l10n.holeProgress(selectedHole, aggregate.game.totalHoles)}  •  ${l10n.par} ${holeConfig.par}',
-                      key: const Key('scoreEntryHoleLabel'),
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children:
-                          List.generate(aggregate.game.totalHoles, (index) {
-                        final holeNumber = index + 1;
-                        final holeState = controller.getHoleState(
-                          aggregate: aggregate,
-                          holeNumber: holeNumber,
-                        );
-
-                        Color? color;
-                        switch (holeState) {
-                          case HoleState.empty:
-                            color = Colors.grey.shade300;
-                            break;
-                          case HoleState.partial:
-                            color = Colors.orange.shade300;
-                            break;
-                          case HoleState.complete:
-                            color = Colors.green.shade300;
-                            break;
-                        }
-
-                        final isSelected = holeNumber == selectedHole;
-
-                        return InkWell(
-                          onTap: () => controller.jumpToHole(holeNumber),
-                          child: Container(
-                            width: 36,
-                            height: 36,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: color,
-                              borderRadius: BorderRadius.circular(18),
-                              border: isSelected
-                                  ? Border.all(
-                                      color: Colors.black,
-                                      width: 2,
-                                    )
-                                  : null,
-                            ),
-                            child: Text('$holeNumber'),
-                          ),
-                        );
-                      }),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1),
-              Expanded(
-                child: ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: aggregate.players.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final player = aggregate.players[index];
-                    final value = currentHoleScores[player.id];
-
-                    return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              player.name,
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            if (player.teamId != null) ...[
-                              const SizedBox(height: 4),
-                              Text(
-                                '${l10n.team}: ${teamNameById[player.teamId] ?? player.teamId}',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ],
-                            const SizedBox(height: 12),
-                            NumberStepper(
-                              key: Key(
-                                  'scoreField_${selectedHole}_${player.id}'),
-                              value: value,
-                              min: 1,
-                              max: 12,
-                              label: l10n.score,
-                              nullable: true,
-                              incrementKey: Key(
-                                  'scoreField_${selectedHole}_${player.id}_increment'),
-                              decrementKey: Key(
-                                  'scoreField_${selectedHole}_${player.id}_decrement'),
-                              onChanged: (v) {
-                                controller.updateScoreInt(
-                                  gameId: gameId,
-                                  holeNumber: selectedHole,
-                                  playerId: player.id,
-                                  strokes: v,
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              SafeArea(
-                top: false,
-                child: Padding(
+              children: [
+                Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              key: const Key('openHoleResultButton'),
-                              onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  useSafeArea: true,
-                                  builder: (_) {
-                                    return HoleResultSheet(
-                                      gameId: gameId,
-                                      holeNumber: selectedHole,
-                                    );
-                                  },
-                                );
-                              },
-                              child: Text(l10n.holeResult),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: OutlinedButton(
-                              key: const Key('openGameSummaryButton'),
-                              onPressed: () {
-                                context.push('/game-summary/$gameId');
-                              },
-                              child: Text(l10n.gameSummary),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        aggregate.game.title,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${l10n.holeProgress(selectedHole, aggregate.game.totalHoles)}  •  ${l10n.par} ${holeConfig.par}',
+                        key: const Key('scoreEntryHoleLabel'),
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              key: const Key('prevHoleButton'),
-                              onPressed: selectedHole > 1
-                                  ? controller.previousHole
-                                  : null,
-                              child: Text(l10n.prev),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children:
+                            List.generate(aggregate.game.totalHoles, (index) {
+                          final holeNumber = index + 1;
+                          final holeState = controller.getHoleState(
+                            aggregate: aggregate,
+                            holeNumber: holeNumber,
+                          );
+
+                          final cs = Theme.of(context).colorScheme;
+                          final Color bg;
+                          final Color fg;
+                          switch (holeState) {
+                            case HoleState.empty:
+                              bg = cs.outlineVariant;
+                              fg = cs.onSurfaceVariant;
+                            case HoleState.partial:
+                              bg = AppColors.yellow;
+                              fg = AppColors.wolf;
+                            case HoleState.complete:
+                              bg = AppColors.green;
+                              fg = Colors.white;
+                          }
+
+                          final isSelected = holeNumber == selectedHole;
+
+                          return InkWell(
+                            onTap: () => controller.jumpToHole(holeNumber),
+                            child: Container(
+                              width: 36,
+                              height: 36,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: bg,
+                                borderRadius: BorderRadius.circular(18),
+                                border: isSelected
+                                    ? Border.all(
+                                        color: AppColors.blue,
+                                        width: 2.5,
+                                      )
+                                    : null,
+                              ),
+                              child: Text(
+                                '$holeNumber',
+                                style: TextStyle(
+                                  color: fg,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                ),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: FilledButton(
-                              key: const Key('nextHoleButton'),
-                              onPressed:
-                                  selectedHole < aggregate.game.totalHoles
-                                      ? () => controller.nextHole(aggregate)
-                                      : null,
-                              child: Text(l10n.next),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton(
-                          key: const Key('finishGameButton'),
-                          onPressed: aggregate.game.status == 'completed'
-                              ? null
-                              : () => _finishGame(gameId),
-                          child: Text(l10n.finishGame),
-                        ),
+                          );
+                        }),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
-          ),
+                const Divider(height: 1),
+                Expanded(
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: aggregate.players.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final player = aggregate.players[index];
+                      final value = currentHoleScores[player.id];
+
+                      return Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                player.name,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              if (player.teamId != null) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${l10n.team}: ${teamNameById[player.teamId] ?? player.teamId}',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                              const SizedBox(height: 12),
+                              NumberStepper(
+                                key: Key(
+                                    'scoreField_${selectedHole}_${player.id}'),
+                                value: value,
+                                min: 1,
+                                max: 12,
+                                label: l10n.score,
+                                nullable: true,
+                                incrementKey: Key(
+                                    'scoreField_${selectedHole}_${player.id}_increment'),
+                                decrementKey: Key(
+                                    'scoreField_${selectedHole}_${player.id}_decrement'),
+                                onChanged: (v) {
+                                  controller.updateScoreInt(
+                                    gameId: gameId,
+                                    holeNumber: selectedHole,
+                                    playerId: player.id,
+                                    strokes: v,
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                key: const Key('openHoleResultButton'),
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    useSafeArea: true,
+                                    builder: (_) {
+                                      return HoleResultSheet(
+                                        gameId: gameId,
+                                        holeNumber: selectedHole,
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Text(l10n.holeResult),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: OutlinedButton(
+                                key: const Key('openGameSummaryButton'),
+                                onPressed: () {
+                                  context.push('/game-summary/$gameId');
+                                },
+                                child: Text(l10n.gameSummary),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                key: const Key('prevHoleButton'),
+                                onPressed: selectedHole > 1
+                                    ? controller.previousHole
+                                    : null,
+                                child: Text(l10n.prev),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FilledButton(
+                                key: const Key('nextHoleButton'),
+                                onPressed:
+                                    selectedHole < aggregate.game.totalHoles
+                                        ? () => controller.nextHole(aggregate)
+                                        : null,
+                                child: Text(l10n.next),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton(
+                            key: const Key('finishGameButton'),
+                            onPressed: aggregate.game.status == 'completed'
+                                ? null
+                                : () => _finishGame(gameId),
+                            child: Text(l10n.finishGame),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

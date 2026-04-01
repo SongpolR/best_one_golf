@@ -5,12 +5,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
+flutter clean            # Delete build cache
+flutter pub get          # Fetch all the dependencies
+dart run build_runner build         # Regenerate Drift DB + localization code
+dart run build_runner build --delete-conflicting-outputs  # Force regenerate
+dart format .            # Format code
 flutter analyze          # Static analysis
 flutter test             # Run all tests
 flutter test test/path/to/test_file.dart   # Run a single test file
 flutter run              # Run on connected device/emulator
-flutter pub run build_runner build         # Regenerate Drift DB + localization code
-flutter pub run build_runner build --delete-conflicting-outputs  # Force regenerate
 ```
 
 > After modifying any Drift table definitions or adding `.g.dart`-backed files, run `build_runner build`.

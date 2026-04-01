@@ -3,7 +3,8 @@ import '../../../fakes/fake_game_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('DuplicateGameUseCase duplicates game and returns new game id', () async {
+  test('DuplicateGameUseCase duplicates game and returns new game id',
+      () async {
     final repository = FakeGameRepository();
     final useCase = DuplicateGameUseCase(repository);
 

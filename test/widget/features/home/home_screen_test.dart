@@ -1,6 +1,7 @@
 import 'package:best_one_golf/app/app.dart';
 import 'package:best_one_golf/core/enums/app_currency.dart';
 import 'package:best_one_golf/core/enums/app_language.dart';
+import 'package:best_one_golf/core/enums/app_theme_mode.dart';
 import 'package:best_one_golf/domain/entities/app_settings.dart';
 import 'package:best_one_golf/domain/entities/game_list_item.dart';
 import 'package:best_one_golf/features/home/presentation/home_screen.dart';
@@ -20,11 +21,15 @@ Widget buildHomeTestApp({
     overrides: [
       appSettingsProvider.overrideWith(
         (ref) => Stream.value(
-          const AppSettings(language: AppLanguage.en, currency: AppCurrency.usd),
+          const AppSettings(
+              language: AppLanguage.en,
+              currency: AppCurrency.usd,
+              themeMode: AppThemeMode.system),
         ),
       ),
       ongoingGamesProvider.overrideWith((ref) => Stream.value(ongoingGames)),
-      completedGamesProvider.overrideWith((ref) => Stream.value(completedGames)),
+      completedGamesProvider
+          .overrideWith((ref) => Stream.value(completedGames)),
     ],
     child: const MaterialApp(
       localizationsDelegates: [

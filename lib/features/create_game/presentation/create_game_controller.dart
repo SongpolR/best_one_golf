@@ -88,6 +88,8 @@ class CreateGameController extends AutoDisposeNotifier<CreateGameState> {
   }
 
   void addTeam() {
+    if (state.teams.length >= 6) return;
+
     final updatedTeams = [...state.teams];
     final name = 'Team ${String.fromCharCode(65 + updatedTeams.length)}';
 
@@ -99,6 +101,32 @@ class CreateGameController extends AutoDisposeNotifier<CreateGameState> {
     );
 
     state = state.copyWith(teams: updatedTeams, errorMessage: null);
+  }
+
+  void removeTeam(int index) {
+    if (state.teams.length <= 2) return;
+
+    final updatedTeams = [...state.teams]..removeAt(index);
+
+    // Renormalize team orders.
+    final normalizedTeams = <TeamDraft>[];
+    for (var i = 0; i < updatedTeams.length; i++) {
+      normalizedTeams.add(updatedTeams[i].copyWith(order: i));
+    }
+
+    // Reassign players: removed team → 0, shift higher indices down.
+    final updatedPlayers = state.players.map((p) {
+      if (p.teamIndex == null) return p;
+      if (p.teamIndex == index) return p.copyWith(teamIndex: 0);
+      if (p.teamIndex! > index) return p.copyWith(teamIndex: p.teamIndex! - 1);
+      return p;
+    }).toList();
+
+    state = state.copyWith(
+      teams: normalizedTeams,
+      players: updatedPlayers,
+      errorMessage: null,
+    );
   }
 
   void updateTeamName(int index, String name) {
