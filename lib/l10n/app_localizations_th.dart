@@ -19,6 +19,18 @@ class AppLocalizationsTh extends AppLocalizations {
   String get currency => 'สกุลเงิน';
 
   @override
+  String get theme => 'ธีม';
+
+  @override
+  String get systemTheme => 'ระบบ';
+
+  @override
+  String get lightTheme => 'สว่าง';
+
+  @override
+  String get darkTheme => 'มืด';
+
+  @override
   String get english => 'English';
 
   @override

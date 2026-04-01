@@ -89,8 +89,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: '/',
-        pageBuilder: (context, state) =>
-            _fadePage(state, const HomeScreen()),
+        pageBuilder: (context, state) => _fadePage(state, const HomeScreen()),
       ),
       GoRoute(
         path: '/settings',

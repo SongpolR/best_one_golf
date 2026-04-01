@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../core/enums/game_mode.dart';
 import '../../../core/enums/hole_state.dart';
 import '../../../core/utils/currency_formatter.dart';
@@ -113,7 +114,8 @@ class GameSummaryScreen extends ConsumerWidget {
                               child: ListTile(
                                 title: Text(
                                   l10n.pays(
-                                    playerNameById[entry.fromId] ?? entry.fromId,
+                                    playerNameById[entry.fromId] ??
+                                        entry.fromId,
                                     playerNameById[entry.toId] ?? entry.toId,
                                   ),
                                 ),
@@ -149,17 +151,20 @@ class GameSummaryScreen extends ConsumerWidget {
                                 holeNumber: holeNumber,
                               );
 
-                          Color? color;
+                          final Color bg;
+                          final Color fg;
                           switch (state) {
                             case HoleState.empty:
-                              color = Colors.grey.shade300;
-                              break;
+                              bg = Theme.of(context).colorScheme.outlineVariant;
+                              fg = Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant;
                             case HoleState.partial:
-                              color = Colors.orange.shade300;
-                              break;
+                              bg = AppColors.yellow;
+                              fg = AppColors.wolf;
                             case HoleState.complete:
-                              color = Colors.green.shade300;
-                              break;
+                              bg = AppColors.green;
+                              fg = Colors.white;
                           }
 
                           return InkWell(
@@ -182,10 +187,17 @@ class GameSummaryScreen extends ConsumerWidget {
                               height: 44,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: color,
+                                color: bg,
                                 borderRadius: BorderRadius.circular(22),
                               ),
-                              child: Text('$holeNumber'),
+                              child: Text(
+                                '$holeNumber',
+                                style: TextStyle(
+                                  color: fg,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
+                              ),
                             ),
                           );
                         }),

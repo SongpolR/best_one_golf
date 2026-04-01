@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../core/enums/app_theme_mode.dart';
 import '../data/local/app_database.dart';
 import '../domain/entities/app_settings.dart';
 import '../domain/entities/game_list_item.dart';
@@ -144,10 +145,18 @@ class BestOneGolfApp extends ConsumerWidget {
 
     return settingsAsync.when(
       data: (settings) {
+        final themeMode = switch (settings.themeMode) {
+          AppThemeMode.light => ThemeMode.light,
+          AppThemeMode.dark => ThemeMode.dark,
+          AppThemeMode.system => ThemeMode.system,
+        };
+
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,
           title: 'BestOneGolf',
           theme: AppTheme.light(),
+          darkTheme: AppTheme.dark(),
+          themeMode: themeMode,
           routerConfig: router,
           locale: Locale(settings.language.code),
           supportedLocales: AppLocalizations.supportedLocales,

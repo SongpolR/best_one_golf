@@ -244,7 +244,7 @@ class _SheetFrame extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey.shade400,
+              color: Theme.of(context).colorScheme.outline,
               borderRadius: BorderRadius.circular(999),
             ),
           ),

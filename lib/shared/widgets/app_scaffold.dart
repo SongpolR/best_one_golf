@@ -26,7 +26,7 @@ class AppScaffold extends StatelessWidget {
           preferredSize: const Size.fromHeight(1),
           child: Divider(
             height: 1,
-            color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.outlineVariant,
           ),
         ),
       ),

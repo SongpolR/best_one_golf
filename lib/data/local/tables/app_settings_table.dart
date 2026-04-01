@@ -4,6 +4,8 @@ class AppSettingsTable extends Table {
   IntColumn get id => integer().withDefault(const Constant(1))();
   TextColumn get languageCode => text().withDefault(const Constant('en'))();
   TextColumn get currencyCode => text().withDefault(const Constant('USD'))();
+  TextColumn get themeModeCode =>
+      text().withDefault(const Constant('system'))();
 
   @override
   Set<Column> get primaryKey => {id};

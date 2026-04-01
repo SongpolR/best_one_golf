@@ -2,6 +2,7 @@ import 'package:best_one_golf/app/app.dart';
 import 'package:best_one_golf/app/router.dart';
 import 'package:best_one_golf/core/enums/app_currency.dart';
 import 'package:best_one_golf/core/enums/app_language.dart';
+import 'package:best_one_golf/core/enums/app_theme_mode.dart';
 import 'package:best_one_golf/domain/entities/app_settings.dart';
 import 'package:best_one_golf/features/score_entry/presentation/score_entry_screen.dart';
 import 'package:best_one_golf/l10n/app_localizations.dart';
@@ -34,6 +35,7 @@ void main() {
             const AppSettings(
               language: AppLanguage.en,
               currency: AppCurrency.usd,
+              themeMode: AppThemeMode.system,
             ),
           ),
         ),

@@ -1,5 +1,6 @@
 import 'package:best_one_golf/core/enums/app_currency.dart';
 import 'package:best_one_golf/core/enums/app_language.dart';
+import 'package:best_one_golf/core/enums/app_theme_mode.dart';
 import 'package:best_one_golf/domain/entities/app_settings.dart';
 import 'package:best_one_golf/features/settings/presentation/settings_screen.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +15,7 @@ void main() {
       initialSettings: const AppSettings(
         language: AppLanguage.en,
         currency: AppCurrency.usd,
+        themeMode: AppThemeMode.system,
       ),
     );
 
@@ -40,6 +42,7 @@ void main() {
       initialSettings: const AppSettings(
         language: AppLanguage.en,
         currency: AppCurrency.usd,
+        themeMode: AppThemeMode.system,
       ),
     );
 

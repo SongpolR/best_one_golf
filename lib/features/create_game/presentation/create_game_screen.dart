@@ -282,12 +282,27 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: TextField(
-                  controller: _teamControllers[team.order],
-                  decoration: InputDecoration(
-                    labelText: l10n.teamN(index + 1),
-                  ),
-                  onChanged: (value) => controller.updateTeamName(index, value),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _teamControllers[team.order],
+                        decoration: InputDecoration(
+                          labelText: l10n.teamN(index + 1),
+                        ),
+                        onChanged: (value) =>
+                            controller.updateTeamName(index, value),
+                      ),
+                    ),
+                    if (state.teams.length > 2) ...[
+                      const SizedBox(width: 8),
+                      IconButton(
+                        onPressed: () => controller.removeTeam(index),
+                        icon: const Icon(Icons.remove_circle_outline),
+                      ),
+                    ],
+                  ],
                 ),
               );
             }),
@@ -295,7 +310,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
               alignment: Alignment.centerLeft,
               child: OutlinedButton.icon(
                 key: const Key('addTeamButton'),
-                onPressed: controller.addTeam,
+                onPressed: state.teams.length < 6 ? controller.addTeam : null,
                 icon: const Icon(Icons.group_add),
                 label: Text(l10n.addTeam),
               ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../core/enums/game_mode.dart';
 import '../../../domain/entities/game_list_item.dart';
 import '../../../l10n/app_localizations.dart';
@@ -192,6 +193,7 @@ class _GameCard extends ConsumerWidget {
                   child: Text(l10n.duplicate),
                 ),
                 OutlinedButton(
+                  style: DestructiveButton.outlined(context),
                   onPressed: () async {
                     final confirmed = await _showDeleteDialog(context);
                     if (confirmed != true) return;
@@ -223,6 +225,7 @@ class _GameCard extends ConsumerWidget {
               child: Text(l10n.cancel),
             ),
             FilledButton(
+              style: DestructiveButton.filled(context),
               onPressed: () => Navigator.of(context).pop(true),
               child: Text(l10n.delete),
             ),
@@ -254,5 +257,4 @@ class _GameCard extends ConsumerWidget {
       },
     );
   }
-
 }
