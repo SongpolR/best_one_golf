@@ -2,15 +2,19 @@ import 'package:best_one_golf/app/app.dart';
 import 'package:best_one_golf/domain/entities/app_settings.dart';
 import 'package:best_one_golf/domain/repositories/app_settings_repository.dart';
 import 'package:best_one_golf/l10n/app_localizations.dart';
+import 'package:best_one_golf/services/iap_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../fakes/fake_iap_service.dart';
+
 Widget pumpTestApp({
   required Widget child,
   AppSettingsRepository? repository,
   AppSettings? settings,
+  IapService? iapService,
 }) {
   return ProviderScope(
     overrides: [
@@ -18,6 +22,7 @@ Widget pumpTestApp({
         appSettingsRepositoryProvider.overrideWithValue(repository),
       if (settings != null)
         appSettingsProvider.overrideWith((ref) => Stream.value(settings)),
+      iapServiceProvider.overrideWithValue(iapService ?? FakeIapService()),
     ],
     child: Consumer(
       builder: (context, ref, _) {

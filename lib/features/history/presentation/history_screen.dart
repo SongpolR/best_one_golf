@@ -7,6 +7,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../core/enums/game_mode.dart';
 import '../../../domain/entities/game_list_item.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/widgets/ad_countdown_dialog.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 import '../../score_entry/presentation/score_entry_controller.dart';
 
@@ -185,7 +186,19 @@ class _GameCard extends ConsumerWidget {
                     final aggregate = await ref.read(
                       gameAggregateProvider(game.id).future,
                     );
+                    if (!context.mounted) return;
 
+                    final settings = ref.read(appSettingsProvider).valueOrNull;
+                    if (settings?.adsRemoved == true) {
+                      context.push('/create-game', extra: aggregate);
+                      return;
+                    }
+
+                    final adService = ref.read(adServiceProvider);
+                    final shown = await adService.show();
+                    if (!shown && context.mounted) {
+                      await showAdCountdownDialog(context);
+                    }
                     if (context.mounted) {
                       context.push('/create-game', extra: aggregate);
                     }

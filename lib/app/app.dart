@@ -26,6 +26,8 @@ import '../domain/usecases/recalculate_game.dart';
 import '../domain/usecases/load_game_summary.dart';
 import '../domain/usecases/load_hole_result.dart';
 import '../l10n/app_localizations.dart';
+import '../services/ad_service.dart';
+import '../services/iap_service.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
 
@@ -40,6 +42,21 @@ final appSettingsRepositoryProvider = Provider<AppSettingsRepository>((ref) {
 
 final appSettingsProvider = StreamProvider<AppSettings>((ref) {
   return ref.watch(appSettingsRepositoryProvider).watchSettings();
+});
+
+final adServiceProvider = Provider<AdService>((ref) {
+  final service = AdService();
+  service.preload();
+  ref.onDispose(service.dispose);
+  return service;
+});
+
+final iapServiceProvider = Provider<IapService>((ref) {
+  final repository = ref.watch(appSettingsRepositoryProvider);
+  final service = IapService(repository);
+  service.initialize();
+  ref.onDispose(service.dispose);
+  return service;
 });
 
 final uuidProvider = Provider<Uuid>((ref) {

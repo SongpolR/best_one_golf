@@ -6,6 +6,7 @@ import '../../../app/app.dart';
 import '../../../core/enums/game_mode.dart';
 import '../../../domain/entities/game_list_item.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/widgets/ad_countdown_dialog.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -43,7 +44,20 @@ class HomeScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         children: [
           FilledButton.icon(
-            onPressed: () => context.push('/create-game'),
+            onPressed: () async {
+              final settings = ref.read(appSettingsProvider).valueOrNull;
+              if (settings?.adsRemoved == true) {
+                context.push('/create-game');
+                return;
+              }
+
+              final adService = ref.read(adServiceProvider);
+              final shown = await adService.show();
+              if (!shown && context.mounted) {
+                await showAdCountdownDialog(context);
+              }
+              if (context.mounted) context.push('/create-game');
+            },
             icon: const Icon(Icons.add),
             label: Text(l10n.newGame),
           ),

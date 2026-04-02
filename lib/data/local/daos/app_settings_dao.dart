@@ -28,6 +28,7 @@ class AppSettingsDao extends DatabaseAccessor<AppDatabase>
         languageCode: Value('en'),
         currencyCode: Value('USD'),
         themeModeCode: Value('system'),
+        adsRemoved: Value(false),
       ),
     );
   }
@@ -52,6 +53,14 @@ class AppSettingsDao extends DatabaseAccessor<AppDatabase>
     return (update(appSettingsTable)..where((tbl) => tbl.id.equals(1))).write(
       AppSettingsTableCompanion(
         themeModeCode: Value(code),
+      ),
+    );
+  }
+
+  Future<void> updateAdsRemoved(bool removed) {
+    return (update(appSettingsTable)..where((tbl) => tbl.id.equals(1))).write(
+      AppSettingsTableCompanion(
+        adsRemoved: Value(removed),
       ),
     );
   }

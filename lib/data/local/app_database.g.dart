@@ -40,9 +40,19 @@ class $AppSettingsTableTable extends AppSettingsTable
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('system'));
+  static const VerificationMeta _adsRemovedMeta =
+      const VerificationMeta('adsRemoved');
+  @override
+  late final GeneratedColumn<bool> adsRemoved = GeneratedColumn<bool>(
+      'ads_removed', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("ads_removed" IN (0, 1))'),
+      defaultValue: const Constant(false));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, languageCode, currencyCode, themeModeCode];
+      [id, languageCode, currencyCode, themeModeCode, adsRemoved];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -75,6 +85,12 @@ class $AppSettingsTableTable extends AppSettingsTable
           themeModeCode.isAcceptableOrUnknown(
               data['theme_mode_code']!, _themeModeCodeMeta));
     }
+    if (data.containsKey('ads_removed')) {
+      context.handle(
+          _adsRemovedMeta,
+          adsRemoved.isAcceptableOrUnknown(
+              data['ads_removed']!, _adsRemovedMeta));
+    }
     return context;
   }
 
@@ -92,6 +108,8 @@ class $AppSettingsTableTable extends AppSettingsTable
           .read(DriftSqlType.string, data['${effectivePrefix}currency_code'])!,
       themeModeCode: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}theme_mode_code'])!,
+      adsRemoved: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}ads_removed'])!,
     );
   }
 
@@ -107,11 +125,13 @@ class AppSettingsTableData extends DataClass
   final String languageCode;
   final String currencyCode;
   final String themeModeCode;
+  final bool adsRemoved;
   const AppSettingsTableData(
       {required this.id,
       required this.languageCode,
       required this.currencyCode,
-      required this.themeModeCode});
+      required this.themeModeCode,
+      required this.adsRemoved});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -119,6 +139,7 @@ class AppSettingsTableData extends DataClass
     map['language_code'] = Variable<String>(languageCode);
     map['currency_code'] = Variable<String>(currencyCode);
     map['theme_mode_code'] = Variable<String>(themeModeCode);
+    map['ads_removed'] = Variable<bool>(adsRemoved);
     return map;
   }
 
@@ -128,6 +149,7 @@ class AppSettingsTableData extends DataClass
       languageCode: Value(languageCode),
       currencyCode: Value(currencyCode),
       themeModeCode: Value(themeModeCode),
+      adsRemoved: Value(adsRemoved),
     );
   }
 
@@ -139,6 +161,7 @@ class AppSettingsTableData extends DataClass
       languageCode: serializer.fromJson<String>(json['languageCode']),
       currencyCode: serializer.fromJson<String>(json['currencyCode']),
       themeModeCode: serializer.fromJson<String>(json['themeModeCode']),
+      adsRemoved: serializer.fromJson<bool>(json['adsRemoved']),
     );
   }
   @override
@@ -149,6 +172,7 @@ class AppSettingsTableData extends DataClass
       'languageCode': serializer.toJson<String>(languageCode),
       'currencyCode': serializer.toJson<String>(currencyCode),
       'themeModeCode': serializer.toJson<String>(themeModeCode),
+      'adsRemoved': serializer.toJson<bool>(adsRemoved),
     };
   }
 
@@ -156,12 +180,14 @@ class AppSettingsTableData extends DataClass
           {int? id,
           String? languageCode,
           String? currencyCode,
-          String? themeModeCode}) =>
+          String? themeModeCode,
+          bool? adsRemoved}) =>
       AppSettingsTableData(
         id: id ?? this.id,
         languageCode: languageCode ?? this.languageCode,
         currencyCode: currencyCode ?? this.currencyCode,
         themeModeCode: themeModeCode ?? this.themeModeCode,
+        adsRemoved: adsRemoved ?? this.adsRemoved,
       );
   AppSettingsTableData copyWithCompanion(AppSettingsTableCompanion data) {
     return AppSettingsTableData(
@@ -175,6 +201,8 @@ class AppSettingsTableData extends DataClass
       themeModeCode: data.themeModeCode.present
           ? data.themeModeCode.value
           : this.themeModeCode,
+      adsRemoved:
+          data.adsRemoved.present ? data.adsRemoved.value : this.adsRemoved,
     );
   }
 
@@ -184,14 +212,15 @@ class AppSettingsTableData extends DataClass
           ..write('id: $id, ')
           ..write('languageCode: $languageCode, ')
           ..write('currencyCode: $currencyCode, ')
-          ..write('themeModeCode: $themeModeCode')
+          ..write('themeModeCode: $themeModeCode, ')
+          ..write('adsRemoved: $adsRemoved')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(id, languageCode, currencyCode, themeModeCode);
+      Object.hash(id, languageCode, currencyCode, themeModeCode, adsRemoved);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -199,7 +228,8 @@ class AppSettingsTableData extends DataClass
           other.id == this.id &&
           other.languageCode == this.languageCode &&
           other.currencyCode == this.currencyCode &&
-          other.themeModeCode == this.themeModeCode);
+          other.themeModeCode == this.themeModeCode &&
+          other.adsRemoved == this.adsRemoved);
 }
 
 class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
@@ -207,29 +237,34 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
   final Value<String> languageCode;
   final Value<String> currencyCode;
   final Value<String> themeModeCode;
+  final Value<bool> adsRemoved;
   const AppSettingsTableCompanion({
     this.id = const Value.absent(),
     this.languageCode = const Value.absent(),
     this.currencyCode = const Value.absent(),
     this.themeModeCode = const Value.absent(),
+    this.adsRemoved = const Value.absent(),
   });
   AppSettingsTableCompanion.insert({
     this.id = const Value.absent(),
     this.languageCode = const Value.absent(),
     this.currencyCode = const Value.absent(),
     this.themeModeCode = const Value.absent(),
+    this.adsRemoved = const Value.absent(),
   });
   static Insertable<AppSettingsTableData> custom({
     Expression<int>? id,
     Expression<String>? languageCode,
     Expression<String>? currencyCode,
     Expression<String>? themeModeCode,
+    Expression<bool>? adsRemoved,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (languageCode != null) 'language_code': languageCode,
       if (currencyCode != null) 'currency_code': currencyCode,
       if (themeModeCode != null) 'theme_mode_code': themeModeCode,
+      if (adsRemoved != null) 'ads_removed': adsRemoved,
     });
   }
 
@@ -237,12 +272,14 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
       {Value<int>? id,
       Value<String>? languageCode,
       Value<String>? currencyCode,
-      Value<String>? themeModeCode}) {
+      Value<String>? themeModeCode,
+      Value<bool>? adsRemoved}) {
     return AppSettingsTableCompanion(
       id: id ?? this.id,
       languageCode: languageCode ?? this.languageCode,
       currencyCode: currencyCode ?? this.currencyCode,
       themeModeCode: themeModeCode ?? this.themeModeCode,
+      adsRemoved: adsRemoved ?? this.adsRemoved,
     );
   }
 
@@ -261,6 +298,9 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
     if (themeModeCode.present) {
       map['theme_mode_code'] = Variable<String>(themeModeCode.value);
     }
+    if (adsRemoved.present) {
+      map['ads_removed'] = Variable<bool>(adsRemoved.value);
+    }
     return map;
   }
 
@@ -270,7 +310,8 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsTableData> {
           ..write('id: $id, ')
           ..write('languageCode: $languageCode, ')
           ..write('currencyCode: $currencyCode, ')
-          ..write('themeModeCode: $themeModeCode')
+          ..write('themeModeCode: $themeModeCode, ')
+          ..write('adsRemoved: $adsRemoved')
           ..write(')'))
         .toString();
   }
@@ -2906,6 +2947,7 @@ typedef $$AppSettingsTableTableCreateCompanionBuilder
   Value<String> languageCode,
   Value<String> currencyCode,
   Value<String> themeModeCode,
+  Value<bool> adsRemoved,
 });
 typedef $$AppSettingsTableTableUpdateCompanionBuilder
     = AppSettingsTableCompanion Function({
@@ -2913,6 +2955,7 @@ typedef $$AppSettingsTableTableUpdateCompanionBuilder
   Value<String> languageCode,
   Value<String> currencyCode,
   Value<String> themeModeCode,
+  Value<bool> adsRemoved,
 });
 
 class $$AppSettingsTableTableFilterComposer
@@ -2935,6 +2978,9 @@ class $$AppSettingsTableTableFilterComposer
 
   ColumnFilters<String> get themeModeCode => $composableBuilder(
       column: $table.themeModeCode, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get adsRemoved => $composableBuilder(
+      column: $table.adsRemoved, builder: (column) => ColumnFilters(column));
 }
 
 class $$AppSettingsTableTableOrderingComposer
@@ -2960,6 +3006,9 @@ class $$AppSettingsTableTableOrderingComposer
   ColumnOrderings<String> get themeModeCode => $composableBuilder(
       column: $table.themeModeCode,
       builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get adsRemoved => $composableBuilder(
+      column: $table.adsRemoved, builder: (column) => ColumnOrderings(column));
 }
 
 class $$AppSettingsTableTableAnnotationComposer
@@ -2982,6 +3031,9 @@ class $$AppSettingsTableTableAnnotationComposer
 
   GeneratedColumn<String> get themeModeCode => $composableBuilder(
       column: $table.themeModeCode, builder: (column) => column);
+
+  GeneratedColumn<bool> get adsRemoved => $composableBuilder(
+      column: $table.adsRemoved, builder: (column) => column);
 }
 
 class $$AppSettingsTableTableTableManager extends RootTableManager<
@@ -3016,24 +3068,28 @@ class $$AppSettingsTableTableTableManager extends RootTableManager<
             Value<String> languageCode = const Value.absent(),
             Value<String> currencyCode = const Value.absent(),
             Value<String> themeModeCode = const Value.absent(),
+            Value<bool> adsRemoved = const Value.absent(),
           }) =>
               AppSettingsTableCompanion(
             id: id,
             languageCode: languageCode,
             currencyCode: currencyCode,
             themeModeCode: themeModeCode,
+            adsRemoved: adsRemoved,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> languageCode = const Value.absent(),
             Value<String> currencyCode = const Value.absent(),
             Value<String> themeModeCode = const Value.absent(),
+            Value<bool> adsRemoved = const Value.absent(),
           }) =>
               AppSettingsTableCompanion.insert(
             id: id,
             languageCode: languageCode,
             currencyCode: currencyCode,
             themeModeCode: themeModeCode,
+            adsRemoved: adsRemoved,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

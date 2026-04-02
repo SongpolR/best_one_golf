@@ -9,4 +9,5 @@ abstract class AppSettingsRepository {
   Future<void> updateLanguage(AppLanguage language);
   Future<void> updateCurrency(AppCurrency currency);
   Future<void> updateThemeMode(AppThemeMode mode);
+  Future<void> updateAdsRemoved(bool removed);
 }

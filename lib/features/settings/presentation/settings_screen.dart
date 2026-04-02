@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../core/enums/app_currency.dart';
 import '../../../core/enums/app_language.dart';
 import '../../../core/enums/app_theme_mode.dart';
@@ -15,6 +16,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(appSettingsProvider);
     final repository = ref.watch(appSettingsRepositoryProvider);
+    final iapService = ref.watch(iapServiceProvider);
     final l10n = AppLocalizations.of(context)!;
 
     return AppScaffold(
@@ -24,6 +26,106 @@ class SettingsScreen extends ConsumerWidget {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              // ── Remove Ads ─────────────────────────────────────────────────
+              Text(
+                l10n.removeAds,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: settings.adsRemoved
+                      ? Row(
+                          children: [
+                            const Icon(
+                              Icons.check_circle,
+                              color: AppColors.green,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    l10n.removeAdsPurchased,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    l10n.removeAdsPurchasedDescription,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.removeAdsDescription,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: FilledButton(
+                                    onPressed: iapService.storeAvailable
+                                        ? () async {
+                                            final ok = await iapService
+                                                .purchaseRemoveAds();
+                                            if (!ok && context.mounted) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    l10n.storeNotAvailable,
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        : null,
+                                    child: Text(l10n.purchase),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                TextButton(
+                                  onPressed: iapService.storeAvailable
+                                      ? () => iapService.restorePurchases()
+                                      : null,
+                                  child: Text(l10n.restorePurchases),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
               // ── Theme ──────────────────────────────────────────────────────
               Text(
                 l10n.theme,

@@ -6,6 +6,7 @@ class AppSettingsTable extends Table {
   TextColumn get currencyCode => text().withDefault(const Constant('USD'))();
   TextColumn get themeModeCode =>
       text().withDefault(const Constant('system'))();
+  BoolColumn get adsRemoved => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};

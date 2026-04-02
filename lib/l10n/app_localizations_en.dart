@@ -274,25 +274,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteGame => 'Delete Game';
 
   @override
-  String get deleteGameConfirmation => 'Do you want to delete this game permanently?';
+  String get deleteGameConfirmation =>
+      'Do you want to delete this game permanently?';
 
   @override
   String get restartGame => 'Restart Game';
 
   @override
-  String get restartGameConfirmation => 'Do you want to create a new game using the same settings?';
+  String get restartGameConfirmation =>
+      'Do you want to create a new game using the same settings?';
 
   @override
   String get duplicateGame => 'Duplicate Game';
 
   @override
-  String get duplicateGameConfirmation => 'Do you want to create a copy of this game with the same settings?';
+  String get duplicateGameConfirmation =>
+      'Do you want to create a copy of this game with the same settings?';
 
   @override
   String get duplicate => 'Duplicate';
 
   @override
-  String get finishGameConfirmation => 'Do you want to mark this game as completed and go to the summary?';
+  String get finishGameConfirmation =>
+      'Do you want to mark this game as completed and go to the summary?';
 
   @override
   String playerN(int n) {
@@ -377,5 +381,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String failedToLoadGameData(Object error) {
     return 'Failed to load game data: $error';
+  }
+
+  @override
+  String get removeAds => 'Remove Ads';
+
+  @override
+  String get removeAdsPurchased => 'Ads Removed';
+
+  @override
+  String get removeAdsDescription =>
+      'Enjoy an ad-free experience with a one-time purchase.';
+
+  @override
+  String get removeAdsPurchasedDescription =>
+      'Thank you! You are enjoying an ad-free experience.';
+
+  @override
+  String get purchase => 'Purchase';
+
+  @override
+  String get restorePurchases => 'Restore Purchases';
+
+  @override
+  String get storeNotAvailable => 'Store not available';
+
+  @override
+  String get adNotAvailable => 'Ad could not be loaded';
+
+  @override
+  String adContinuingIn(int seconds) {
+    return 'Continuing in ${seconds}s...';
   }
 }
