@@ -27,6 +27,9 @@ class ScoreEntryScreen extends ConsumerStatefulWidget {
 class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
   bool _initialHoleSet = false;
 
+  /// +1 = swiping forward (next hole), -1 = swiping backward (previous hole).
+  int _slideDirection = 1;
+
   void _onInitialData(GameAggregate aggregate) {
     if (_initialHoleSet) return;
     _initialHoleSet = true;
@@ -80,6 +83,14 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
     final controller = ref.read(scoreEntryControllerProvider);
 
     final l10n = AppLocalizations.of(context)!;
+
+    ref.listen<int>(selectedHoleProvider, (prev, next) {
+      if (prev != null && next != prev) {
+        setState(() {
+          _slideDirection = next > prev ? 1 : -1;
+        });
+      }
+    });
 
     return aggregateAsync.when(
       data: (aggregate) {
@@ -190,58 +201,97 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                 ),
                 const Divider(height: 1),
                 Expanded(
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: aggregate.players.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final player = aggregate.players[index];
-                      final value = currentHoleScores[player.id];
-
-                      return Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                player.name,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              if (player.teamId != null) ...[
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${l10n.team}: ${teamNameById[player.teamId] ?? player.teamId}',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
-                              const SizedBox(height: 12),
-                              NumberStepper(
-                                key: Key(
-                                    'scoreField_${selectedHole}_${player.id}'),
-                                value: value,
-                                min: 1,
-                                max: 12,
-                                label: l10n.score,
-                                nullable: true,
-                                incrementKey: Key(
-                                    'scoreField_${selectedHole}_${player.id}_increment'),
-                                decrementKey: Key(
-                                    'scoreField_${selectedHole}_${player.id}_decrement'),
-                                onChanged: (v) {
-                                  controller.updateScoreInt(
-                                    gameId: gameId,
-                                    holeNumber: selectedHole,
-                                    playerId: player.id,
-                                    strokes: v,
-                                  );
-                                },
-                              ),
-                            ],
+                  child: ClipRect(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      layoutBuilder: (currentChild, previousChildren) => Stack(
+                        children: [
+                          ...previousChildren,
+                          if (currentChild != null) currentChild,
+                        ],
+                      ),
+                      transitionBuilder: (child, animation) {
+                        final isIncoming =
+                            child.key == ValueKey(selectedHole);
+                        final beginOffset = isIncoming
+                            ? Offset(_slideDirection.toDouble(), 0)
+                            : Offset.zero;
+                        final endOffset = isIncoming
+                            ? Offset.zero
+                            : Offset(-_slideDirection.toDouble(), 0);
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: beginOffset,
+                            end: endOffset,
+                          ).animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeOutCubic,
+                          )),
+                          child: FadeTransition(
+                            opacity: animation,
+                            child: child,
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                      child: ListView.separated(
+                        key: ValueKey(selectedHole),
+                        padding: const EdgeInsets.all(16),
+                        itemCount: aggregate.players.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          final player = aggregate.players[index];
+                          final value = currentHoleScores[player.id];
+
+                          return Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    player.name,
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                  if (player.teamId != null) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '${l10n.team}: ${teamNameById[player.teamId] ?? player.teamId}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                  ],
+                                  const SizedBox(height: 12),
+                                  NumberStepper(
+                                    key: Key(
+                                        'scoreField_${selectedHole}_${player.id}'),
+                                    value: value,
+                                    min: 1,
+                                    max: 12,
+                                    label: l10n.score,
+                                    nullable: true,
+                                    incrementKey: Key(
+                                        'scoreField_${selectedHole}_${player.id}_increment'),
+                                    decrementKey: Key(
+                                        'scoreField_${selectedHole}_${player.id}_decrement'),
+                                    onChanged: (v) {
+                                      controller.updateScoreInt(
+                                        gameId: gameId,
+                                        holeNumber: selectedHole,
+                                        playerId: player.id,
+                                        strokes: v,
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
                 SafeArea(

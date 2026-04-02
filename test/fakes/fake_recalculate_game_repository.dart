@@ -60,4 +60,20 @@ class FakeRecalculateGameRepository implements GameRepository {
   Stream<List<GameListItem>> watchOngoingGames() {
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<GameListItem>> fetchOngoingGames({
+    required int limit,
+    required int offset,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<GameListItem>> fetchCompletedGames({
+    required int limit,
+    required int offset,
+  }) {
+    throw UnimplementedError();
+  }
 }

@@ -23,7 +23,7 @@ class $AppSettingsTableTable extends AppSettingsTable
       'language_code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
-      defaultValue: const Constant('en'));
+      defaultValue: const Constant('th'));
   static const VerificationMeta _currencyCodeMeta =
       const VerificationMeta('currencyCode');
   @override
@@ -31,7 +31,7 @@ class $AppSettingsTableTable extends AppSettingsTable
       'currency_code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
-      defaultValue: const Constant('USD'));
+      defaultValue: const Constant('THB'));
   static const VerificationMeta _themeModeCodeMeta =
       const VerificationMeta('themeModeCode');
   @override

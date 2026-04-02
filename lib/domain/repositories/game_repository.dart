@@ -8,6 +8,15 @@ abstract class GameRepository {
   Stream<List<GameListItem>> watchOngoingGames();
   Stream<List<GameListItem>> watchCompletedGames();
 
+  Future<List<GameListItem>> fetchOngoingGames({
+    required int limit,
+    required int offset,
+  });
+  Future<List<GameListItem>> fetchCompletedGames({
+    required int limit,
+    required int offset,
+  });
+
   Stream<GameAggregate> watchGame(String gameId);
 
   Future<void> updateScore({

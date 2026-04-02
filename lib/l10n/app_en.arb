@@ -55,6 +55,8 @@
   "turboX2": "Turbo x2",
   "birdieBonusX2": "Birdie Bonus x2",
   "useSameAmountForAllRules": "Use same amount for all rules",
+  "useDifferentAmountForEachRule": "Use different amount for each rule",
+  "amount": "Amount",
   "bestOneAmount": "Best One Amount",
   "bestTwoAmount": "Best Two Amount",
   "bestTwoAmountOptional": "Best Two Amount (optional)",
@@ -226,5 +228,7 @@
     "placeholders": {
       "seconds": { "type": "int" }
     }
-  }
+  },
+
+  "loadMore": "Load More"
 }
