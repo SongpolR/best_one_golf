@@ -118,6 +118,32 @@ class GameRepositoryImpl implements GameRepository {
   }
 
   @override
+  Future<List<GameListItem>> fetchOngoingGames({
+    required int limit,
+    required int offset,
+  }) async {
+    final rows = await db.historyDao.fetchGamesByStatus(
+      'ongoing',
+      limit: limit,
+      offset: offset,
+    );
+    return _mapGameList(rows);
+  }
+
+  @override
+  Future<List<GameListItem>> fetchCompletedGames({
+    required int limit,
+    required int offset,
+  }) async {
+    final rows = await db.historyDao.fetchGamesByStatus(
+      'completed',
+      limit: limit,
+      offset: offset,
+    );
+    return _mapGameList(rows);
+  }
+
+  @override
   Stream<GameAggregate> watchGame(String gameId) {
     return Rx.combineLatest6(
       db.scoreEntryDao.watchGame(gameId),

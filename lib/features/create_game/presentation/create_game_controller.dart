@@ -34,11 +34,27 @@ class CreateGameController extends AutoDisposeNotifier<CreateGameState> {
     state = state.copyWith(
       mode: mode,
       errorMessage: null,
+      // Best One is always on; reset Best Two and amounts when switching to Individual.
+      bestOneEnabled: true,
+      bestTwoEnabled: mode == GameMode.individual ? false : state.bestTwoEnabled,
+      sharedBetDefault:
+          mode == GameMode.individual ? true : state.sharedBetDefault,
       players: mode == GameMode.individual
           ? state.players
               .map((player) => player.copyWith(teamIndex: null))
               .toList()
           : state.players,
+    );
+  }
+
+  /// Toggles whether Team mode uses a separate amount per rule.
+  /// When [useSeparate] is true: show Best One + Best Two fields individually.
+  /// When false: show a single shared amount (Best Two disabled).
+  void setUseSeparateAmounts(bool useSeparate) {
+    state = state.copyWith(
+      sharedBetDefault: !useSeparate,
+      bestTwoEnabled: useSeparate,
+      errorMessage: null,
     );
   }
 
@@ -50,7 +66,7 @@ class CreateGameController extends AutoDisposeNotifier<CreateGameState> {
       PlayerDraft(
         name: '',
         order: updatedPlayers.length,
-        teamIndex: state.mode == GameMode.team ? 0 : null,
+        teamIndex: null,
       ),
     );
 

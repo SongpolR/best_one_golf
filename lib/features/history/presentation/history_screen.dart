@@ -10,6 +10,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/ad_countdown_dialog.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 import '../../score_entry/presentation/score_entry_controller.dart';
+import 'history_controller.dart';
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
@@ -17,8 +18,8 @@ class HistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final ongoingAsync = ref.watch(ongoingGamesProvider);
-    final completedAsync = ref.watch(completedGamesProvider);
+    final state = ref.watch(historyControllerProvider);
+    final controller = ref.read(historyControllerProvider.notifier);
 
     return AppScaffold(
       title: l10n.history,
@@ -30,41 +31,11 @@ class HistoryScreen extends ConsumerWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 12),
-          ongoingAsync.when(
-            data: (items) {
-              if (items.isEmpty) {
-                return Card(
-                  child: ListTile(
-                    title: Text(l10n.noOngoingGames),
-                  ),
-                );
-              }
-
-              return Column(
-                children: items
-                    .map(
-                      (game) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _GameCard(
-                          game: game,
-                          isCompleted: false,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              );
-            },
-            loading: () => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: CircularProgressIndicator(),
-              ),
-            ),
-            error: (error, stackTrace) => Card(
-              child: ListTile(
-                title: Text(l10n.failedToLoadOngoingGames(error)),
-              ),
-            ),
+          _GameSection(
+            pageState: state.ongoing,
+            isCompleted: false,
+            onLoadMore: controller.loadMoreOngoing,
+            onRefresh: controller.refresh,
           ),
           const SizedBox(height: 24),
           Text(
@@ -72,41 +43,11 @@ class HistoryScreen extends ConsumerWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 12),
-          completedAsync.when(
-            data: (items) {
-              if (items.isEmpty) {
-                return Card(
-                  child: ListTile(
-                    title: Text(l10n.noCompletedGames),
-                  ),
-                );
-              }
-
-              return Column(
-                children: items
-                    .map(
-                      (game) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _GameCard(
-                          game: game,
-                          isCompleted: true,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              );
-            },
-            loading: () => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: CircularProgressIndicator(),
-              ),
-            ),
-            error: (error, stackTrace) => Card(
-              child: ListTile(
-                title: Text(l10n.failedToLoadCompletedGames(error)),
-              ),
-            ),
+          _GameSection(
+            pageState: state.completed,
+            isCompleted: true,
+            onLoadMore: controller.loadMoreCompleted,
+            onRefresh: controller.refresh,
           ),
         ],
       ),
@@ -114,13 +55,85 @@ class HistoryScreen extends ConsumerWidget {
   }
 }
 
+class _GameSection extends ConsumerWidget {
+  final GamePageState pageState;
+  final bool isCompleted;
+  final VoidCallback onLoadMore;
+  final Future<void> Function() onRefresh;
+
+  const _GameSection({
+    required this.pageState,
+    required this.isCompleted,
+    required this.onLoadMore,
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
+    if (pageState.isLoading && pageState.items.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (pageState.items.isEmpty) {
+      return Card(
+        child: ListTile(
+          title: Text(
+            isCompleted ? l10n.noCompletedGames : l10n.noOngoingGames,
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        ...pageState.items.map(
+          (game) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _GameCard(
+              game: game,
+              isCompleted: isCompleted,
+              onMutated: onRefresh,
+            ),
+          ),
+        ),
+        if (pageState.hasMore)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: pageState.isLoading ? null : onLoadMore,
+                child: pageState.isLoading
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l10n.loadMore),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
 class _GameCard extends ConsumerWidget {
   final GameListItem game;
   final bool isCompleted;
+  final Future<void> Function() onMutated;
 
   const _GameCard({
     required this.game,
     required this.isCompleted,
+    required this.onMutated,
   });
 
   @override
@@ -213,6 +226,8 @@ class _GameCard extends ConsumerWidget {
 
                     final deleteGame = ref.read(deleteGameUseCaseProvider);
                     await deleteGame(game.id);
+
+                    await onMutated();
                   },
                   child: Text(l10n.delete),
                 ),

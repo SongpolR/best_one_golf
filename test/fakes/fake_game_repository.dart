@@ -66,6 +66,22 @@ class FakeGameRepository implements GameRepository {
   }
 
   @override
+  Future<List<GameListItem>> fetchOngoingGames({
+    required int limit,
+    required int offset,
+  }) async {
+    return _ongoingGames.skip(offset).take(limit).toList();
+  }
+
+  @override
+  Future<List<GameListItem>> fetchCompletedGames({
+    required int limit,
+    required int offset,
+  }) async {
+    return _completedGames.skip(offset).take(limit).toList();
+  }
+
+  @override
   Stream<GameAggregate> watchGame(String gameId) async* {
     if (_gameAggregate != null) {
       yield _gameAggregate!;

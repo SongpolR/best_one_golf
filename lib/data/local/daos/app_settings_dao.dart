@@ -25,8 +25,8 @@ class AppSettingsDao extends DatabaseAccessor<AppDatabase>
     await into(appSettingsTable).insert(
       const AppSettingsTableCompanion(
         id: Value(1),
-        languageCode: Value('en'),
-        currencyCode: Value('USD'),
+        languageCode: Value('th'),
+        currencyCode: Value('THB'),
         themeModeCode: Value('system'),
         adsRemoved: Value(false),
       ),

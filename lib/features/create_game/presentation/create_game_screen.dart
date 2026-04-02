@@ -214,13 +214,17 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                     Expanded(
                       child: DropdownButtonFormField<int>(
                         value: player.teamIndex,
+                        isExpanded: true,
                         decoration: InputDecoration(
                           labelText: l10n.team,
                         ),
                         items: List.generate(state.teams.length, (teamIndex) {
                           return DropdownMenuItem(
                             value: teamIndex,
-                            child: Text(state.teams[teamIndex].name),
+                            child: Text(
+                              state.teams[teamIndex].name,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           );
                         }),
                         onChanged: (value) =>
@@ -321,45 +325,41 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
             l10n.rules,
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          CheckboxListTile(
-            value: state.bestOneEnabled,
-            onChanged: (value) => controller.setBestOneEnabled(value ?? false),
-            title: Text(l10n.bestOne),
-            contentPadding: EdgeInsets.zero,
-          ),
-          CheckboxListTile(
-            value: state.bestTwoEnabled,
-            onChanged: (value) => controller.setBestTwoEnabled(value ?? false),
-            title: Text(l10n.bestTwo),
-            contentPadding: EdgeInsets.zero,
-          ),
-          const SizedBox(height: 16),
-          SwitchListTile(
-            value: state.sharedBetDefault,
-            onChanged: controller.setSharedBetDefault,
-            title: Text(l10n.useSameAmountForAllRules),
-            contentPadding: EdgeInsets.zero,
-          ),
           const SizedBox(height: 8),
-          TextField(
-            controller: _bestOneAmountController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: l10n.bestOneAmount,
+          // In Team mode: show toggle for separate amounts.
+          if (state.mode == GameMode.team) ...[
+            SwitchListTile(
+              value: !state.sharedBetDefault,
+              onChanged: controller.setUseSeparateAmounts,
+              title: Text(l10n.useDifferentAmountForEachRule),
+              contentPadding: EdgeInsets.zero,
             ),
-            onChanged: controller.updateBestOneAmount,
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _bestTwoAmountController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: state.sharedBetDefault
-                  ? l10n.bestTwoAmountOptional
-                  : l10n.bestTwoAmount,
+            const SizedBox(height: 8),
+          ],
+          // Single amount field — Individual always, Team when toggle is OFF.
+          if (state.mode == GameMode.individual || state.sharedBetDefault) ...[
+            TextField(
+              controller: _bestOneAmountController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: l10n.amount),
+              onChanged: controller.updateBestOneAmount,
             ),
-            onChanged: controller.updateBestTwoAmount,
-          ),
+          ] else ...[
+            // Separate fields — Team mode when toggle is ON.
+            TextField(
+              controller: _bestOneAmountController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: l10n.bestOneAmount),
+              onChanged: controller.updateBestOneAmount,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _bestTwoAmountController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: l10n.bestTwoAmount),
+              onChanged: controller.updateBestTwoAmount,
+            ),
+          ],
           const SizedBox(height: 24),
           Text(
             l10n.holeSetup,

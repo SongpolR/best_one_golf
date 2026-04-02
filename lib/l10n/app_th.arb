@@ -55,6 +55,8 @@
   "turboX2": "เทอร์โบ x2",
   "birdieBonusX2": "โบนัสเบิร์ดี้ x2",
   "useSameAmountForAllRules": "ใช้จำนวนเงินเดียวกันสำหรับทุกกฎ",
+  "useDifferentAmountForEachRule": "ใช้จำนวนเงินต่างกันสำหรับแต่ละกฎ",
+  "amount": "จำนวนเงิน",
   "bestOneAmount": "จำนวนเงินเบสต์วัน",
   "bestTwoAmount": "จำนวนเงินเบสต์ทู",
   "bestTwoAmountOptional": "จำนวนเงินเบสต์ทู (ไม่บังคับ)",
@@ -226,5 +228,7 @@
     "placeholders": {
       "seconds": { "type": "int" }
     }
-  }
+  },
+
+  "loadMore": "โหลดเพิ่มเติม"
 }
