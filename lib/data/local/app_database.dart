@@ -48,7 +48,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -86,6 +86,20 @@ class AppDatabase extends _$AppDatabase {
               );
             }
           }
+
+          if (from < 6) {
+            final hasAdsRemoved = await _hasColumn(
+              appSettingsTable.actualTableName,
+              'ads_removed',
+            );
+
+            if (!hasAdsRemoved) {
+              await m.addColumn(
+                appSettingsTable,
+                appSettingsTable.adsRemoved,
+              );
+            }
+          }
         },
         beforeOpen: (details) async {
           await appSettingsDao.ensureSeeded();
@@ -100,6 +114,19 @@ class AppDatabase extends _$AppDatabase {
               'UPDATE ${appSettingsTable.actualTableName} '
               "SET theme_mode_code = 'system' "
               'WHERE theme_mode_code IS NULL',
+            );
+          }
+
+          final hasAdsRemoved = await _hasColumn(
+            appSettingsTable.actualTableName,
+            'ads_removed',
+          );
+
+          if (hasAdsRemoved) {
+            await customStatement(
+              'UPDATE ${appSettingsTable.actualTableName} '
+              'SET ads_removed = 0 '
+              'WHERE ads_removed IS NULL',
             );
           }
         },

@@ -15,6 +15,7 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
       language: AppLanguage.fromCode(row.languageCode),
       currency: AppCurrency.fromCode(row.currencyCode),
       themeMode: AppThemeMode.fromCode(row.themeModeCode),
+      adsRemoved: row.adsRemoved,
     );
   }
 
@@ -42,5 +43,10 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
   @override
   Future<void> updateThemeMode(AppThemeMode mode) {
     return db.appSettingsDao.updateThemeMode(mode.code);
+  }
+
+  @override
+  Future<void> updateAdsRemoved(bool removed) {
+    return db.appSettingsDao.updateAdsRemoved(removed);
   }
 }

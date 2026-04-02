@@ -280,19 +280,22 @@ class AppLocalizationsTh extends AppLocalizations {
   String get restartGame => 'เริ่มเกมใหม่';
 
   @override
-  String get restartGameConfirmation => 'คุณต้องการสร้างเกมใหม่โดยใช้การตั้งค่าเดิมหรือไม่?';
+  String get restartGameConfirmation =>
+      'คุณต้องการสร้างเกมใหม่โดยใช้การตั้งค่าเดิมหรือไม่?';
 
   @override
   String get duplicateGame => 'คัดลอกเกม';
 
   @override
-  String get duplicateGameConfirmation => 'คุณต้องการสร้างสำเนาเกมนี้โดยใช้การตั้งค่าเดิมหรือไม่?';
+  String get duplicateGameConfirmation =>
+      'คุณต้องการสร้างสำเนาเกมนี้โดยใช้การตั้งค่าเดิมหรือไม่?';
 
   @override
   String get duplicate => 'คัดลอก';
 
   @override
-  String get finishGameConfirmation => 'คุณต้องการทำเครื่องหมายว่าเกมนี้เสร็จสิ้นและไปที่สรุปหรือไม่?';
+  String get finishGameConfirmation =>
+      'คุณต้องการทำเครื่องหมายว่าเกมนี้เสร็จสิ้นและไปที่สรุปหรือไม่?';
 
   @override
   String playerN(int n) {
@@ -377,5 +380,36 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String failedToLoadGameData(Object error) {
     return 'โหลดข้อมูลเกมไม่สำเร็จ: $error';
+  }
+
+  @override
+  String get removeAds => 'ลบโฆษณา';
+
+  @override
+  String get removeAdsPurchased => 'ลบโฆษณาแล้ว';
+
+  @override
+  String get removeAdsDescription =>
+      'เพลิดเพลินกับประสบการณ์ไม่มีโฆษณาด้วยการซื้อครั้งเดียว';
+
+  @override
+  String get removeAdsPurchasedDescription =>
+      'ขอบคุณ! คุณกำลังเพลิดเพลินกับประสบการณ์ไม่มีโฆษณา';
+
+  @override
+  String get purchase => 'ซื้อ';
+
+  @override
+  String get restorePurchases => 'คืนค่าการซื้อ';
+
+  @override
+  String get storeNotAvailable => 'ร้านค้าไม่พร้อมใช้งาน';
+
+  @override
+  String get adNotAvailable => 'ไม่สามารถโหลดโฆษณาได้';
+
+  @override
+  String adContinuingIn(int seconds) {
+    return 'กำลังดำเนินการต่อใน $seconds วินาที...';
   }
 }

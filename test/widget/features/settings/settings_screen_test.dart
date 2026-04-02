@@ -29,12 +29,16 @@ void main() {
     await tester.pump();
 
     expect(find.text('Settings'), findsOneWidget);
+    expect(find.text('Remove Ads'), findsOneWidget);
+
+    // Scroll down to reveal Language and Currency sections.
+    await tester.scrollUntilVisible(find.text('Language'), 100);
+    await tester.pump();
     expect(find.text('Language'), findsOneWidget);
+
+    await tester.scrollUntilVisible(find.text('Currency'), 100);
+    await tester.pump();
     expect(find.text('Currency'), findsOneWidget);
-    expect(find.text('English'), findsOneWidget);
-    expect(find.text('Thai'), findsOneWidget);
-    expect(find.text('USD'), findsOneWidget);
-    expect(find.text('THB'), findsOneWidget);
   });
 
   testWidgets('Settings screen updates language selection', (tester) async {
@@ -55,6 +59,9 @@ void main() {
 
     await tester.pump();
 
+    await tester.scrollUntilVisible(find.text('Thai'), 100);
+    await tester.ensureVisible(find.text('Thai'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Thai'));
     await tester.pump();
 

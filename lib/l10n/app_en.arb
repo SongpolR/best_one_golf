@@ -211,5 +211,20 @@
     "placeholders": {
       "error": { "type": "Object" }
     }
+  },
+
+  "removeAds": "Remove Ads",
+  "removeAdsPurchased": "Ads Removed",
+  "removeAdsDescription": "Enjoy an ad-free experience with a one-time purchase.",
+  "removeAdsPurchasedDescription": "Thank you! You are enjoying an ad-free experience.",
+  "purchase": "Purchase",
+  "restorePurchases": "Restore Purchases",
+  "storeNotAvailable": "Store not available",
+  "adNotAvailable": "Ad could not be loaded",
+  "adContinuingIn": "Continuing in {seconds}s...",
+  "@adContinuingIn": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
   }
 }

@@ -47,6 +47,12 @@ class FakeAppSettingsRepository implements AppSettingsRepository {
     _controller.add(_settings);
   }
 
+  @override
+  Future<void> updateAdsRemoved(bool removed) async {
+    _settings = _settings.copyWith(adsRemoved: removed);
+    _controller.add(_settings);
+  }
+
   Future<void> dispose() async {
     await _controller.close();
   }
