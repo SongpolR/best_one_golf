@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/app.dart';
 import '../../../app/theme/app_theme.dart';
@@ -221,6 +222,33 @@ class SettingsScreen extends ConsumerWidget {
                         if (value != null) repository.updateCurrency(value);
                       },
                       title: Text(l10n.thb),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── Legal ──────────────────────────────────────────────────────
+              Text(
+                l10n.legal,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.description_outlined),
+                      title: Text(l10n.termsAndConditions),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/terms'),
+                    ),
+                    const Divider(height: 1, indent: 16, endIndent: 16),
+                    ListTile(
+                      leading: const Icon(Icons.privacy_tip_outlined),
+                      title: Text(l10n.privacyPolicy),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/privacy-policy'),
                     ),
                   ],
                 ),
