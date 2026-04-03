@@ -14,5 +14,7 @@
     <false/>
     <key>uploadSymbols</key>
     <true/>
+    <key>allowProvisioningUpdates</key>
+    <true/>
 </dict>
 </plist>

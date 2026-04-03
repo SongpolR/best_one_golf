@@ -38,6 +38,15 @@
 -keepattributes InnerClasses
 -keepattributes EnclosingMethod
 
+# Flutter deferred components (Play Core Split Install)
+# Flutter engine references these classes but they are not required
+# unless the app uses deferred components.
+-dontwarn com.google.android.play.core.splitcompat.SplitCompatApplication
+-dontwarn com.google.android.play.core.splitinstall.**
+-dontwarn com.google.android.play.core.tasks.**
+-dontwarn io.flutter.app.FlutterPlayStoreSplitApplication
+-dontwarn io.flutter.embedding.engine.deferredcomponents.**
+
 # General Android
 -dontwarn android.support.**
 -dontwarn androidx.**
