@@ -211,8 +211,7 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                         ],
                       ),
                       transitionBuilder: (child, animation) {
-                        final isIncoming =
-                            child.key == ValueKey(selectedHole);
+                        final isIncoming = child.key == ValueKey(selectedHole);
                         final beginOffset = isIncoming
                             ? Offset(_slideDirection.toDouble(), 0)
                             : Offset.zero;
@@ -237,8 +236,7 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
                         key: ValueKey(selectedHole),
                         padding: const EdgeInsets.all(16),
                         itemCount: aggregate.players.length,
-                        separatorBuilder: (_, __) =>
-                            const SizedBox(height: 12),
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
                         itemBuilder: (context, index) {
                           final player = aggregate.players[index];
                           final value = currentHoleScores[player.id];

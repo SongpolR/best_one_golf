@@ -36,7 +36,8 @@ class CreateGameController extends AutoDisposeNotifier<CreateGameState> {
       errorMessage: null,
       // Best One is always on; reset Best Two and amounts when switching to Individual.
       bestOneEnabled: true,
-      bestTwoEnabled: mode == GameMode.individual ? false : state.bestTwoEnabled,
+      bestTwoEnabled:
+          mode == GameMode.individual ? false : state.bestTwoEnabled,
       sharedBetDefault:
           mode == GameMode.individual ? true : state.sharedBetDefault,
       players: mode == GameMode.individual
