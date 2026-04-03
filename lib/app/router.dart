@@ -9,6 +9,7 @@ import '../features/home/presentation/home_screen.dart';
 import '../features/score_entry/presentation/score_entry_screen.dart';
 import '../features/settings/presentation/policy_screen.dart';
 import '../features/settings/presentation/settings_screen.dart';
+import '../features/splash/presentation/splash_screen.dart';
 import '../features/game_summary/presentation/game_summary_screen.dart';
 import '../features/hole_result/presentation/hole_result_screen.dart';
 
@@ -86,8 +87,12 @@ CustomTransitionPage<void> _fadePage(GoRouterState state, Widget child) {
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/splash',
     routes: [
+      GoRoute(
+        path: '/splash',
+        pageBuilder: (context, state) => _fadePage(state, const SplashScreen()),
+      ),
       GoRoute(
         path: '/',
         pageBuilder: (context, state) => _fadePage(state, const HomeScreen()),
