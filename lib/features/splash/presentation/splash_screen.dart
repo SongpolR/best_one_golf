@@ -283,6 +283,22 @@ class _GolfPainter extends CustomPainter {
         ).createShader(Rect.fromCircle(center: center, radius: r)),
     );
 
+    // Rotation angle: rolling without slipping (distance / radius), clockwise.
+    double rotation = 0.0;
+    if (t >= _tImpact && t < _tRollEnd) {
+      rotation = (bx - startX) / ballR;
+    } else if (t >= _tRollEnd) {
+      rotation = (holeX - startX) / ballR;
+    }
+
+    // Dimples (hex grid, clipped to ball circle, rotated with the ball).
+    canvas.save();
+    canvas.clipPath(Path()..addOval(Rect.fromCircle(center: center, radius: r)));
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(rotation);
+    _drawDimples(canvas, r, scale);
+    canvas.restore();
+
     // Outline
     canvas.drawCircle(
       center,
@@ -292,6 +308,26 @@ class _GolfPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 0.8,
     );
+  }
+
+  // ── Ball dimples ───────────────────────────────────────────────────────────
+  // Draws dimples relative to the current canvas origin (call after translate +
+  // rotate so the pattern spins with the ball).
+  void _drawDimples(Canvas canvas, double r, double scale) {
+    final dimpleR = r * 0.07;
+    final spacing = r * 0.40;
+    final paint = Paint()
+      ..color = const Color(0xFFCCCCCC).withOpacity(scale);
+
+    for (int row = -5; row <= 5; row++) {
+      final dy = row * spacing;
+      final xOff = (row.abs() % 2 == 1) ? spacing * 0.5 : 0.0;
+      for (int col = -5; col <= 5; col++) {
+        final dx = col * spacing + xOff;
+        if (dx * dx + dy * dy > (r - dimpleR) * (r - dimpleR)) continue;
+        canvas.drawCircle(Offset(dx, dy), dimpleR, paint);
+      }
+    }
   }
 
   // ── Flag ──────────────────────────────────────────────────────────────
@@ -318,19 +354,14 @@ class _GolfPainter extends CustomPainter {
 
     final fTopY = groundY - poleH;
     // Flag body: wider and taller than previous versions
-    final fW = w * 0.32 * flagT;
+    final fW = w * 0.38 * flagT;
     final fH = h * 0.11 * flagT;
 
-    // Flag body (triangle)
-    final flagPath = Path()
-      ..moveTo(holeX, fTopY)
-      ..lineTo(holeX + fW, fTopY + fH * 0.46)
-      ..lineTo(holeX, fTopY + fH)
-      ..close();
-
-    canvas.drawPath(flagPath, Paint()..color = const Color(0xFFFF4B4B));
-    canvas.drawPath(
-      flagPath,
+    // Flag body (rectangle)
+    final flagRect = Rect.fromLTWH(holeX, fTopY, fW, fH);
+    canvas.drawRect(flagRect, Paint()..color = const Color(0xFFFF4B4B));
+    canvas.drawRect(
+      flagRect,
       Paint()
         ..color = const Color(0xFFFF7070)
         ..style = PaintingStyle.stroke
@@ -342,17 +373,24 @@ class _GolfPainter extends CustomPainter {
       final numOpacity = _clamp(_norm(flagT, 0.50, 1.0));
       final tp = TextPainter(
         text: TextSpan(
-          text: '1',
+          text: 'BestOne',
           style: TextStyle(
             color: Colors.white.withOpacity(numOpacity),
-            fontSize: fH * 0.52,
+            fontSize: fH * 0.24,
             fontWeight: FontWeight.w800,
             height: 1,
           ),
         ),
         textDirection: TextDirection.ltr,
       )..layout();
-      tp.paint(canvas, Offset(holeX + fW * 0.18, fTopY + fH * 0.20));
+      // Centre the "1" within the rectangle.
+      tp.paint(
+        canvas,
+        Offset(
+          holeX + (fW - tp.width) / 2,
+          fTopY + (fH - tp.height) / 2,
+        ),
+      );
     }
   }
 
