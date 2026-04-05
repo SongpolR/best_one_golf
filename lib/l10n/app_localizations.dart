@@ -800,7 +800,7 @@ abstract class AppLocalizations {
   /// No description provided for @removeAdsDescription.
   ///
   /// In en, this message translates to:
-  /// **'Enjoy an ad-free experience with a one-time purchase.'**
+  /// **'Enjoy an ad-free experience with a one-time purchase of \$0.99.'**
   String get removeAdsDescription;
 
   /// No description provided for @removeAdsPurchasedDescription.
@@ -838,6 +838,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continuing in {seconds}s...'**
   String adContinuingIn(int seconds);
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String appVersion(String version);
 
   /// No description provided for @loadMore.
   ///

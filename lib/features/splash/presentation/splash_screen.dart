@@ -293,7 +293,8 @@ class _GolfPainter extends CustomPainter {
 
     // Dimples (hex grid, clipped to ball circle, rotated with the ball).
     canvas.save();
-    canvas.clipPath(Path()..addOval(Rect.fromCircle(center: center, radius: r)));
+    canvas
+        .clipPath(Path()..addOval(Rect.fromCircle(center: center, radius: r)));
     canvas.translate(center.dx, center.dy);
     canvas.rotate(rotation);
     _drawDimples(canvas, r, scale);
@@ -316,8 +317,7 @@ class _GolfPainter extends CustomPainter {
   void _drawDimples(Canvas canvas, double r, double scale) {
     final dimpleR = r * 0.07;
     final spacing = r * 0.40;
-    final paint = Paint()
-      ..color = const Color(0xFFCCCCCC).withOpacity(scale);
+    final paint = Paint()..color = const Color(0xFFCCCCCC).withOpacity(scale);
 
     for (int row = -5; row <= 5; row++) {
       final dy = row * spacing;

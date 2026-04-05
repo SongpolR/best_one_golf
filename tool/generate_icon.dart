@@ -23,13 +23,14 @@ const _cx = _sz ~/ 2; // 512 – horizontal centre
 const _cy = _sz ~/ 2; // 512 – vertical centre
 
 // ── Colours ───────────────────────────────────────────────────────────────────
-final _bgGreen  = img.ColorRgba8( 88, 204,   2, 255); // #58CC02 – brand green bg
-final _ball     = img.ColorRgba8(252, 252, 252, 255); // near-white ball body
-final _dimple   = img.ColorRgba8(215, 215, 215, 255); // light-grey dimples
-final _oneColor = img.ColorRgba8( 26,  92,  10, 255); // #1A5C0A – dark green "1"
+final _bgGreen = img.ColorRgba8(88, 204, 2, 255); // #58CC02 – brand green bg
+final _ball = img.ColorRgba8(252, 252, 252, 255); // near-white ball body
+final _dimple = img.ColorRgba8(215, 215, 215, 255); // light-grey dimples
+final _oneColor = img.ColorRgba8(26, 92, 10, 255); // #1A5C0A – dark green "1"
 
 // ── Ball geometry ─────────────────────────────────────────────────────────────
-const _ballR = 430; // ball radius (86 % of half-canvas → leaves visible bg border)
+const _ballR =
+    430; // ball radius (86 % of half-canvas → leaves visible bg border)
 
 // ── "1" geometry (all values validated to stay within the ball circle) ────────
 //
@@ -43,17 +44,17 @@ const _ballR = 430; // ball radius (86 % of half-canvas → leaves visible bg bo
 //
 const _barTop = 290;
 const _barBot = 730;
-const _barTk  = 88;  // vertical bar stroke width
-const _sX1    = 430; // serif anchor x
-const _sY1    = 380; // serif anchor y
-const _sTk    = 68;  // serif stroke width
+const _barTk = 88; // vertical bar stroke width
+const _sX1 = 430; // serif anchor x
+const _sY1 = 380; // serif anchor y
+const _sTk = 68; // serif stroke width
 
 // ── Dimple grid ───────────────────────────────────────────────────────────────
-const _dimpleR   = 22;  // dimple radius
+const _dimpleR = 22; // dimple radius
 const _dimpleSpc = 108; // hex-grid row / column spacing
 // Exclusion band: skip dimples that would sit under the "1" stroke
-const _exHalfW   = 64;  // half-width of exclusion band (|Δx| < this)
-const _exHalfH   = 255; // half-height of exclusion band (|Δy| < this)
+const _exHalfW = 64; // half-width of exclusion band (|Δx| < this)
+const _exHalfH = 255; // half-height of exclusion band (|Δy| < this)
 
 // ─────────────────────────────────────────────────────────────────────────────
 void main() async {
@@ -80,8 +81,11 @@ img.Image _render({required bool withBg}) {
   // ── Golf ball (white circle) ────────────────────────────────────────────────
   img.fillCircle(
     icon,
-    x: _cx, y: _cy, radius: _ballR,
-    color: _ball, antialias: true,
+    x: _cx,
+    y: _cy,
+    radius: _ballR,
+    color: _ball,
+    antialias: true,
   );
 
   // ── Dimples (hex grid, skipping the "1" zone) ──────────────────────────────
@@ -91,14 +95,24 @@ img.Image _render({required bool withBg}) {
   // Vertical bar
   img.drawLine(
     icon,
-    x1: _cx, y1: _barTop, x2: _cx, y2: _barBot,
-    color: _oneColor, thickness: _barTk, antialias: false,
+    x1: _cx,
+    y1: _barTop,
+    x2: _cx,
+    y2: _barBot,
+    color: _oneColor,
+    thickness: _barTk,
+    antialias: false,
   );
   // Top-left diagonal serif / hook
   img.drawLine(
     icon,
-    x1: _sX1, y1: _sY1, x2: _cx, y2: _barTop,
-    color: _oneColor, thickness: _sTk, antialias: true,
+    x1: _sX1,
+    y1: _sY1,
+    x2: _cx,
+    y2: _barTop,
+    color: _oneColor,
+    thickness: _sTk,
+    antialias: true,
   );
 
   return icon;
@@ -126,8 +140,11 @@ void _drawDimples(img.Image icon) {
 
       img.fillCircle(
         icon,
-        x: _cx + rx, y: _cy + ry, radius: _dimpleR,
-        color: _dimple, antialias: true,
+        x: _cx + rx,
+        y: _cy + ry,
+        radius: _dimpleR,
+        color: _dimple,
+        antialias: true,
       );
     }
   }

@@ -392,7 +392,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removeAdsPurchased => 'Ads Removed';
 
   @override
-  String get removeAdsDescription => 'Enjoy an ad-free experience with a one-time purchase.';
+  String get removeAdsDescription => 'Enjoy an ad-free experience with a one-time purchase of \$0.99.';
 
   @override
   String get removeAdsPurchasedDescription => 'Thank you! You are enjoying an ad-free experience.';
@@ -412,6 +412,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String adContinuingIn(int seconds) {
     return 'Continuing in ${seconds}s...';
+  }
+
+  @override
+  String appVersion(String version) {
+    return 'Version $version';
   }
 
   @override

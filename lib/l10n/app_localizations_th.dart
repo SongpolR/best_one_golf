@@ -392,7 +392,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get removeAdsPurchased => 'ลบโฆษณาแล้ว';
 
   @override
-  String get removeAdsDescription => 'เพลิดเพลินกับประสบการณ์ไม่มีโฆษณาด้วยการซื้อครั้งเดียว';
+  String get removeAdsDescription => 'เพลิดเพลินกับประสบการณ์ไม่มีโฆษณาด้วยการซื้อครั้งเดียวในราคา 39฿';
 
   @override
   String get removeAdsPurchasedDescription => 'ขอบคุณ! คุณกำลังเพลิดเพลินกับประสบการณ์ไม่มีโฆษณา';
@@ -412,6 +412,11 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String adContinuingIn(int seconds) {
     return 'กำลังดำเนินการต่อใน $seconds วินาที...';
+  }
+
+  @override
+  String appVersion(String version) {
+    return 'เวอร์ชัน $version';
   }
 
   @override
