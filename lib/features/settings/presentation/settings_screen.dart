@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../app/app.dart';
 import '../../../app/theme/app_theme.dart';
@@ -10,6 +11,10 @@ import '../../../core/enums/app_theme_mode.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 
+final _packageInfoProvider = FutureProvider<PackageInfo>(
+  (_) => PackageInfo.fromPlatform(),
+);
+
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -18,6 +23,7 @@ class SettingsScreen extends ConsumerWidget {
     final settingsAsync = ref.watch(appSettingsProvider);
     final repository = ref.watch(appSettingsRepositoryProvider);
     final iapService = ref.watch(iapServiceProvider);
+    final packageInfoAsync = ref.watch(_packageInfoProvider);
     final l10n = AppLocalizations.of(context)!;
 
     return AppScaffold(
@@ -253,6 +259,24 @@ class SettingsScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
+
+              // ── App Version ────────────────────────────────────────────────
+              Center(
+                child: Text(
+                  packageInfoAsync.when(
+                    data: (info) => l10n.appVersion(info.version),
+                    loading: () => '',
+                    error: (_, __) => '',
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ),
+              const SizedBox(height: 8),
             ],
           );
         },

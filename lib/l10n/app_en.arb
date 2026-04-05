@@ -217,7 +217,7 @@
 
   "removeAds": "Remove Ads",
   "removeAdsPurchased": "Ads Removed",
-  "removeAdsDescription": "Enjoy an ad-free experience with a one-time purchase.",
+  "removeAdsDescription": "Enjoy an ad-free experience with a one-time purchase of $0.99.",
   "removeAdsPurchasedDescription": "Thank you! You are enjoying an ad-free experience.",
   "purchase": "Purchase",
   "restorePurchases": "Restore Purchases",
@@ -227,6 +227,13 @@
   "@adContinuingIn": {
     "placeholders": {
       "seconds": { "type": "int" }
+    }
+  },
+
+  "appVersion": "Version {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": { "type": "String" }
     }
   },
 
