@@ -416,4 +416,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loadMore => 'Load More';
+
+  @override
+  String get legal => 'Legal';
+
+  @override
+  String get termsAndConditions => 'Terms & Conditions';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
 }

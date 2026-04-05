@@ -230,5 +230,9 @@
     }
   },
 
-  "loadMore": "Load More"
+  "loadMore": "Load More",
+
+  "legal": "Legal",
+  "termsAndConditions": "Terms & Conditions",
+  "privacyPolicy": "Privacy Policy"
 }

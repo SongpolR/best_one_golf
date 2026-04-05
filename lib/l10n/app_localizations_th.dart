@@ -416,4 +416,13 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get loadMore => 'โหลดเพิ่มเติม';
+
+  @override
+  String get legal => 'กฎหมาย';
+
+  @override
+  String get termsAndConditions => 'ข้อกำหนดและเงื่อนไข';
+
+  @override
+  String get privacyPolicy => 'นโยบายความเป็นส่วนตัว';
 }

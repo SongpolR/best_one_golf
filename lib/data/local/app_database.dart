@@ -151,7 +151,7 @@ class AppDatabase extends _$AppDatabase {
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dir.path, 'bestone_golf.sqlite'));
+    final file = File(p.join(dir.path, 'best_one_golf.sqlite'));
     return NativeDatabase.createInBackground(file);
   });
 }
