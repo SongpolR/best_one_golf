@@ -25,8 +25,10 @@ class AppSettingsDao extends DatabaseAccessor<AppDatabase>
     await into(appSettingsTable).insert(
       const AppSettingsTableCompanion(
         id: Value(1),
-        languageCode: Value('en'),
-        currencyCode: Value('USD'),
+        languageCode: Value('th'),
+        currencyCode: Value('THB'),
+        themeModeCode: Value('system'),
+        adsRemoved: Value(false),
       ),
     );
   }
@@ -43,6 +45,22 @@ class AppSettingsDao extends DatabaseAccessor<AppDatabase>
     return (update(appSettingsTable)..where((tbl) => tbl.id.equals(1))).write(
       AppSettingsTableCompanion(
         currencyCode: Value(code),
+      ),
+    );
+  }
+
+  Future<void> updateThemeMode(String code) {
+    return (update(appSettingsTable)..where((tbl) => tbl.id.equals(1))).write(
+      AppSettingsTableCompanion(
+        themeModeCode: Value(code),
+      ),
+    );
+  }
+
+  Future<void> updateAdsRemoved(bool removed) {
+    return (update(appSettingsTable)..where((tbl) => tbl.id.equals(1))).write(
+      AppSettingsTableCompanion(
+        adsRemoved: Value(removed),
       ),
     );
   }

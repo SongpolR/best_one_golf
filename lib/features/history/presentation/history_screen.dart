@@ -3,9 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/app.dart';
+import '../../../app/theme/app_theme.dart';
+import '../../../core/enums/game_mode.dart';
 import '../../../domain/entities/game_list_item.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../shared/widgets/ad_countdown_dialog.dart';
 import '../../../shared/widgets/app_scaffold.dart';
+import '../../score_entry/presentation/score_entry_controller.dart';
+import 'history_controller.dart';
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
@@ -13,96 +18,36 @@ class HistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final ongoingAsync = ref.watch(ongoingGamesProvider);
-    final completedAsync = ref.watch(completedGamesProvider);
+    final state = ref.watch(historyControllerProvider);
+    final controller = ref.read(historyControllerProvider.notifier);
 
     return AppScaffold(
-      title: 'History',
+      title: l10n.history,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            'Ongoing',
+            l10n.ongoing,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 12),
-          ongoingAsync.when(
-            data: (items) {
-              if (items.isEmpty) {
-                return const Card(
-                  child: ListTile(
-                    title: Text('No ongoing games'),
-                  ),
-                );
-              }
-
-              return Column(
-                children: items
-                    .map(
-                      (game) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _GameCard(
-                          game: game,
-                          isCompleted: false,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              );
-            },
-            loading: () => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: CircularProgressIndicator(),
-              ),
-            ),
-            error: (error, stackTrace) => Card(
-              child: ListTile(
-                title: Text('Failed to load ongoing games: $error'),
-              ),
-            ),
+          _GameSection(
+            pageState: state.ongoing,
+            isCompleted: false,
+            onLoadMore: controller.loadMoreOngoing,
+            onRefresh: controller.refresh,
           ),
           const SizedBox(height: 24),
           Text(
-            'Completed',
+            l10n.completed,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 12),
-          completedAsync.when(
-            data: (items) {
-              if (items.isEmpty) {
-                return const Card(
-                  child: ListTile(
-                    title: Text('No completed games'),
-                  ),
-                );
-              }
-
-              return Column(
-                children: items
-                    .map(
-                      (game) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _GameCard(
-                          game: game,
-                          isCompleted: true,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              );
-            },
-            loading: () => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: CircularProgressIndicator(),
-              ),
-            ),
-            error: (error, stackTrace) => Card(
-              child: ListTile(
-                title: Text('Failed to load completed games: $error'),
-              ),
-            ),
+          _GameSection(
+            pageState: state.completed,
+            isCompleted: true,
+            onLoadMore: controller.loadMoreCompleted,
+            onRefresh: controller.refresh,
           ),
         ],
       ),
@@ -110,17 +55,91 @@ class HistoryScreen extends ConsumerWidget {
   }
 }
 
-class _GameCard extends ConsumerWidget {
-  final GameListItem game;
+class _GameSection extends ConsumerWidget {
+  final GamePageState pageState;
   final bool isCompleted;
+  final VoidCallback onLoadMore;
+  final Future<void> Function() onRefresh;
 
-  const _GameCard({
-    required this.game,
+  const _GameSection({
+    required this.pageState,
     required this.isCompleted,
+    required this.onLoadMore,
+    required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
+    if (pageState.isLoading && pageState.items.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (pageState.items.isEmpty) {
+      return Card(
+        child: ListTile(
+          title: Text(
+            isCompleted ? l10n.noCompletedGames : l10n.noOngoingGames,
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        ...pageState.items.map(
+          (game) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _GameCard(
+              game: game,
+              isCompleted: isCompleted,
+              onMutated: onRefresh,
+            ),
+          ),
+        ),
+        if (pageState.hasMore)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: pageState.isLoading ? null : onLoadMore,
+                child: pageState.isLoading
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l10n.loadMore),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _GameCard extends ConsumerWidget {
+  final GameListItem game;
+  final bool isCompleted;
+  final Future<void> Function() onMutated;
+
+  const _GameCard({
+    required this.game,
+    required this.isCompleted,
+    required this.onMutated,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -130,10 +149,15 @@ class _GameCard extends ConsumerWidget {
               contentPadding: EdgeInsets.zero,
               title: Text(game.title),
               subtitle: Text(
-                '${game.mode.name} • ${game.totalHoles} holes',
+                l10n.gameInfo(
+                  game.mode == GameMode.individual
+                      ? l10n.individual
+                      : l10n.team,
+                  game.totalHoles,
+                ),
               ),
               trailing: Text(
-                isCompleted ? 'Completed' : 'Ongoing',
+                isCompleted ? l10n.completed : l10n.ongoing,
               ),
             ),
             const SizedBox(height: 8),
@@ -146,14 +170,14 @@ class _GameCard extends ConsumerWidget {
                     onPressed: () {
                       context.push('/score-entry/${game.id}');
                     },
-                    child: const Text('View'),
+                    child: Text(l10n.view),
                   )
                 else
                   OutlinedButton(
                     onPressed: () {
                       context.push('/score-entry/${game.id}');
                     },
-                    child: const Text('Continue'),
+                    child: Text(l10n.continueGame),
                   ),
                 if (!isCompleted)
                   OutlinedButton(
@@ -168,17 +192,44 @@ class _GameCard extends ConsumerWidget {
                         context.go('/score-entry/$newGameId');
                       }
                     },
-                    child: const Text('Restart'),
+                    child: Text(l10n.restart),
                   ),
                 OutlinedButton(
+                  onPressed: () async {
+                    final aggregate = await ref.read(
+                      gameAggregateProvider(game.id).future,
+                    );
+                    if (!context.mounted) return;
+
+                    final settings = ref.read(appSettingsProvider).value;
+                    if (settings?.adsRemoved == true) {
+                      context.push('/create-game', extra: aggregate);
+                      return;
+                    }
+
+                    final adService = ref.read(adServiceProvider);
+                    final shown = await adService.show();
+                    if (!shown && context.mounted) {
+                      await showAdCountdownDialog(context);
+                    }
+                    if (context.mounted) {
+                      context.push('/create-game', extra: aggregate);
+                    }
+                  },
+                  child: Text(l10n.duplicate),
+                ),
+                OutlinedButton(
+                  style: DestructiveButton.outlined(context),
                   onPressed: () async {
                     final confirmed = await _showDeleteDialog(context);
                     if (confirmed != true) return;
 
                     final deleteGame = ref.read(deleteGameUseCaseProvider);
                     await deleteGame(game.id);
+
+                    await onMutated();
                   },
-                  child: const Text('Delete'),
+                  child: Text(l10n.delete),
                 ),
               ],
             ),
@@ -189,20 +240,22 @@ class _GameCard extends ConsumerWidget {
   }
 
   Future<bool?> _showDeleteDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Delete Game'),
-          content: const Text('Do you want to delete this game permanently?'),
+          title: Text(l10n.deleteGame),
+          content: Text(l10n.deleteGameConfirmation),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
+              style: DestructiveButton.filled(context),
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Delete'),
+              child: Text(l10n.delete),
             ),
           ],
         );
@@ -211,22 +264,21 @@ class _GameCard extends ConsumerWidget {
   }
 
   Future<bool?> _showRestartDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Restart Game'),
-          content: const Text(
-            'Do you want to create a new game using the same settings?',
-          ),
+          title: Text(l10n.restartGame),
+          content: Text(l10n.restartGameConfirmation),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Restart'),
+              child: Text(l10n.restart),
             ),
           ],
         );

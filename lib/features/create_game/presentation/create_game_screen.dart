@@ -3,18 +3,174 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/enums/game_mode.dart';
+import '../../../domain/entities/game_aggregate.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
+import '../../../shared/widgets/number_stepper.dart';
 import 'create_game_controller.dart';
+import 'create_game_state.dart';
 
-class CreateGameScreen extends ConsumerWidget {
-  const CreateGameScreen({super.key});
+class CreateGameScreen extends ConsumerStatefulWidget {
+  final GameAggregate? template;
+
+  const CreateGameScreen({super.key, this.template});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(createGameControllerProvider);
+  ConsumerState<CreateGameScreen> createState() => _CreateGameScreenState();
+}
+
+class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
+  late final TextEditingController _titleController;
+  final Map<int, TextEditingController> _playerControllers = {};
+  final Map<int, TextEditingController> _teamControllers = {};
+  late final TextEditingController _bestOneAmountController;
+  late final TextEditingController _bestTwoAmountController;
+
+  // Holds template state for the first frame while the provider loads asynchronously.
+  CreateGameState? _templateState;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final CreateGameState initialState;
+    if (widget.template != null) {
+      _templateState = CreateGameState.fromAggregate(widget.template!);
+      initialState = _templateState!;
+      // Defer provider mutation until after the current build phase.
+      Future(() {
+        if (mounted) {
+          ref
+              .read(createGameControllerProvider.notifier)
+              .loadFromAggregate(widget.template!);
+          setState(() => _templateState = null);
+        }
+      });
+    } else {
+      initialState = ref.read(createGameControllerProvider);
+    }
+
+    _titleController = TextEditingController(text: initialState.title);
+    _bestOneAmountController = TextEditingController(
+      text: initialState.bestOneAmount?.toString() ?? '',
+    );
+    _bestTwoAmountController = TextEditingController(
+      text: initialState.bestTwoAmount?.toString() ?? '',
+    );
+
+    _syncPlayerControllers(initialState.players);
+    _syncTeamControllers(initialState.teams);
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _bestOneAmountController.dispose();
+    _bestTwoAmountController.dispose();
+
+    for (final controller in _playerControllers.values) {
+      controller.dispose();
+    }
+
+    for (final controller in _teamControllers.values) {
+      controller.dispose();
+    }
+
+    super.dispose();
+  }
+
+  void _syncPlayerControllers(List<PlayerDraft> players) {
+    for (final player in players) {
+      final existing = _playerControllers[player.order];
+      if (existing == null) {
+        _playerControllers[player.order] = TextEditingController(
+          text: player.name,
+        );
+      } else if (existing.text != player.name) {
+        existing.value = existing.value.copyWith(
+          text: player.name,
+          selection: TextSelection.collapsed(offset: player.name.length),
+          composing: TextRange.empty,
+        );
+      }
+    }
+
+    final validKeys = players.map((e) => e.order).toSet();
+    final toRemove = _playerControllers.keys
+        .where((key) => !validKeys.contains(key))
+        .toList();
+
+    for (final key in toRemove) {
+      _playerControllers[key]?.dispose();
+      _playerControllers.remove(key);
+    }
+  }
+
+  void _syncTeamControllers(List<TeamDraft> teams) {
+    for (final team in teams) {
+      final existing = _teamControllers[team.order];
+      if (existing == null) {
+        _teamControllers[team.order] = TextEditingController(
+          text: team.name,
+        );
+      } else if (existing.text != team.name) {
+        existing.value = existing.value.copyWith(
+          text: team.name,
+          selection: TextSelection.collapsed(offset: team.name.length),
+          composing: TextRange.empty,
+        );
+      }
+    }
+
+    final validKeys = teams.map((e) => e.order).toSet();
+    final toRemove =
+        _teamControllers.keys.where((key) => !validKeys.contains(key)).toList();
+
+    for (final key in toRemove) {
+      _teamControllers[key]?.dispose();
+      _teamControllers.remove(key);
+    }
+  }
+
+  void _syncTopLevelControllers(CreateGameState state) {
+    if (_titleController.text != state.title) {
+      _titleController.value = _titleController.value.copyWith(
+        text: state.title,
+        selection: TextSelection.collapsed(offset: state.title.length),
+        composing: TextRange.empty,
+      );
+    }
+
+    final bestOneText = state.bestOneAmount?.toString() ?? '';
+    if (_bestOneAmountController.text != bestOneText) {
+      _bestOneAmountController.value = _bestOneAmountController.value.copyWith(
+        text: bestOneText,
+        selection: TextSelection.collapsed(offset: bestOneText.length),
+        composing: TextRange.empty,
+      );
+    }
+
+    final bestTwoText = state.bestTwoAmount?.toString() ?? '';
+    if (_bestTwoAmountController.text != bestTwoText) {
+      _bestTwoAmountController.value = _bestTwoAmountController.value.copyWith(
+        text: bestTwoText,
+        selection: TextSelection.collapsed(offset: bestTwoText.length),
+        composing: TextRange.empty,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final providerState = ref.watch(createGameControllerProvider);
+    // Use the locally-computed template state until the provider has been loaded.
+    final state = _templateState ?? providerState;
     final controller = ref.read(createGameControllerProvider.notifier);
     final l10n = AppLocalizations.of(context)!;
+
+    _syncTopLevelControllers(state);
+    _syncPlayerControllers(state.players);
+    _syncTeamControllers(state.teams);
 
     return AppScaffold(
       title: l10n.newGame,
@@ -22,14 +178,16 @@ class CreateGameScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
-            decoration: const InputDecoration(
-              labelText: 'Game Title',
+            key: const Key('createGameTitleField'),
+            controller: _titleController,
+            decoration: InputDecoration(
+              labelText: l10n.gameTitle,
             ),
             onChanged: controller.updateTitle,
           ),
           const SizedBox(height: 24),
           Text(
-            'Players',
+            l10n.players,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -43,8 +201,9 @@ class CreateGameScreen extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: TextField(
+                      controller: _playerControllers[player.order],
                       decoration: InputDecoration(
-                        labelText: 'Player ${index + 1}',
+                        labelText: l10n.playerN(index + 1),
                       ),
                       onChanged: (value) =>
                           controller.updatePlayerName(index, value),
@@ -54,14 +213,18 @@ class CreateGameScreen extends ConsumerWidget {
                   if (state.mode == GameMode.team)
                     Expanded(
                       child: DropdownButtonFormField<int>(
-                        value: player.teamIndex,
-                        decoration: const InputDecoration(
-                          labelText: 'Team',
+                        initialValue: player.teamIndex,
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          labelText: l10n.team,
                         ),
                         items: List.generate(state.teams.length, (teamIndex) {
                           return DropdownMenuItem(
                             value: teamIndex,
-                            child: Text(state.teams[teamIndex].name),
+                            child: Text(
+                              state.teams[teamIndex].name,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           );
                         }),
                         onChanged: (value) =>
@@ -82,119 +245,127 @@ class CreateGameScreen extends ConsumerWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
+              key: const Key('addPlayerButton'),
               onPressed: state.players.length < 6 ? controller.addPlayer : null,
               icon: const Icon(Icons.person_add),
-              label: const Text('Add Player'),
+              label: Text(l10n.addPlayer),
             ),
           ),
           const SizedBox(height: 24),
           Text(
-            'Mode',
+            l10n.mode,
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          RadioListTile<GameMode>(
-            value: GameMode.individual,
+          RadioGroup<GameMode>(
             groupValue: state.mode,
             onChanged: (value) {
               if (value != null) controller.updateMode(value);
             },
-            title: const Text('Individual'),
-          ),
-          RadioListTile<GameMode>(
-            value: GameMode.team,
-            groupValue: state.mode,
-            onChanged: (value) {
-              if (value != null) controller.updateMode(value);
-            },
-            title: const Text('Team'),
+            child: Column(
+              children: [
+                RadioListTile<GameMode>(
+                  key: const Key('individualModeRadio'),
+                  value: GameMode.individual,
+                  title: Text(l10n.individual),
+                ),
+                RadioListTile<GameMode>(
+                  key: const Key('teamModeRadio'),
+                  value: GameMode.team,
+                  title: Text(l10n.team),
+                ),
+              ],
+            ),
           ),
           if (state.mode == GameMode.team) ...[
             const SizedBox(height: 16),
             Text(
-              'Teams',
+              l10n.teams,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             ...List.generate(state.teams.length, (index) {
+              final team = state.teams[index];
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Team ${index + 1}',
-                  ),
-                  controller:
-                      TextEditingController(text: state.teams[index].name)
-                        ..selection = TextSelection.collapsed(
-                          offset: state.teams[index].name.length,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _teamControllers[team.order],
+                        decoration: InputDecoration(
+                          labelText: l10n.teamN(index + 1),
                         ),
-                  onChanged: (value) => controller.updateTeamName(index, value),
+                        onChanged: (value) =>
+                            controller.updateTeamName(index, value),
+                      ),
+                    ),
+                    if (state.teams.length > 2) ...[
+                      const SizedBox(width: 8),
+                      IconButton(
+                        onPressed: () => controller.removeTeam(index),
+                        icon: const Icon(Icons.remove_circle_outline),
+                      ),
+                    ],
+                  ],
                 ),
               );
             }),
             Align(
               alignment: Alignment.centerLeft,
               child: OutlinedButton.icon(
-                onPressed: controller.addTeam,
+                key: const Key('addTeamButton'),
+                onPressed: state.teams.length < 6 ? controller.addTeam : null,
                 icon: const Icon(Icons.group_add),
-                label: const Text('Add Team'),
+                label: Text(l10n.addTeam),
               ),
             ),
           ],
           const SizedBox(height: 24),
           Text(
-            'Rules',
+            l10n.rules,
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          CheckboxListTile(
-            value: state.bestOneEnabled,
-            onChanged: (value) => controller.setBestOneEnabled(value ?? false),
-            title: const Text('Best One'),
-            contentPadding: EdgeInsets.zero,
-          ),
-          CheckboxListTile(
-            value: state.bestTwoEnabled,
-            onChanged: (value) => controller.setBestTwoEnabled(value ?? false),
-            title: const Text('Best Two'),
-            contentPadding: EdgeInsets.zero,
-          ),
-          const SizedBox(height: 16),
-          SwitchListTile(
-            value: state.sharedBetDefault,
-            onChanged: controller.setSharedBetDefault,
-            title: const Text('Use same amount for all rules'),
-            contentPadding: EdgeInsets.zero,
-          ),
           const SizedBox(height: 8),
-          TextField(
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Best One Amount',
+          // In Team mode: show toggle for separate amounts.
+          if (state.mode == GameMode.team) ...[
+            SwitchListTile(
+              value: !state.sharedBetDefault,
+              onChanged: controller.setUseSeparateAmounts,
+              title: Text(l10n.useDifferentAmountForEachRule),
+              contentPadding: EdgeInsets.zero,
             ),
-            controller: TextEditingController(
-              text: state.bestOneAmount?.toString() ?? '',
-            )..selection = TextSelection.collapsed(
-                offset: (state.bestOneAmount?.toString() ?? '').length,
-              ),
-            onChanged: controller.updateBestOneAmount,
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: state.sharedBetDefault
-                  ? 'Best Two Amount (optional)'
-                  : 'Best Two Amount',
+            const SizedBox(height: 8),
+          ],
+          // Single amount field — Individual always, Team when toggle is OFF.
+          if (state.mode == GameMode.individual || state.sharedBetDefault) ...[
+            TextField(
+              controller: _bestOneAmountController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: l10n.amount),
+              onChanged: controller.updateBestOneAmount,
             ),
-            controller: TextEditingController(
-              text: state.bestTwoAmount?.toString() ?? '',
-            )..selection = TextSelection.collapsed(
-                offset: (state.bestTwoAmount?.toString() ?? '').length,
-              ),
-            onChanged: controller.updateBestTwoAmount,
-          ),
+          ] else ...[
+            // Separate fields — Team mode when toggle is ON.
+            TextField(
+              controller: _bestOneAmountController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: l10n.bestOneAmount),
+              onChanged: controller.updateBestOneAmount,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _bestTwoAmountController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: l10n.bestTwoAmount),
+              onChanged: controller.updateBestTwoAmount,
+            ),
+          ],
           const SizedBox(height: 24),
           Text(
-            'Hole Setup',
+            l10n.holeSetup,
+            key: const Key('holeSetupSectionTitle'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -204,11 +375,11 @@ class CreateGameScreen extends ConsumerWidget {
             children: [
               OutlinedButton(
                 onPressed: controller.applyTurboFor9And18,
-                child: const Text('Set Turbo 9 & 18'),
+                child: Text(l10n.setTurbo9And18),
               ),
               OutlinedButton(
                 onPressed: controller.applyBirdieBonusFor9And18,
-                child: const Text('Set Birdie 9 & 18'),
+                child: Text(l10n.setBirdie9And18),
               ),
             ],
           ),
@@ -225,37 +396,31 @@ class CreateGameScreen extends ConsumerWidget {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Hole ${hole.holeNumber}',
+                        l10n.holeN(hole.holeNumber),
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ),
                     const SizedBox(height: 12),
-                    TextField(
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Par',
-                      ),
-                      controller: TextEditingController(
-                        text: hole.par.toString(),
-                      )..selection = TextSelection.collapsed(
-                          offset: hole.par.toString().length,
-                        ),
-                      onChanged: (value) =>
-                          controller.updateHolePar(index, value),
+                    NumberStepper(
+                      value: hole.par,
+                      min: 3,
+                      max: 5,
+                      label: l10n.par,
+                      onChanged: (v) => controller.updateHoleParInt(index, v!),
                     ),
                     const SizedBox(height: 8),
                     SwitchListTile(
                       value: hole.isTurbo,
                       onChanged: (value) =>
                           controller.updateHoleTurbo(index, value),
-                      title: const Text('Turbo x2'),
+                      title: Text(l10n.turboX2),
                       contentPadding: EdgeInsets.zero,
                     ),
                     SwitchListTile(
                       value: hole.isBirdieBonus,
                       onChanged: (value) =>
                           controller.updateHoleBirdieBonus(index, value),
-                      title: const Text('Birdie Bonus x2'),
+                      title: Text(l10n.birdieBonusX2),
                       contentPadding: EdgeInsets.zero,
                     ),
                   ],
@@ -274,6 +439,7 @@ class CreateGameScreen extends ConsumerWidget {
           ],
           const SizedBox(height: 24),
           FilledButton(
+            key: const Key('startGameButton'),
             onPressed: state.isSubmitting
                 ? null
                 : () async {
@@ -288,7 +454,7 @@ class CreateGameScreen extends ConsumerWidget {
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Start Game'),
+                : Text(l10n.startGame),
           ),
         ],
       ),

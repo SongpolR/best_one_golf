@@ -1,0 +1,450 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../app/app.dart';
+import '../../../core/utils/currency_formatter.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../score_entry/presentation/score_entry_controller.dart';
+
+enum HoleResultViewMode {
+  summary,
+  detail,
+}
+
+class HoleResultSheet extends ConsumerStatefulWidget {
+  final String gameId;
+  final int holeNumber;
+
+  const HoleResultSheet({
+    super.key,
+    required this.gameId,
+    required this.holeNumber,
+  });
+
+  @override
+  ConsumerState<HoleResultSheet> createState() => _HoleResultSheetState();
+}
+
+class _HoleResultSheetState extends ConsumerState<HoleResultSheet> {
+  HoleResultViewMode mode = HoleResultViewMode.summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final resultAsync = ref.watch(
+      holeResultProvider(
+        (gameId: widget.gameId, holeNumber: widget.holeNumber),
+      ),
+    );
+    final settingsAsync = ref.watch(appSettingsProvider);
+    final aggregateAsync = ref.watch(gameAggregateProvider(widget.gameId));
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        child: settingsAsync.when(
+          data: (settings) {
+            return aggregateAsync.when(
+              data: (aggregate) {
+                final playerNameById = {
+                  for (final player in aggregate.players)
+                    player.id: player.name,
+                };
+                final teamNameById = {
+                  for (final team in aggregate.teams) team.id: team.name,
+                };
+
+                return resultAsync.when(
+                  data: (result) {
+                    if (result == null) {
+                      return _SheetFrame(
+                        title: l10n.holeResult,
+                        child: Center(
+                          child: Text(l10n.noResultAvailable),
+                        ),
+                      );
+                    }
+
+                    return _SheetFrame(
+                      title: l10n.holeNResult(result.holeNumber),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _TopMeta(
+                            isComplete: result.isComplete,
+                            isTurbo: result.isTurbo,
+                            isBirdieBonus: result.isBirdieBonus,
+                            baseAmount: result.baseAmount == null
+                                ? null
+                                : CurrencyFormatter.format(
+                                    result.baseAmount!,
+                                    settings.currency,
+                                  ),
+                          ),
+                          const SizedBox(height: 16),
+                          SegmentedButton<HoleResultViewMode>(
+                            segments: [
+                              ButtonSegment(
+                                value: HoleResultViewMode.summary,
+                                label: Text(l10n.summary),
+                              ),
+                              ButtonSegment(
+                                value: HoleResultViewMode.detail,
+                                label: Text(l10n.detail),
+                              ),
+                            ],
+                            selected: {mode},
+                            onSelectionChanged: (selection) {
+                              setState(() {
+                                mode = selection.first;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          Expanded(
+                            child: mode == HoleResultViewMode.summary
+                                ? _SummaryView(
+                                    playerNet: result.playerNet,
+                                    teamNet: result.teamNet,
+                                    playerNameById: playerNameById,
+                                    teamNameById: teamNameById,
+                                    formatter: (amount) =>
+                                        CurrencyFormatter.formatSigned(
+                                      amount,
+                                      settings.currency,
+                                    ),
+                                  )
+                                : _DetailView(
+                                    playerMovements: result.playerMovements
+                                        .map(
+                                          (move) => _MovementTileData(
+                                            title:
+                                                '${playerNameById[move.fromId] ?? move.fromId} → ${playerNameById[move.toId] ?? teamNameById[move.toId] ?? move.toId}',
+                                            subtitle: _formatRuleLabel(
+                                              l10n,
+                                              move.rule,
+                                              move.note,
+                                            ),
+                                            amount: CurrencyFormatter.format(
+                                              move.amount,
+                                              settings.currency,
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    teamMovements: result.teamMovements
+                                        .map(
+                                          (move) => _MovementTileData(
+                                            title:
+                                                '${teamNameById[move.fromTeamId] ?? move.fromTeamId} → ${teamNameById[move.toTeamId] ?? move.toTeamId}',
+                                            subtitle: _formatRuleLabel(
+                                              l10n,
+                                              move.rule,
+                                              move.note,
+                                            ),
+                                            amount: CurrencyFormatter.format(
+                                              move.amount,
+                                              settings.currency,
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  loading: () => _SheetFrame(
+                    title: l10n.holeResult,
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                  error: (error, stackTrace) => _SheetFrame(
+                    title: l10n.holeResult,
+                    child: Center(
+                      child: Text(l10n.failedToLoadHoleResult(error)),
+                    ),
+                  ),
+                );
+              },
+              loading: () => _SheetFrame(
+                title: l10n.holeResult,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              error: (error, stackTrace) => _SheetFrame(
+                title: l10n.holeResult,
+                child: Center(
+                  child: Text(l10n.failedToLoadGameData(error)),
+                ),
+              ),
+            );
+          },
+          loading: () => _SheetFrame(
+            title: l10n.holeResult,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (error, stackTrace) => _SheetFrame(
+            title: l10n.holeResult,
+            child: Center(
+              child: Text(l10n.failedToLoadAppSettings(error)),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatRuleLabel(AppLocalizations l10n, String rule, String note) {
+    final ruleLabel = switch (rule) {
+      'best_one' => l10n.bestOne,
+      'best_two' => l10n.bestTwo,
+      'individual' => l10n.individual,
+      _ => rule,
+    };
+
+    final noteLabel = switch (note) {
+      'team' => l10n.team,
+      'team_split' => l10n.split,
+      'team_match' => l10n.team,
+      'team_payment' => l10n.team,
+      'gross' => l10n.gross,
+      _ => note,
+    };
+
+    return '$ruleLabel • $noteLabel';
+  }
+}
+
+class _SheetFrame extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _SheetFrame({
+    required this.title,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.outline,
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 12),
+        Expanded(child: child),
+      ],
+    );
+  }
+}
+
+class _TopMeta extends StatelessWidget {
+  final bool isComplete;
+  final bool isTurbo;
+  final bool isBirdieBonus;
+  final String? baseAmount;
+
+  const _TopMeta({
+    required this.isComplete,
+    required this.isTurbo,
+    required this.isBirdieBonus,
+    required this.baseAmount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        _MetaChip(label: isComplete ? l10n.complete : l10n.incomplete),
+        _MetaChip(label: isTurbo ? l10n.turboOnShort : l10n.turboOffShort),
+        _MetaChip(
+          label: isBirdieBonus ? l10n.birdieOnShort : l10n.birdieOffShort,
+        ),
+        if (baseAmount != null)
+          _MetaChip(label: l10n.baseWithAmount(baseAmount!)),
+      ],
+    );
+  }
+}
+
+class _MetaChip extends StatelessWidget {
+  final String label;
+
+  const _MetaChip({
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(label: Text(label));
+  }
+}
+
+class _SummaryView extends StatelessWidget {
+  final Map<String, int> playerNet;
+  final Map<String, int> teamNet;
+  final Map<String, String> playerNameById;
+  final Map<String, String> teamNameById;
+  final String Function(int amount) formatter;
+
+  const _SummaryView({
+    required this.playerNet,
+    required this.teamNet,
+    required this.playerNameById,
+    required this.teamNameById,
+    required this.formatter,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final sortedTeamEntries = teamNet.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    final sortedPlayerEntries = playerNet.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 8),
+      children: [
+        if (teamNet.isEmpty && playerNet.isEmpty) Text(l10n.noResultYet),
+        if (teamNet.isNotEmpty) ...[
+          Text(
+            l10n.teamNet,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          ...sortedTeamEntries.map(
+            (entry) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Card(
+                child: ListTile(
+                  title: Text(teamNameById[entry.key] ?? entry.key),
+                  trailing: Text(formatter(entry.value)),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+        if (playerNet.isNotEmpty) ...[
+          Text(
+            l10n.playerNet,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          ...sortedPlayerEntries.map(
+            (entry) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Card(
+                child: ListTile(
+                  title: Text(playerNameById[entry.key] ?? entry.key),
+                  trailing: Text(formatter(entry.value)),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _DetailView extends StatelessWidget {
+  final List<_MovementTileData> playerMovements;
+  final List<_MovementTileData> teamMovements;
+
+  const _DetailView({
+    required this.playerMovements,
+    required this.teamMovements,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 8),
+      children: [
+        Text(
+          l10n.playerMovements,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        if (playerMovements.isEmpty)
+          Text(l10n.noPlayerMovements)
+        else
+          ...playerMovements.map(
+            (move) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Card(
+                child: ListTile(
+                  title: Text(move.title),
+                  subtitle: Text(move.subtitle),
+                  trailing: Text(move.amount),
+                ),
+              ),
+            ),
+          ),
+        const SizedBox(height: 8),
+        Text(
+          l10n.teamMovements,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        if (teamMovements.isEmpty)
+          Text(l10n.noTeamMovements)
+        else
+          ...teamMovements.map(
+            (move) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Card(
+                child: ListTile(
+                  title: Text(move.title),
+                  subtitle: Text(move.subtitle),
+                  trailing: Text(move.amount),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _MovementTileData {
+  final String title;
+  final String subtitle;
+  final String amount;
+
+  const _MovementTileData({
+    required this.title,
+    required this.subtitle,
+    required this.amount,
+  });
+}

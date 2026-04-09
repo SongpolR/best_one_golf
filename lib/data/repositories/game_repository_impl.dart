@@ -1,20 +1,34 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../core/enums/game_mode.dart';
 import '../../domain/entities/create_game_input.dart';
+import '../../domain/entities/game.dart';
+import '../../domain/entities/game_aggregate.dart';
 import '../../domain/entities/game_list_item.dart';
+import '../../domain/entities/game_rule_settings.dart';
+import '../../domain/entities/hole_config.dart';
+import '../../domain/entities/hole_score.dart';
+import '../../domain/entities/player.dart';
+import '../../domain/entities/team.dart';
 import '../../domain/repositories/game_repository.dart';
+import '../../domain/services/calculation/game_calculator.dart';
 import '../local/app_database.dart';
 
 class GameRepositoryImpl implements GameRepository {
   final AppDatabase db;
   final Uuid uuid;
+  final GameCalculator gameCalculator;
 
   GameRepositoryImpl(
     this.db, {
     Uuid? uuid,
-  }) : uuid = uuid ?? const Uuid();
+    GameCalculator? gameCalculator,
+  })  : uuid = uuid ?? const Uuid(),
+        gameCalculator = gameCalculator ?? const GameCalculator();
 
   @override
   Future<String> createGame(CreateGameInput input) async {
@@ -104,6 +118,161 @@ class GameRepositoryImpl implements GameRepository {
   }
 
   @override
+  Future<List<GameListItem>> fetchOngoingGames({
+    required int limit,
+    required int offset,
+  }) async {
+    final rows = await db.historyDao.fetchGamesByStatus(
+      'ongoing',
+      limit: limit,
+      offset: offset,
+    );
+    return _mapGameList(rows);
+  }
+
+  @override
+  Future<List<GameListItem>> fetchCompletedGames({
+    required int limit,
+    required int offset,
+  }) async {
+    final rows = await db.historyDao.fetchGamesByStatus(
+      'completed',
+      limit: limit,
+      offset: offset,
+    );
+    return _mapGameList(rows);
+  }
+
+  @override
+  Stream<GameAggregate> watchGame(String gameId) {
+    return Rx.combineLatest6(
+      db.scoreEntryDao.watchGame(gameId),
+      db.scoreEntryDao.watchPlayers(gameId),
+      db.scoreEntryDao.watchTeams(gameId),
+      db.scoreEntryDao.watchRuleSettings(gameId),
+      db.scoreEntryDao.watchHoleConfigs(gameId),
+      db.scoreEntryDao.watchHoleScores(gameId),
+      (
+        gameRow,
+        playerRows,
+        teamRows,
+        ruleSettingsRow,
+        holeConfigRows,
+        holeScoreRows,
+      ) {
+        return GameAggregate(
+          game: Game(
+            id: gameRow.id,
+            title: gameRow.title,
+            mode: GameMode.fromValue(gameRow.mode),
+            status: gameRow.status,
+            totalHoles: gameRow.totalHoles,
+            createdAt: gameRow.createdAt,
+            updatedAt: gameRow.updatedAt,
+          ),
+          settings: GameRuleSettings(
+            gameId: ruleSettingsRow.gameId,
+            bestOneEnabled: ruleSettingsRow.bestOneEnabled,
+            bestTwoEnabled: ruleSettingsRow.bestTwoEnabled,
+            sharedBetDefault: ruleSettingsRow.sharedBetDefault,
+            bestOneAmount: ruleSettingsRow.bestOneAmount,
+            bestTwoAmount: ruleSettingsRow.bestTwoAmount,
+          ),
+          players: playerRows
+              .map(
+                (row) => Player(
+                  id: row.id,
+                  gameId: row.gameId,
+                  name: row.name,
+                  order: row.playerOrder,
+                  teamId: row.teamId,
+                ),
+              )
+              .toList(),
+          teams: teamRows
+              .map(
+                (row) => Team(
+                  id: row.id,
+                  gameId: row.gameId,
+                  name: row.name,
+                  order: row.teamOrder,
+                ),
+              )
+              .toList(),
+          holeConfigs: holeConfigRows
+              .map(
+                (row) => HoleConfig(
+                  id: row.id,
+                  gameId: row.gameId,
+                  holeNumber: row.holeNumber,
+                  par: row.par,
+                  isTurbo: row.isTurbo,
+                  isBirdieBonus: row.isBirdieBonus,
+                ),
+              )
+              .toList(),
+          holeScores: holeScoreRows
+              .map(
+                (row) => HoleScore(
+                  id: row.id,
+                  gameId: row.gameId,
+                  holeNumber: row.holeNumber,
+                  playerId: row.playerId,
+                  strokes: row.strokes,
+                ),
+              )
+              .toList(),
+        );
+      },
+    );
+  }
+
+  @override
+  Future<void> updateScore({
+    required String gameId,
+    required int holeNumber,
+    required String playerId,
+    required int? strokes,
+  }) async {
+    await db.scoreEntryDao.updateScore(
+      gameId: gameId,
+      holeNumber: holeNumber,
+      playerId: playerId,
+      strokes: strokes,
+    );
+
+    await recalculateGame(gameId);
+  }
+
+  @override
+  Future<void> recalculateGame(String gameId) async {
+    final aggregate = await watchGame(gameId).first;
+    final result = gameCalculator.calculate(aggregate);
+
+    final holeRows = result.holeResults.map((hole) {
+      return ComputedHoleResultsTableCompanion(
+        id: Value('${gameId}_${hole.holeNumber}'),
+        gameId: Value(gameId),
+        holeNumber: Value(hole.holeNumber),
+        isComplete: Value(hole.isComplete),
+        summaryJson: Value(jsonEncode(hole.toJson())),
+      );
+    }).toList();
+
+    final settlementRow = SettlementSnapshotsTableCompanion(
+      gameId: Value(gameId),
+      summaryJson: Value(jsonEncode(result.toJson())),
+      updatedAt: Value(DateTime.now()),
+    );
+
+    await db.calculationDao.replaceCalculationResult(
+      gameId: gameId,
+      holeResults: holeRows,
+      settlement: settlementRow,
+    );
+  }
+
+  @override
   Future<void> deleteGame(String gameId) {
     return db.historyDao.deleteGame(gameId);
   }
@@ -114,7 +283,12 @@ class GameRepositoryImpl implements GameRepository {
   }
 
   @override
-  Future<String> restartGame(String gameId) async {
+  Future<String> restartGame(String gameId) => _copyGame(gameId);
+
+  @override
+  Future<String> duplicateGame(String gameId) => _copyGame(gameId);
+
+  Future<String> _copyGame(String gameId) async {
     final game = await db.historyDao.getGameById(gameId);
     final players = await db.historyDao.getPlayersByGameId(gameId);
     final teams = await db.historyDao.getTeamsByGameId(gameId);

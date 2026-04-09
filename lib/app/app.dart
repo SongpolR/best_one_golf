@@ -3,20 +3,31 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../core/enums/app_theme_mode.dart';
 import '../data/local/app_database.dart';
-import '../data/repositories/app_settings_repository_impl.dart';
-import '../data/repositories/game_repository_impl.dart';
 import '../domain/entities/app_settings.dart';
 import '../domain/entities/game_list_item.dart';
+import '../domain/entities/game_summary_view_data.dart';
+import '../domain/entities/hole_result_view_data.dart';
 import '../domain/repositories/app_settings_repository.dart';
 import '../domain/repositories/game_repository.dart';
+import '../data/repositories/app_settings_repository_impl.dart';
+import '../data/repositories/game_repository_impl.dart';
 import '../domain/usecases/create_game.dart';
 import '../domain/usecases/delete_game.dart';
+import '../domain/usecases/duplicate_game.dart';
 import '../domain/usecases/finalize_game.dart';
 import '../domain/usecases/list_completed_games.dart';
 import '../domain/usecases/list_ongoing_games.dart';
 import '../domain/usecases/restart_game.dart';
+import '../domain/usecases/load_game.dart';
+import '../domain/usecases/update_score.dart';
+import '../domain/usecases/recalculate_game.dart';
+import '../domain/usecases/load_game_summary.dart';
+import '../domain/usecases/load_hole_result.dart';
 import '../l10n/app_localizations.dart';
+import '../services/ad_service.dart';
+import '../services/iap_service.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
 
@@ -31,6 +42,21 @@ final appSettingsRepositoryProvider = Provider<AppSettingsRepository>((ref) {
 
 final appSettingsProvider = StreamProvider<AppSettings>((ref) {
   return ref.watch(appSettingsRepositoryProvider).watchSettings();
+});
+
+final adServiceProvider = Provider<AdService>((ref) {
+  final service = AdService();
+  service.preload();
+  ref.onDispose(service.dispose);
+  return service;
+});
+
+final iapServiceProvider = Provider<IapService>((ref) {
+  final repository = ref.watch(appSettingsRepositoryProvider);
+  final service = IapService(repository);
+  service.initialize();
+  ref.onDispose(service.dispose);
+  return service;
 });
 
 final uuidProvider = Provider<Uuid>((ref) {
@@ -70,6 +96,11 @@ final restartGameUseCaseProvider = Provider<RestartGameUseCase>((ref) {
   return RestartGameUseCase(repository);
 });
 
+final duplicateGameUseCaseProvider = Provider<DuplicateGameUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return DuplicateGameUseCase(repository);
+});
+
 final finalizeGameUseCaseProvider = Provider<FinalizeGameUseCase>((ref) {
   final repository = ref.watch(gameRepositoryProvider);
   return FinalizeGameUseCase(repository);
@@ -83,6 +114,44 @@ final completedGamesProvider = StreamProvider<List<GameListItem>>((ref) {
   return ref.watch(listCompletedGamesUseCaseProvider).call();
 });
 
+final loadGameUseCaseProvider = Provider<LoadGameUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return LoadGameUseCase(repository);
+});
+
+final updateScoreUseCaseProvider = Provider<UpdateScoreUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return UpdateScoreUseCase(repository);
+});
+
+final recalculateGameUseCaseProvider = Provider<RecalculateGameUseCase>((ref) {
+  final repository = ref.watch(gameRepositoryProvider);
+  return RecalculateGameUseCase(repository);
+});
+
+final loadHoleResultUseCaseProvider = Provider<LoadHoleResultUseCase>((ref) {
+  final db = ref.watch(appDatabaseProvider);
+  return LoadHoleResultUseCase(db);
+});
+
+final loadGameSummaryUseCaseProvider = Provider<LoadGameSummaryUseCase>((ref) {
+  final db = ref.watch(appDatabaseProvider);
+  return LoadGameSummaryUseCase(db);
+});
+
+final holeResultProvider = StreamProvider.family<HoleResultViewData?,
+    ({String gameId, int holeNumber})>((ref, params) {
+  return ref.watch(loadHoleResultUseCaseProvider).watch(
+        gameId: params.gameId,
+        holeNumber: params.holeNumber,
+      );
+});
+
+final gameSummaryProvider =
+    StreamProvider.family<GameSummaryViewData?, String>((ref, gameId) {
+  return ref.watch(loadGameSummaryUseCaseProvider).watch(gameId);
+});
+
 class BestOneGolfApp extends ConsumerWidget {
   const BestOneGolfApp({super.key});
 
@@ -93,10 +162,18 @@ class BestOneGolfApp extends ConsumerWidget {
 
     return settingsAsync.when(
       data: (settings) {
+        final themeMode = switch (settings.themeMode) {
+          AppThemeMode.light => ThemeMode.light,
+          AppThemeMode.dark => ThemeMode.dark,
+          AppThemeMode.system => ThemeMode.system,
+        };
+
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,
           title: 'BestOneGolf',
           theme: AppTheme.light(),
+          darkTheme: AppTheme.dark(),
+          themeMode: themeMode,
           routerConfig: router,
           locale: Locale(settings.language.code),
           supportedLocales: AppLocalizations.supportedLocales,

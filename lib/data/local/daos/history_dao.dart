@@ -30,6 +30,20 @@ class HistoryDao extends DatabaseAccessor<AppDatabase> with _$HistoryDaoMixin {
         .watch();
   }
 
+  Future<List<GamesTableData>> fetchGamesByStatus(
+    String status, {
+    required int limit,
+    required int offset,
+  }) {
+    return (select(gamesTable)
+          ..where((tbl) => tbl.status.equals(status))
+          ..orderBy([
+            (tbl) => OrderingTerm.desc(tbl.updatedAt),
+          ])
+          ..limit(limit, offset: offset))
+        .get();
+  }
+
   Future<void> deleteGame(String gameId) async {
     await transaction(() async {
       await (delete(holeConfigsTable)

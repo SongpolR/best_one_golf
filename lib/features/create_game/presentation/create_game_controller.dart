@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/app.dart';
 import '../../../core/enums/game_mode.dart';
 import '../../../domain/entities/create_game_input.dart';
+import '../../../domain/entities/game_aggregate.dart';
 import '../../../domain/services/validation/game_setup_validator.dart';
 import 'create_game_state.dart';
 
@@ -11,7 +12,7 @@ final gameSetupValidatorProvider = Provider<GameSetupValidator>((ref) {
 });
 
 final createGameControllerProvider =
-    NotifierProvider<CreateGameController, CreateGameState>(
+    NotifierProvider.autoDispose<CreateGameController, CreateGameState>(
   CreateGameController.new,
 );
 
@@ -19,6 +20,10 @@ class CreateGameController extends Notifier<CreateGameState> {
   @override
   CreateGameState build() {
     return CreateGameState.initial();
+  }
+
+  void loadFromAggregate(GameAggregate aggregate) {
+    state = CreateGameState.fromAggregate(aggregate);
   }
 
   void updateTitle(String value) {
@@ -29,11 +34,28 @@ class CreateGameController extends Notifier<CreateGameState> {
     state = state.copyWith(
       mode: mode,
       errorMessage: null,
+      // Best One is always on; reset Best Two and amounts when switching to Individual.
+      bestOneEnabled: true,
+      bestTwoEnabled:
+          mode == GameMode.individual ? false : state.bestTwoEnabled,
+      sharedBetDefault:
+          mode == GameMode.individual ? true : state.sharedBetDefault,
       players: mode == GameMode.individual
           ? state.players
               .map((player) => player.copyWith(teamIndex: null))
               .toList()
           : state.players,
+    );
+  }
+
+  /// Toggles whether Team mode uses a separate amount per rule.
+  /// When [useSeparate] is true: show Best One + Best Two fields individually.
+  /// When false: show a single shared amount (Best Two disabled).
+  void setUseSeparateAmounts(bool useSeparate) {
+    state = state.copyWith(
+      sharedBetDefault: !useSeparate,
+      bestTwoEnabled: useSeparate,
+      errorMessage: null,
     );
   }
 
@@ -45,7 +67,7 @@ class CreateGameController extends Notifier<CreateGameState> {
       PlayerDraft(
         name: '',
         order: updatedPlayers.length,
-        teamIndex: state.mode == GameMode.team ? 0 : null,
+        teamIndex: null,
       ),
     );
 
@@ -83,6 +105,8 @@ class CreateGameController extends Notifier<CreateGameState> {
   }
 
   void addTeam() {
+    if (state.teams.length >= 6) return;
+
     final updatedTeams = [...state.teams];
     final name = 'Team ${String.fromCharCode(65 + updatedTeams.length)}';
 
@@ -94,6 +118,32 @@ class CreateGameController extends Notifier<CreateGameState> {
     );
 
     state = state.copyWith(teams: updatedTeams, errorMessage: null);
+  }
+
+  void removeTeam(int index) {
+    if (state.teams.length <= 2) return;
+
+    final updatedTeams = [...state.teams]..removeAt(index);
+
+    // Renormalize team orders.
+    final normalizedTeams = <TeamDraft>[];
+    for (var i = 0; i < updatedTeams.length; i++) {
+      normalizedTeams.add(updatedTeams[i].copyWith(order: i));
+    }
+
+    // Reassign players: removed team → 0, shift higher indices down.
+    final updatedPlayers = state.players.map((p) {
+      if (p.teamIndex == null) return p;
+      if (p.teamIndex == index) return p.copyWith(teamIndex: null);
+      if (p.teamIndex! > index) return p.copyWith(teamIndex: p.teamIndex! - 1);
+      return p;
+    }).toList();
+
+    state = state.copyWith(
+      teams: normalizedTeams,
+      players: updatedPlayers,
+      errorMessage: null,
+    );
   }
 
   void updateTeamName(int index, String name) {
@@ -135,6 +185,13 @@ class CreateGameController extends Notifier<CreateGameState> {
 
     final updatedHoles = [...state.holes];
     updatedHoles[holeIndex] = updatedHoles[holeIndex].copyWith(par: parsed);
+
+    state = state.copyWith(holes: updatedHoles, errorMessage: null);
+  }
+
+  void updateHoleParInt(int holeIndex, int par) {
+    final updatedHoles = [...state.holes];
+    updatedHoles[holeIndex] = updatedHoles[holeIndex].copyWith(par: par);
 
     state = state.copyWith(holes: updatedHoles, errorMessage: null);
   }
