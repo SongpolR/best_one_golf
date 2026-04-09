@@ -1,6 +1,8 @@
 import '../../../core/enums/game_mode.dart';
 import '../../../domain/entities/game_aggregate.dart';
 
+const Object _unset = Object();
+
 class PlayerDraft {
   final String name;
   final int order;
@@ -15,12 +17,12 @@ class PlayerDraft {
   PlayerDraft copyWith({
     String? name,
     int? order,
-    int? teamIndex,
+    Object? teamIndex = _unset,
   }) {
     return PlayerDraft(
       name: name ?? this.name,
       order: order ?? this.order,
-      teamIndex: teamIndex ?? this.teamIndex,
+      teamIndex: identical(teamIndex, _unset) ? this.teamIndex : teamIndex as int?,
     );
   }
 }
@@ -102,8 +104,11 @@ class CreateGameState {
   });
 
   factory CreateGameState.fromAggregate(GameAggregate aggregate) {
+    final sortedTeams = aggregate.teams.toList()
+      ..sort((a, b) => a.order.compareTo(b.order));
+
     final teamIdToIndex = {
-      for (var i = 0; i < aggregate.teams.length; i++) aggregate.teams[i].id: i,
+      for (var i = 0; i < sortedTeams.length; i++) sortedTeams[i].id: i,
     };
 
     final players =
@@ -117,8 +122,7 @@ class CreateGameState {
             )
             .toList();
 
-    final teams = (aggregate.teams.toList()
-          ..sort((a, b) => a.order.compareTo(b.order)))
+    final teams = sortedTeams
         .map((t) => TeamDraft(name: t.name, order: t.order))
         .toList();
 
