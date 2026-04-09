@@ -134,7 +134,7 @@ class CreateGameController extends Notifier<CreateGameState> {
     // Reassign players: removed team → 0, shift higher indices down.
     final updatedPlayers = state.players.map((p) {
       if (p.teamIndex == null) return p;
-      if (p.teamIndex == index) return p.copyWith(teamIndex: 0);
+      if (p.teamIndex == index) return p.copyWith(teamIndex: null);
       if (p.teamIndex! > index) return p.copyWith(teamIndex: p.teamIndex! - 1);
       return p;
     }).toList();
