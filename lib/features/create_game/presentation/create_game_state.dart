@@ -1,6 +1,8 @@
 import '../../../core/enums/game_mode.dart';
 import '../../../domain/entities/game_aggregate.dart';
 
+const Object _unset = Object();
+
 class PlayerDraft {
   final String name;
   final int order;
@@ -15,12 +17,12 @@ class PlayerDraft {
   PlayerDraft copyWith({
     String? name,
     int? order,
-    int? teamIndex,
+    Object? teamIndex = _unset,
   }) {
     return PlayerDraft(
       name: name ?? this.name,
       order: order ?? this.order,
-      teamIndex: teamIndex ?? this.teamIndex,
+      teamIndex: identical(teamIndex, _unset) ? this.teamIndex : teamIndex as int?,
     );
   }
 }
