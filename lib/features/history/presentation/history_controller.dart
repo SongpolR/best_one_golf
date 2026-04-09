@@ -59,11 +59,11 @@ class HistoryState {
 }
 
 final historyControllerProvider =
-    AutoDisposeNotifierProvider<HistoryController, HistoryState>(
+    NotifierProvider.autoDispose<HistoryController, HistoryState>(
   HistoryController.new,
 );
 
-class HistoryController extends AutoDisposeNotifier<HistoryState> {
+class HistoryController extends Notifier<HistoryState> {
   @override
   HistoryState build() {
     Future.microtask(() async {

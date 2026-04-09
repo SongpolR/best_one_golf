@@ -213,7 +213,7 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
                   if (state.mode == GameMode.team)
                     Expanded(
                       child: DropdownButtonFormField<int>(
-                        value: player.teamIndex,
+                        initialValue: player.teamIndex,
                         isExpanded: true,
                         decoration: InputDecoration(
                           labelText: l10n.team,
@@ -256,23 +256,25 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
             l10n.mode,
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          RadioListTile<GameMode>(
-            key: const Key('individualModeRadio'),
-            value: GameMode.individual,
+          RadioGroup<GameMode>(
             groupValue: state.mode,
             onChanged: (value) {
               if (value != null) controller.updateMode(value);
             },
-            title: Text(l10n.individual),
-          ),
-          RadioListTile<GameMode>(
-            key: const Key('teamModeRadio'),
-            value: GameMode.team,
-            groupValue: state.mode,
-            onChanged: (value) {
-              if (value != null) controller.updateMode(value);
-            },
-            title: Text(l10n.team),
+            child: Column(
+              children: [
+                RadioListTile<GameMode>(
+                  key: const Key('individualModeRadio'),
+                  value: GameMode.individual,
+                  title: Text(l10n.individual),
+                ),
+                RadioListTile<GameMode>(
+                  key: const Key('teamModeRadio'),
+                  value: GameMode.team,
+                  title: Text(l10n.team),
+                ),
+              ],
+            ),
           ),
           if (state.mode == GameMode.team) ...[
             const SizedBox(height: 16),

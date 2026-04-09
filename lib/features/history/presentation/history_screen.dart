@@ -201,7 +201,7 @@ class _GameCard extends ConsumerWidget {
                     );
                     if (!context.mounted) return;
 
-                    final settings = ref.read(appSettingsProvider).valueOrNull;
+                    final settings = ref.read(appSettingsProvider).value;
                     if (settings?.adsRemoved == true) {
                       context.push('/create-game', extra: aggregate);
                       return;

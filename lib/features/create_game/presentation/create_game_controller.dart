@@ -12,11 +12,11 @@ final gameSetupValidatorProvider = Provider<GameSetupValidator>((ref) {
 });
 
 final createGameControllerProvider =
-    AutoDisposeNotifierProvider<CreateGameController, CreateGameState>(
+    NotifierProvider.autoDispose<CreateGameController, CreateGameState>(
   CreateGameController.new,
 );
 
-class CreateGameController extends AutoDisposeNotifier<CreateGameState> {
+class CreateGameController extends Notifier<CreateGameState> {
   @override
   CreateGameState build() {
     return CreateGameState.initial();
