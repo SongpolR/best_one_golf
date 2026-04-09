@@ -65,7 +65,7 @@ void main() {
     await tester.tap(find.text('Thai'));
     await tester.pump();
 
-    expect(find.text('ภาษา'), findsOneWidget);
     expect(find.text('สกุลเงิน'), findsOneWidget);
+    expect(find.text('กฎหมาย'), findsOneWidget);
   });
 }

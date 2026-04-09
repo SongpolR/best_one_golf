@@ -145,7 +145,7 @@ class AppTheme {
         thickness: 1,
         space: 1,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
@@ -242,7 +242,7 @@ class AppTheme {
         thickness: 1,
         space: 1,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.darkSurface,
         surfaceTintColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
@@ -301,8 +301,8 @@ class AppTheme {
     );
   }
 
-  static CardTheme _cardThemeDark() {
-    return CardTheme(
+  static CardThemeData _cardThemeDark() {
+    return CardThemeData(
       margin: EdgeInsets.zero,
       elevation: 0,
       color: AppColors.darkSurface,
@@ -393,10 +393,10 @@ class AppTheme {
         }),
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
-            return AppColors.green.withOpacity(0.1);
+            return AppColors.green.withValues(alpha: 0.1);
           }
           if (states.contains(WidgetState.hovered)) {
-            return AppColors.green.withOpacity(0.05);
+            return AppColors.green.withValues(alpha: 0.05);
           }
           return null;
         }),
@@ -415,7 +415,7 @@ class AppTheme {
         }),
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
-            return AppColors.green.withOpacity(0.12);
+            return AppColors.green.withValues(alpha: 0.12);
           }
           return null;
         }),
@@ -645,8 +645,8 @@ class AppTheme {
   // ── Card ─────────────────────────────────────────────────────────────────────
   // White card, rounded (16), subtle gray border — like Duolingo option tiles.
 
-  static CardTheme _cardTheme() {
-    return CardTheme(
+  static CardThemeData _cardTheme() {
+    return CardThemeData(
       margin: EdgeInsets.zero,
       elevation: 0,
       color: Colors.white,
@@ -740,10 +740,10 @@ class AppTheme {
         }),
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
-            return Colors.black.withOpacity(0.1);
+            return Colors.black.withValues(alpha: 0.1);
           }
           if (states.contains(WidgetState.hovered)) {
-            return Colors.black.withOpacity(0.05);
+            return Colors.black.withValues(alpha: 0.05);
           }
           return null;
         }),
@@ -800,10 +800,10 @@ class AppTheme {
         }),
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
-            return AppColors.green.withOpacity(0.08);
+            return AppColors.green.withValues(alpha: 0.08);
           }
           if (states.contains(WidgetState.hovered)) {
-            return AppColors.green.withOpacity(0.04);
+            return AppColors.green.withValues(alpha: 0.04);
           }
           return null;
         }),
@@ -835,7 +835,7 @@ class AppTheme {
         }),
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
-            return AppColors.blue.withOpacity(0.12);
+            return AppColors.blue.withValues(alpha: 0.12);
           }
           return null;
         }),
@@ -856,7 +856,7 @@ class AppTheme {
         }),
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
-            return AppColors.green.withOpacity(0.12);
+            return AppColors.green.withValues(alpha: 0.12);
           }
           return null;
         }),
@@ -987,7 +987,7 @@ extension DestructiveButton on ButtonStyle {
       backgroundColor: AppColors.red,
       foregroundColor: Colors.white,
       disabledBackgroundColor: AppColors.redLight,
-      disabledForegroundColor: AppColors.red.withOpacity(0.5),
+      disabledForegroundColor: AppColors.red.withValues(alpha: 0.5),
     );
   }
 }

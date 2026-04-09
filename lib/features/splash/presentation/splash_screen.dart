@@ -194,7 +194,7 @@ class _GolfPainter extends CustomPainter {
     );
 
     // Subtle mowing stripes
-    final stripe = Paint()..color = Colors.black.withOpacity(0.022);
+    final stripe = Paint()..color = Colors.black.withValues(alpha: 0.022);
     const n = 7;
     for (int i = 0; i < n; i++) {
       final x = i * w / n;
@@ -216,7 +216,7 @@ class _GolfPainter extends CustomPainter {
         height: ry * 1.9,
       ),
       Paint()
-        ..color = Colors.black.withOpacity(0.28)
+        ..color = Colors.black.withValues(alpha: 0.28)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
     );
     // Cup
@@ -265,7 +265,7 @@ class _GolfPainter extends CustomPainter {
         height: ballR * 0.52 * scale,
       ),
       Paint()
-        ..color = Colors.black.withOpacity(0.20 * scale)
+        ..color = Colors.black.withValues(alpha: 0.20 * scale)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
     );
 
@@ -305,7 +305,7 @@ class _GolfPainter extends CustomPainter {
       center,
       r,
       Paint()
-        ..color = const Color(0xFFBBBBBB).withOpacity(scale)
+        ..color = const Color(0xFFBBBBBB).withValues(alpha: scale)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 0.8,
     );
@@ -317,7 +317,8 @@ class _GolfPainter extends CustomPainter {
   void _drawDimples(Canvas canvas, double r, double scale) {
     final dimpleR = r * 0.07;
     final spacing = r * 0.40;
-    final paint = Paint()..color = const Color(0xFFCCCCCC).withOpacity(scale);
+    final paint = Paint()
+      ..color = const Color(0xFFCCCCCC).withValues(alpha: scale);
 
     for (int row = -5; row <= 5; row++) {
       final dy = row * spacing;
@@ -375,7 +376,7 @@ class _GolfPainter extends CustomPainter {
         text: TextSpan(
           text: 'BestOne',
           style: TextStyle(
-            color: Colors.white.withOpacity(numOpacity),
+            color: Colors.white.withValues(alpha: numOpacity),
             fontSize: fH * 0.24,
             fontWeight: FontWeight.w800,
             height: 1,
@@ -417,7 +418,7 @@ class _GolfPainter extends CustomPainter {
       canvas.drawRect(
         Rect.fromCenter(
             center: Offset.zero, width: p.size, height: p.size * 0.42),
-        Paint()..color = p.color.withOpacity(opacity),
+        Paint()..color = p.color.withValues(alpha: opacity),
       );
       canvas.restore();
     }

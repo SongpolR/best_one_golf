@@ -76,10 +76,10 @@ class NumberStepper extends StatelessWidget {
         Container(
           height: 52,
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest.withOpacity(0.45),
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: colorScheme.outline.withOpacity(0.35),
+              color: colorScheme.outline.withValues(alpha: 0.35),
               width: 1,
             ),
           ),
@@ -102,7 +102,7 @@ class NumberStepper extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     color: value != null
                         ? colorScheme.onSurface
-                        : colorScheme.onSurfaceVariant.withOpacity(0.35),
+                        : colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
                   ),
                 ),
               ),
@@ -145,7 +145,7 @@ class _StepButton extends StatelessWidget {
         child: Icon(
           icon,
           size: 20,
-          color: enabled ? primaryColor : primaryColor.withOpacity(0.25),
+          color: enabled ? primaryColor : primaryColor.withValues(alpha: 0.25),
         ),
       ),
     );
