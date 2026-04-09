@@ -217,7 +217,7 @@
 
   "removeAds": "ลบโฆษณา",
   "removeAdsPurchased": "ลบโฆษณาแล้ว",
-  "removeAdsDescription": "เพลิดเพลินกับประสบการณ์ไม่มีโฆษณาด้วยการซื้อครั้งเดียว",
+  "removeAdsDescription": "เพลิดเพลินกับประสบการณ์ไม่มีโฆษณาด้วยการซื้อครั้งเดียวในราคา 39฿",
   "removeAdsPurchasedDescription": "ขอบคุณ! คุณกำลังเพลิดเพลินกับประสบการณ์ไม่มีโฆษณา",
   "purchase": "ซื้อ",
   "restorePurchases": "คืนค่าการซื้อ",
@@ -227,6 +227,13 @@
   "@adContinuingIn": {
     "placeholders": {
       "seconds": { "type": "int" }
+    }
+  },
+
+  "appVersion": "เวอร์ชัน {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": { "type": "String" }
     }
   },
 

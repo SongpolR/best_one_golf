@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -160,7 +162,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get useSameAmountForAllRules => 'ใช้จำนวนเงินเดียวกันสำหรับทุกกฎ';
 
   @override
-  String get useDifferentAmountForEachRule => 'ใช้จำนวนเงินต่างกันสำหรับแต่ละกฎ';
+  String get useDifferentAmountForEachRule =>
+      'ใช้จำนวนเงินต่างกันสำหรับแต่ละกฎ';
 
   @override
   String get amount => 'จำนวนเงิน';
@@ -286,19 +289,22 @@ class AppLocalizationsTh extends AppLocalizations {
   String get restartGame => 'เริ่มเกมใหม่';
 
   @override
-  String get restartGameConfirmation => 'คุณต้องการสร้างเกมใหม่โดยใช้การตั้งค่าเดิมหรือไม่?';
+  String get restartGameConfirmation =>
+      'คุณต้องการสร้างเกมใหม่โดยใช้การตั้งค่าเดิมหรือไม่?';
 
   @override
   String get duplicateGame => 'คัดลอกเกม';
 
   @override
-  String get duplicateGameConfirmation => 'คุณต้องการสร้างสำเนาเกมนี้โดยใช้การตั้งค่าเดิมหรือไม่?';
+  String get duplicateGameConfirmation =>
+      'คุณต้องการสร้างสำเนาเกมนี้โดยใช้การตั้งค่าเดิมหรือไม่?';
 
   @override
   String get duplicate => 'คัดลอก';
 
   @override
-  String get finishGameConfirmation => 'คุณต้องการทำเครื่องหมายว่าเกมนี้เสร็จสิ้นและไปที่สรุปหรือไม่?';
+  String get finishGameConfirmation =>
+      'คุณต้องการทำเครื่องหมายว่าเกมนี้เสร็จสิ้นและไปที่สรุปหรือไม่?';
 
   @override
   String playerN(int n) {
@@ -392,10 +398,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get removeAdsPurchased => 'ลบโฆษณาแล้ว';
 
   @override
-  String get removeAdsDescription => 'เพลิดเพลินกับประสบการณ์ไม่มีโฆษณาด้วยการซื้อครั้งเดียว';
+  String get removeAdsDescription =>
+      'เพลิดเพลินกับประสบการณ์ไม่มีโฆษณาด้วยการซื้อครั้งเดียวในราคา 39฿';
 
   @override
-  String get removeAdsPurchasedDescription => 'ขอบคุณ! คุณกำลังเพลิดเพลินกับประสบการณ์ไม่มีโฆษณา';
+  String get removeAdsPurchasedDescription =>
+      'ขอบคุณ! คุณกำลังเพลิดเพลินกับประสบการณ์ไม่มีโฆษณา';
 
   @override
   String get purchase => 'ซื้อ';
@@ -412,6 +420,11 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String adContinuingIn(int seconds) {
     return 'กำลังดำเนินการต่อใน $seconds วินาที...';
+  }
+
+  @override
+  String appVersion(String version) {
+    return 'เวอร์ชัน $version';
   }
 
   @override

@@ -23,8 +23,8 @@ class HomeScreen extends ConsumerWidget {
         final all = [...ongoing, ...completed]
           ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
         return all.take(5).toList();
-      }).valueOrNull;
-    }).valueOrNull;
+      }).value;
+    }).value;
 
     return AppScaffold(
       title: l10n.appName,
@@ -45,7 +45,7 @@ class HomeScreen extends ConsumerWidget {
         children: [
           FilledButton.icon(
             onPressed: () async {
-              final settings = ref.read(appSettingsProvider).valueOrNull;
+              final settings = ref.read(appSettingsProvider).value;
               if (settings?.adsRemoved == true) {
                 context.push('/create-game');
                 return;

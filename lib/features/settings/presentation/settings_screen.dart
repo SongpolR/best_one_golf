@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../app/app.dart';
 import '../../../app/theme/app_theme.dart';
@@ -10,6 +11,10 @@ import '../../../core/enums/app_theme_mode.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 
+final _packageInfoProvider = FutureProvider<PackageInfo>(
+  (_) => PackageInfo.fromPlatform(),
+);
+
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -18,6 +23,7 @@ class SettingsScreen extends ConsumerWidget {
     final settingsAsync = ref.watch(appSettingsProvider);
     final repository = ref.watch(appSettingsRepositoryProvider);
     final iapService = ref.watch(iapServiceProvider);
+    final packageInfoAsync = ref.watch(_packageInfoProvider);
     final l10n = AppLocalizations.of(context)!;
 
     return AppScaffold(
@@ -134,36 +140,30 @@ class SettingsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Card(
-                child: Column(
-                  children: [
-                    RadioListTile<AppThemeMode>(
-                      value: AppThemeMode.system,
-                      groupValue: settings.themeMode,
-                      onChanged: (value) {
-                        if (value != null) repository.updateThemeMode(value);
-                      },
-                      title: Text(l10n.systemTheme),
-                      secondary: const Icon(Icons.brightness_auto_outlined),
-                    ),
-                    RadioListTile<AppThemeMode>(
-                      value: AppThemeMode.light,
-                      groupValue: settings.themeMode,
-                      onChanged: (value) {
-                        if (value != null) repository.updateThemeMode(value);
-                      },
-                      title: Text(l10n.lightTheme),
-                      secondary: const Icon(Icons.light_mode_outlined),
-                    ),
-                    RadioListTile<AppThemeMode>(
-                      value: AppThemeMode.dark,
-                      groupValue: settings.themeMode,
-                      onChanged: (value) {
-                        if (value != null) repository.updateThemeMode(value);
-                      },
-                      title: Text(l10n.darkTheme),
-                      secondary: const Icon(Icons.dark_mode_outlined),
-                    ),
-                  ],
+                child: RadioGroup<AppThemeMode>(
+                  groupValue: settings.themeMode,
+                  onChanged: (value) {
+                    if (value != null) repository.updateThemeMode(value);
+                  },
+                  child: Column(
+                    children: [
+                      RadioListTile<AppThemeMode>(
+                        value: AppThemeMode.system,
+                        title: Text(l10n.systemTheme),
+                        secondary: const Icon(Icons.brightness_auto_outlined),
+                      ),
+                      RadioListTile<AppThemeMode>(
+                        value: AppThemeMode.light,
+                        title: Text(l10n.lightTheme),
+                        secondary: const Icon(Icons.light_mode_outlined),
+                      ),
+                      RadioListTile<AppThemeMode>(
+                        value: AppThemeMode.dark,
+                        title: Text(l10n.darkTheme),
+                        secondary: const Icon(Icons.dark_mode_outlined),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -175,25 +175,23 @@ class SettingsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Card(
-                child: Column(
-                  children: [
-                    RadioListTile<AppLanguage>(
-                      value: AppLanguage.en,
-                      groupValue: settings.language,
-                      onChanged: (value) {
-                        if (value != null) repository.updateLanguage(value);
-                      },
-                      title: Text(l10n.english),
-                    ),
-                    RadioListTile<AppLanguage>(
-                      value: AppLanguage.th,
-                      groupValue: settings.language,
-                      onChanged: (value) {
-                        if (value != null) repository.updateLanguage(value);
-                      },
-                      title: Text(l10n.thai),
-                    ),
-                  ],
+                child: RadioGroup<AppLanguage>(
+                  groupValue: settings.language,
+                  onChanged: (value) {
+                    if (value != null) repository.updateLanguage(value);
+                  },
+                  child: Column(
+                    children: [
+                      RadioListTile<AppLanguage>(
+                        value: AppLanguage.en,
+                        title: Text(l10n.english),
+                      ),
+                      RadioListTile<AppLanguage>(
+                        value: AppLanguage.th,
+                        title: Text(l10n.thai),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -205,25 +203,23 @@ class SettingsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Card(
-                child: Column(
-                  children: [
-                    RadioListTile<AppCurrency>(
-                      value: AppCurrency.usd,
-                      groupValue: settings.currency,
-                      onChanged: (value) {
-                        if (value != null) repository.updateCurrency(value);
-                      },
-                      title: Text(l10n.usd),
-                    ),
-                    RadioListTile<AppCurrency>(
-                      value: AppCurrency.thb,
-                      groupValue: settings.currency,
-                      onChanged: (value) {
-                        if (value != null) repository.updateCurrency(value);
-                      },
-                      title: Text(l10n.thb),
-                    ),
-                  ],
+                child: RadioGroup<AppCurrency>(
+                  groupValue: settings.currency,
+                  onChanged: (value) {
+                    if (value != null) repository.updateCurrency(value);
+                  },
+                  child: Column(
+                    children: [
+                      RadioListTile<AppCurrency>(
+                        value: AppCurrency.usd,
+                        title: Text(l10n.usd),
+                      ),
+                      RadioListTile<AppCurrency>(
+                        value: AppCurrency.thb,
+                        title: Text(l10n.thb),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -253,6 +249,24 @@ class SettingsScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
+
+              // ── App Version ────────────────────────────────────────────────
+              Center(
+                child: Text(
+                  packageInfoAsync.when(
+                    data: (info) => l10n.appVersion(info.version),
+                    loading: () => '',
+                    error: (_, __) => '',
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ),
+              const SizedBox(height: 8),
             ],
           );
         },

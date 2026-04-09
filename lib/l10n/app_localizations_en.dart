@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -160,7 +162,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get useSameAmountForAllRules => 'Use same amount for all rules';
 
   @override
-  String get useDifferentAmountForEachRule => 'Use different amount for each rule';
+  String get useDifferentAmountForEachRule =>
+      'Use different amount for each rule';
 
   @override
   String get amount => 'Amount';
@@ -280,25 +283,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteGame => 'Delete Game';
 
   @override
-  String get deleteGameConfirmation => 'Do you want to delete this game permanently?';
+  String get deleteGameConfirmation =>
+      'Do you want to delete this game permanently?';
 
   @override
   String get restartGame => 'Restart Game';
 
   @override
-  String get restartGameConfirmation => 'Do you want to create a new game using the same settings?';
+  String get restartGameConfirmation =>
+      'Do you want to create a new game using the same settings?';
 
   @override
   String get duplicateGame => 'Duplicate Game';
 
   @override
-  String get duplicateGameConfirmation => 'Do you want to create a copy of this game with the same settings?';
+  String get duplicateGameConfirmation =>
+      'Do you want to create a copy of this game with the same settings?';
 
   @override
   String get duplicate => 'Duplicate';
 
   @override
-  String get finishGameConfirmation => 'Do you want to mark this game as completed and go to the summary?';
+  String get finishGameConfirmation =>
+      'Do you want to mark this game as completed and go to the summary?';
 
   @override
   String playerN(int n) {
@@ -392,10 +399,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removeAdsPurchased => 'Ads Removed';
 
   @override
-  String get removeAdsDescription => 'Enjoy an ad-free experience with a one-time purchase.';
+  String get removeAdsDescription =>
+      'Enjoy an ad-free experience with a one-time purchase of \$0.99.';
 
   @override
-  String get removeAdsPurchasedDescription => 'Thank you! You are enjoying an ad-free experience.';
+  String get removeAdsPurchasedDescription =>
+      'Thank you! You are enjoying an ad-free experience.';
 
   @override
   String get purchase => 'Purchase';
@@ -412,6 +421,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String adContinuingIn(int seconds) {
     return 'Continuing in ${seconds}s...';
+  }
+
+  @override
+  String appVersion(String version) {
+    return 'Version $version';
   }
 
   @override

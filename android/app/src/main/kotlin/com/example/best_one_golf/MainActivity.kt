@@ -1,4 +1,4 @@
-package com.example.best_one_golf
+package com.songpolr.best_one_golf
 
 import io.flutter.embedding.android.FlutterActivity
 
