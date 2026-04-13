@@ -120,6 +120,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get holes => 'Holes';
 
   @override
+  String get scorecard => 'Scorecard';
+
+  @override
   String get summary => 'Summary';
 
   @override

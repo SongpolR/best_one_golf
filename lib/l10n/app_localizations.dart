@@ -320,6 +320,12 @@ abstract class AppLocalizations {
   /// **'Holes'**
   String get holes;
 
+  /// No description provided for @scorecard.
+  ///
+  /// In en, this message translates to:
+  /// **'Scorecard'**
+  String get scorecard;
+
   /// No description provided for @summary.
   ///
   /// In en, this message translates to:

@@ -120,6 +120,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get holes => 'หลุม';
 
   @override
+  String get scorecard => 'สกอร์การ์ด';
+
+  @override
   String get summary => 'สรุป';
 
   @override
