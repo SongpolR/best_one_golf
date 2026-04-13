@@ -6,4 +6,13 @@ part of 'app_settings_dao.dart';
 mixin _$AppSettingsDaoMixin on DatabaseAccessor<AppDatabase> {
   $AppSettingsTableTable get appSettingsTable =>
       attachedDatabase.appSettingsTable;
+  AppSettingsDaoManager get managers => AppSettingsDaoManager(this);
+}
+
+class AppSettingsDaoManager {
+  final _$AppSettingsDaoMixin _db;
+  AppSettingsDaoManager(this._db);
+  $$AppSettingsTableTableTableManager get appSettingsTable =>
+      $$AppSettingsTableTableTableManager(
+          _db.attachedDatabase, _db.appSettingsTable);
 }

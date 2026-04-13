@@ -10,6 +10,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../hole_result/presentation/hole_result_sheet.dart';
 import '../../score_entry/presentation/score_entry_controller.dart';
 import '../../../shared/widgets/app_scaffold.dart';
+import '../../../shared/widgets/scorecard_table.dart';
 
 class GameSummaryScreen extends ConsumerWidget {
   final String gameId;
@@ -202,6 +203,16 @@ class GameSummaryScreen extends ConsumerWidget {
                           );
                         }),
                       ),
+
+                      const SizedBox(height: 24),
+
+                      /// Scorecard
+                      Text(
+                        l10n.scorecard,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      ScorecardTable(aggregate: aggregate),
                     ],
                   );
                 },

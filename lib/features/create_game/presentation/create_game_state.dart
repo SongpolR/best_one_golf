@@ -22,7 +22,8 @@ class PlayerDraft {
     return PlayerDraft(
       name: name ?? this.name,
       order: order ?? this.order,
-      teamIndex: identical(teamIndex, _unset) ? this.teamIndex : teamIndex as int?,
+      teamIndex:
+          identical(teamIndex, _unset) ? this.teamIndex : teamIndex as int?,
     );
   }
 }
