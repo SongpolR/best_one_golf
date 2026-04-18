@@ -59,6 +59,11 @@ final iapServiceProvider = Provider<IapService>((ref) {
   return service;
 });
 
+final golfCoursesProvider = FutureProvider((ref) {
+  final db = ref.watch(appDatabaseProvider);
+  return db.golfCourseDao.getAllCourses();
+});
+
 final uuidProvider = Provider<Uuid>((ref) {
   return const Uuid();
 });

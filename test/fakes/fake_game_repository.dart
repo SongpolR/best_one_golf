@@ -176,9 +176,8 @@ class FakeGameRepository implements GameRepository {
   }
 
   @override
-  Future<String> restartGame(String gameId) async {
+  Future<void> restartGame(String gameId) async {
     restartedFromGameId = gameId;
-    return 'restarted-$gameId';
   }
 
   @override

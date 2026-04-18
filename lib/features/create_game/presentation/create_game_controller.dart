@@ -4,6 +4,7 @@ import '../../../app/app.dart';
 import '../../../core/enums/game_mode.dart';
 import '../../../domain/entities/create_game_input.dart';
 import '../../../domain/entities/game_aggregate.dart';
+import '../../../domain/entities/golf_course.dart';
 import '../../../domain/services/validation/game_setup_validator.dart';
 import 'create_game_state.dart';
 
@@ -24,6 +25,10 @@ class CreateGameController extends Notifier<CreateGameState> {
 
   void loadFromAggregate(GameAggregate aggregate) {
     state = CreateGameState.fromAggregate(aggregate);
+  }
+
+  void resetToDefault() {
+    state = CreateGameState.initial();
   }
 
   void updateTitle(String value) {
@@ -209,6 +214,47 @@ class CreateGameController extends Notifier<CreateGameState> {
         updatedHoles[holeIndex].copyWith(isBirdieBonus: value);
 
     state = state.copyWith(holes: updatedHoles, errorMessage: null);
+  }
+
+  void applyCourse(GolfCourse? course) {
+    if (course == null) {
+      // Reset to default par 4 for all holes
+      final holes = List.generate(
+        18,
+        (index) => HoleConfigDraft(
+          holeNumber: index + 1,
+          par: 4,
+          isTurbo:
+              state.holes.length > index ? state.holes[index].isTurbo : false,
+          isBirdieBonus: state.holes.length > index
+              ? state.holes[index].isBirdieBonus
+              : false,
+        ),
+      );
+      state = state.copyWith(
+        holes: holes,
+        selectedCourseId: null,
+        errorMessage: null,
+      );
+      return;
+    }
+
+    final updatedHoles = <HoleConfigDraft>[];
+    for (var i = 0; i < course.pars.length; i++) {
+      updatedHoles.add(HoleConfigDraft(
+        holeNumber: i + 1,
+        par: course.pars[i],
+        isTurbo: state.holes.length > i ? state.holes[i].isTurbo : false,
+        isBirdieBonus:
+            state.holes.length > i ? state.holes[i].isBirdieBonus : false,
+      ));
+    }
+
+    state = state.copyWith(
+      holes: updatedHoles,
+      selectedCourseId: course.id,
+      errorMessage: null,
+    );
   }
 
   void applyTurboFor9And18() {

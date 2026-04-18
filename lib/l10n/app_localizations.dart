@@ -374,6 +374,18 @@ abstract class AppLocalizations {
   /// **'Start Game'**
   String get startGame;
 
+  /// No description provided for @golfCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'Golf Course'**
+  String get golfCourse;
+
+  /// No description provided for @selectGolfCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a golf course'**
+  String get selectGolfCourse;
+
   /// No description provided for @holeSetup.
   ///
   /// In en, this message translates to:
@@ -667,6 +679,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Do you want to create a new game using the same settings?'**
   String get restartGameConfirmation;
+
+  /// No description provided for @resetToDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to Default'**
+  String get resetToDefault;
+
+  /// No description provided for @resetToDefaultConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to reset all game settings to their default values?'**
+  String get resetToDefaultConfirmation;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
 
   /// No description provided for @duplicateGame.
   ///

@@ -147,6 +147,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startGame => 'Start Game';
 
   @override
+  String get golfCourse => 'Golf Course';
+
+  @override
+  String get selectGolfCourse => 'Select a golf course';
+
+  @override
   String get holeSetup => 'Hole Setup';
 
   @override
@@ -295,6 +301,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get restartGameConfirmation =>
       'Do you want to create a new game using the same settings?';
+
+  @override
+  String get resetToDefault => 'Reset to Default';
+
+  @override
+  String get resetToDefaultConfirmation =>
+      'Do you want to reset all game settings to their default values?';
+
+  @override
+  String get reset => 'Reset';
 
   @override
   String get duplicateGame => 'Duplicate Game';

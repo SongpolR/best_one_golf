@@ -283,7 +283,33 @@ class GameRepositoryImpl implements GameRepository {
   }
 
   @override
-  Future<String> restartGame(String gameId) => _copyGame(gameId);
+  Future<void> restartGame(String gameId) async {
+    await db.transaction(() async {
+      // Delete all player scores
+      await (db.delete(db.holeScoresTable)
+            ..where((tbl) => tbl.gameId.equals(gameId)))
+          .go();
+
+      // Delete computed hole results
+      await (db.delete(db.computedHoleResultsTable)
+            ..where((tbl) => tbl.gameId.equals(gameId)))
+          .go();
+
+      // Delete settlement snapshots
+      await (db.delete(db.settlementSnapshotsTable)
+            ..where((tbl) => tbl.gameId.equals(gameId)))
+          .go();
+
+      // Reset game status to ongoing
+      await (db.update(db.gamesTable)..where((tbl) => tbl.id.equals(gameId)))
+          .write(
+        GamesTableCompanion(
+          status: const Value('ongoing'),
+          updatedAt: Value(DateTime.now()),
+        ),
+      );
+    });
+  }
 
   @override
   Future<String> duplicateGame(String gameId) => _copyGame(gameId);
