@@ -2898,6 +2898,318 @@ class SettlementSnapshotsTableCompanion
   }
 }
 
+class $GolfCoursesTableTable extends GolfCoursesTable
+    with TableInfo<$GolfCoursesTableTable, GolfCoursesTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GolfCoursesTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _locationMeta =
+      const VerificationMeta('location');
+  @override
+  late final GeneratedColumn<String> location = GeneratedColumn<String>(
+      'location', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _totalHolesMeta =
+      const VerificationMeta('totalHoles');
+  @override
+  late final GeneratedColumn<int> totalHoles = GeneratedColumn<int>(
+      'total_holes', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(18));
+  static const VerificationMeta _parsMeta = const VerificationMeta('pars');
+  @override
+  late final GeneratedColumn<String> pars = GeneratedColumn<String>(
+      'pars', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, name, location, totalHoles, pars];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'golf_courses_table';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<GolfCoursesTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('location')) {
+      context.handle(_locationMeta,
+          location.isAcceptableOrUnknown(data['location']!, _locationMeta));
+    } else if (isInserting) {
+      context.missing(_locationMeta);
+    }
+    if (data.containsKey('total_holes')) {
+      context.handle(
+          _totalHolesMeta,
+          totalHoles.isAcceptableOrUnknown(
+              data['total_holes']!, _totalHolesMeta));
+    }
+    if (data.containsKey('pars')) {
+      context.handle(
+          _parsMeta, pars.isAcceptableOrUnknown(data['pars']!, _parsMeta));
+    } else if (isInserting) {
+      context.missing(_parsMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GolfCoursesTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GolfCoursesTableData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      location: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}location'])!,
+      totalHoles: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}total_holes'])!,
+      pars: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}pars'])!,
+    );
+  }
+
+  @override
+  $GolfCoursesTableTable createAlias(String alias) {
+    return $GolfCoursesTableTable(attachedDatabase, alias);
+  }
+}
+
+class GolfCoursesTableData extends DataClass
+    implements Insertable<GolfCoursesTableData> {
+  final String id;
+  final String name;
+  final String location;
+  final int totalHoles;
+
+  /// Comma-separated par values per hole, e.g. "4,4,5,4,3,4,5,3,4,4,5,4,3,4,4,4,3,5"
+  final String pars;
+  const GolfCoursesTableData(
+      {required this.id,
+      required this.name,
+      required this.location,
+      required this.totalHoles,
+      required this.pars});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['location'] = Variable<String>(location);
+    map['total_holes'] = Variable<int>(totalHoles);
+    map['pars'] = Variable<String>(pars);
+    return map;
+  }
+
+  GolfCoursesTableCompanion toCompanion(bool nullToAbsent) {
+    return GolfCoursesTableCompanion(
+      id: Value(id),
+      name: Value(name),
+      location: Value(location),
+      totalHoles: Value(totalHoles),
+      pars: Value(pars),
+    );
+  }
+
+  factory GolfCoursesTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GolfCoursesTableData(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      location: serializer.fromJson<String>(json['location']),
+      totalHoles: serializer.fromJson<int>(json['totalHoles']),
+      pars: serializer.fromJson<String>(json['pars']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'location': serializer.toJson<String>(location),
+      'totalHoles': serializer.toJson<int>(totalHoles),
+      'pars': serializer.toJson<String>(pars),
+    };
+  }
+
+  GolfCoursesTableData copyWith(
+          {String? id,
+          String? name,
+          String? location,
+          int? totalHoles,
+          String? pars}) =>
+      GolfCoursesTableData(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        location: location ?? this.location,
+        totalHoles: totalHoles ?? this.totalHoles,
+        pars: pars ?? this.pars,
+      );
+  GolfCoursesTableData copyWithCompanion(GolfCoursesTableCompanion data) {
+    return GolfCoursesTableData(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      location: data.location.present ? data.location.value : this.location,
+      totalHoles:
+          data.totalHoles.present ? data.totalHoles.value : this.totalHoles,
+      pars: data.pars.present ? data.pars.value : this.pars,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GolfCoursesTableData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('location: $location, ')
+          ..write('totalHoles: $totalHoles, ')
+          ..write('pars: $pars')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, location, totalHoles, pars);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GolfCoursesTableData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.location == this.location &&
+          other.totalHoles == this.totalHoles &&
+          other.pars == this.pars);
+}
+
+class GolfCoursesTableCompanion extends UpdateCompanion<GolfCoursesTableData> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> location;
+  final Value<int> totalHoles;
+  final Value<String> pars;
+  final Value<int> rowid;
+  const GolfCoursesTableCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.location = const Value.absent(),
+    this.totalHoles = const Value.absent(),
+    this.pars = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GolfCoursesTableCompanion.insert({
+    required String id,
+    required String name,
+    required String location,
+    this.totalHoles = const Value.absent(),
+    required String pars,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name),
+        location = Value(location),
+        pars = Value(pars);
+  static Insertable<GolfCoursesTableData> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? location,
+    Expression<int>? totalHoles,
+    Expression<String>? pars,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (location != null) 'location': location,
+      if (totalHoles != null) 'total_holes': totalHoles,
+      if (pars != null) 'pars': pars,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GolfCoursesTableCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<String>? location,
+      Value<int>? totalHoles,
+      Value<String>? pars,
+      Value<int>? rowid}) {
+    return GolfCoursesTableCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      location: location ?? this.location,
+      totalHoles: totalHoles ?? this.totalHoles,
+      pars: pars ?? this.pars,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (location.present) {
+      map['location'] = Variable<String>(location.value);
+    }
+    if (totalHoles.present) {
+      map['total_holes'] = Variable<int>(totalHoles.value);
+    }
+    if (pars.present) {
+      map['pars'] = Variable<String>(pars.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GolfCoursesTableCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('location: $location, ')
+          ..write('totalHoles: $totalHoles, ')
+          ..write('pars: $pars, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2916,6 +3228,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $ComputedHoleResultsTableTable(this);
   late final $SettlementSnapshotsTableTable settlementSnapshotsTable =
       $SettlementSnapshotsTableTable(this);
+  late final $GolfCoursesTableTable golfCoursesTable =
+      $GolfCoursesTableTable(this);
   late final AppSettingsDao appSettingsDao =
       AppSettingsDao(this as AppDatabase);
   late final GamesDao gamesDao = GamesDao(this as AppDatabase);
@@ -2924,6 +3238,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final CalculationDao calculationDao =
       CalculationDao(this as AppDatabase);
   late final ResultViewDao resultViewDao = ResultViewDao(this as AppDatabase);
+  late final GolfCourseDao golfCourseDao = GolfCourseDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2937,7 +3252,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         holeConfigsTable,
         holeScoresTable,
         computedHoleResultsTable,
-        settlementSnapshotsTable
+        settlementSnapshotsTable,
+        golfCoursesTable
       ];
 }
 
@@ -4543,6 +4859,182 @@ typedef $$SettlementSnapshotsTableTableProcessedTableManager
         ),
         SettlementSnapshotsTableData,
         PrefetchHooks Function()>;
+typedef $$GolfCoursesTableTableCreateCompanionBuilder
+    = GolfCoursesTableCompanion Function({
+  required String id,
+  required String name,
+  required String location,
+  Value<int> totalHoles,
+  required String pars,
+  Value<int> rowid,
+});
+typedef $$GolfCoursesTableTableUpdateCompanionBuilder
+    = GolfCoursesTableCompanion Function({
+  Value<String> id,
+  Value<String> name,
+  Value<String> location,
+  Value<int> totalHoles,
+  Value<String> pars,
+  Value<int> rowid,
+});
+
+class $$GolfCoursesTableTableFilterComposer
+    extends Composer<_$AppDatabase, $GolfCoursesTableTable> {
+  $$GolfCoursesTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get location => $composableBuilder(
+      column: $table.location, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get totalHoles => $composableBuilder(
+      column: $table.totalHoles, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get pars => $composableBuilder(
+      column: $table.pars, builder: (column) => ColumnFilters(column));
+}
+
+class $$GolfCoursesTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $GolfCoursesTableTable> {
+  $$GolfCoursesTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get location => $composableBuilder(
+      column: $table.location, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get totalHoles => $composableBuilder(
+      column: $table.totalHoles, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get pars => $composableBuilder(
+      column: $table.pars, builder: (column) => ColumnOrderings(column));
+}
+
+class $$GolfCoursesTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GolfCoursesTableTable> {
+  $$GolfCoursesTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get location =>
+      $composableBuilder(column: $table.location, builder: (column) => column);
+
+  GeneratedColumn<int> get totalHoles => $composableBuilder(
+      column: $table.totalHoles, builder: (column) => column);
+
+  GeneratedColumn<String> get pars =>
+      $composableBuilder(column: $table.pars, builder: (column) => column);
+}
+
+class $$GolfCoursesTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $GolfCoursesTableTable,
+    GolfCoursesTableData,
+    $$GolfCoursesTableTableFilterComposer,
+    $$GolfCoursesTableTableOrderingComposer,
+    $$GolfCoursesTableTableAnnotationComposer,
+    $$GolfCoursesTableTableCreateCompanionBuilder,
+    $$GolfCoursesTableTableUpdateCompanionBuilder,
+    (
+      GolfCoursesTableData,
+      BaseReferences<_$AppDatabase, $GolfCoursesTableTable,
+          GolfCoursesTableData>
+    ),
+    GolfCoursesTableData,
+    PrefetchHooks Function()> {
+  $$GolfCoursesTableTableTableManager(
+      _$AppDatabase db, $GolfCoursesTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GolfCoursesTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GolfCoursesTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GolfCoursesTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> location = const Value.absent(),
+            Value<int> totalHoles = const Value.absent(),
+            Value<String> pars = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              GolfCoursesTableCompanion(
+            id: id,
+            name: name,
+            location: location,
+            totalHoles: totalHoles,
+            pars: pars,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String name,
+            required String location,
+            Value<int> totalHoles = const Value.absent(),
+            required String pars,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              GolfCoursesTableCompanion.insert(
+            id: id,
+            name: name,
+            location: location,
+            totalHoles: totalHoles,
+            pars: pars,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$GolfCoursesTableTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $GolfCoursesTableTable,
+    GolfCoursesTableData,
+    $$GolfCoursesTableTableFilterComposer,
+    $$GolfCoursesTableTableOrderingComposer,
+    $$GolfCoursesTableTableAnnotationComposer,
+    $$GolfCoursesTableTableCreateCompanionBuilder,
+    $$GolfCoursesTableTableUpdateCompanionBuilder,
+    (
+      GolfCoursesTableData,
+      BaseReferences<_$AppDatabase, $GolfCoursesTableTable,
+          GolfCoursesTableData>
+    ),
+    GolfCoursesTableData,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4567,4 +5059,6 @@ class $AppDatabaseManager {
   $$SettlementSnapshotsTableTableTableManager get settlementSnapshotsTable =>
       $$SettlementSnapshotsTableTableTableManager(
           _db, _db.settlementSnapshotsTable);
+  $$GolfCoursesTableTableTableManager get golfCoursesTable =>
+      $$GolfCoursesTableTableTableManager(_db, _db.golfCoursesTable);
 }

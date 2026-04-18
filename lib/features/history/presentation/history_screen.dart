@@ -179,23 +179,27 @@ class _GameCard extends ConsumerWidget {
                     },
                     child: Text(l10n.continueGame),
                   ),
-                if (!isCompleted)
-                  OutlinedButton(
-                    onPressed: () async {
-                      final confirmed = await _showRestartDialog(context);
-                      if (confirmed != true) return;
-
-                      final restartGame = ref.read(restartGameUseCaseProvider);
-                      final newGameId = await restartGame(game.id);
-
-                      if (context.mounted) {
-                        context.go('/score-entry/$newGameId');
-                      }
-                    },
-                    child: Text(l10n.restart),
-                  ),
                 OutlinedButton(
                   onPressed: () async {
+                    final confirmed = await _showRestartDialog(context);
+                    if (confirmed != true) return;
+
+                    final restartGame = ref.read(restartGameUseCaseProvider);
+                    await restartGame(game.id);
+
+                    if (context.mounted) {
+                      context.push('/score-entry/${game.id}');
+                    }
+                  },
+                  child: Text(l10n.restart),
+                ),
+                OutlinedButton(
+                  onPressed: () async {
+                    final confirmed = await _showDuplicateDialog(context);
+                    if (confirmed != true) return;
+
+                    if (!context.mounted) return;
+
                     final aggregate = await ref.read(
                       gameAggregateProvider(game.id).future,
                     );
@@ -256,6 +260,29 @@ class _GameCard extends ConsumerWidget {
               style: DestructiveButton.filled(context),
               onPressed: () => Navigator.of(context).pop(true),
               child: Text(l10n.delete),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool?> _showDuplicateDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(l10n.duplicateGame),
+          content: Text(l10n.duplicateGameConfirmation),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.duplicate),
             ),
           ],
         );

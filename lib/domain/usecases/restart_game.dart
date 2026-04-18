@@ -5,7 +5,7 @@ class RestartGameUseCase {
 
   const RestartGameUseCase(this.repository);
 
-  Future<String> call(String gameId) {
+  Future<void> call(String gameId) {
     return repository.restartGame(gameId);
   }
 }

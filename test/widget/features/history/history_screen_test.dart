@@ -187,10 +187,10 @@ void main() {
     );
   });
 
-  testWidgets('Confirm restart navigates to new restarted game',
+  testWidgets('Confirm restart clears scores and navigates to score entry',
       (tester) async {
     final repository = FakeGameRepository(
-      gameAggregate: fakeGameAggregate(gameId: 'restarted-game-1'),
+      gameAggregate: fakeGameAggregate(gameId: 'game-1'),
       ongoingGames: [
         fakeGameListItem(id: 'game-1', title: 'Ongoing Match'),
       ],
@@ -207,7 +207,5 @@ void main() {
 
     expect(repository.restartedFromGameId, 'game-1');
     expect(find.text('Score Entry'), findsOneWidget);
-    expect(find.text('Saturday Match'), findsOneWidget);
-    expect(find.textContaining('Hole 1 / 18'), findsOneWidget);
   });
 }

@@ -88,6 +88,7 @@ class CreateGameState {
   final List<HoleConfigDraft> holes;
   final bool isSubmitting;
   final String? errorMessage;
+  final String? selectedCourseId;
 
   const CreateGameState({
     required this.title,
@@ -102,6 +103,7 @@ class CreateGameState {
     required this.holes,
     required this.isSubmitting,
     required this.errorMessage,
+    this.selectedCourseId,
   });
 
   factory CreateGameState.fromAggregate(GameAggregate aggregate) {
@@ -194,11 +196,12 @@ class CreateGameState {
     bool? bestOneEnabled,
     bool? bestTwoEnabled,
     bool? sharedBetDefault,
-    int? bestOneAmount,
-    int? bestTwoAmount,
+    Object? bestOneAmount = _unset,
+    Object? bestTwoAmount = _unset,
     List<HoleConfigDraft>? holes,
     bool? isSubmitting,
     String? errorMessage,
+    Object? selectedCourseId = _unset,
   }) {
     return CreateGameState(
       title: title ?? this.title,
@@ -208,11 +211,18 @@ class CreateGameState {
       bestOneEnabled: bestOneEnabled ?? this.bestOneEnabled,
       bestTwoEnabled: bestTwoEnabled ?? this.bestTwoEnabled,
       sharedBetDefault: sharedBetDefault ?? this.sharedBetDefault,
-      bestOneAmount: bestOneAmount ?? this.bestOneAmount,
-      bestTwoAmount: bestTwoAmount ?? this.bestTwoAmount,
+      bestOneAmount: identical(bestOneAmount, _unset)
+          ? this.bestOneAmount
+          : bestOneAmount as int?,
+      bestTwoAmount: identical(bestTwoAmount, _unset)
+          ? this.bestTwoAmount
+          : bestTwoAmount as int?,
       holes: holes ?? this.holes,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       errorMessage: errorMessage,
+      selectedCourseId: identical(selectedCourseId, _unset)
+          ? this.selectedCourseId
+          : selectedCourseId as String?,
     );
   }
 }

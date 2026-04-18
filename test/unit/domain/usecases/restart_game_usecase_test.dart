@@ -3,13 +3,12 @@ import '../../../fakes/fake_game_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('RestartGameUseCase restarts game and returns new game id', () async {
+  test('RestartGameUseCase restarts game by clearing scores', () async {
     final repository = FakeGameRepository();
     final useCase = RestartGameUseCase(repository);
 
-    final newGameId = await useCase('game-1');
+    await useCase('game-1');
 
     expect(repository.restartedFromGameId, 'game-1');
-    expect(newGameId, 'restarted-game-1');
   });
 }

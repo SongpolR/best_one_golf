@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/app.dart';
 import '../../../core/enums/game_mode.dart';
 import '../../../domain/entities/game_aggregate.dart';
+import '../../../domain/entities/golf_course.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 import '../../../shared/widgets/number_stepper.dart';
@@ -174,6 +176,14 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
 
     return AppScaffold(
       title: l10n.newGame,
+      actions: [
+        IconButton(
+          key: const Key('resetToDefaultButton'),
+          icon: const Icon(Icons.restart_alt),
+          tooltip: l10n.resetToDefault,
+          onPressed: () => _showResetDialog(context, controller, l10n),
+        ),
+      ],
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -369,6 +379,12 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
+          _GolfCourseSelector(
+            key: ValueKey(state.selectedCourseId),
+            selectedCourseId: state.selectedCourseId,
+            onChanged: controller.applyCourse,
+          ),
+          const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -458,6 +474,89 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+Future<void> _showResetDialog(
+  BuildContext context,
+  CreateGameController controller,
+  AppLocalizations l10n,
+) async {
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(l10n.resetToDefault),
+        content: Text(l10n.resetToDefaultConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.reset),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (confirmed == true) {
+    controller.resetToDefault();
+  }
+}
+
+class _GolfCourseSelector extends ConsumerWidget {
+  final String? selectedCourseId;
+  final ValueChanged<GolfCourse?> onChanged;
+
+  const _GolfCourseSelector({
+    super.key,
+    required this.selectedCourseId,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final coursesAsync = ref.watch(golfCoursesProvider);
+    final l10n = AppLocalizations.of(context)!;
+
+    return coursesAsync.when(
+      data: (courses) {
+        if (courses.isEmpty) return const SizedBox.shrink();
+
+        return DropdownButtonFormField<String>(
+          initialValue: selectedCourseId,
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: l10n.golfCourse,
+          ),
+          items: [
+            DropdownMenuItem<String>(
+              value: null,
+              child: Text(l10n.selectGolfCourse),
+            ),
+            ...courses.map((course) {
+              return DropdownMenuItem<String>(
+                value: course.id,
+                child: Text('${course.name} (${course.location})'),
+              );
+            }),
+          ],
+          onChanged: (courseId) {
+            if (courseId == null) {
+              onChanged(null);
+            } else {
+              final course = courses.firstWhere((c) => c.id == courseId);
+              onChanged(course);
+            }
+          },
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
     );
   }
 }

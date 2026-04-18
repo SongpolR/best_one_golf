@@ -147,6 +147,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get startGame => 'เริ่มเกม';
 
   @override
+  String get golfCourse => 'สนามกอล์ฟ';
+
+  @override
+  String get selectGolfCourse => 'เลือกสนามกอล์ฟ';
+
+  @override
   String get holeSetup => 'ตั้งค่าหลุม';
 
   @override
@@ -294,6 +300,16 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get restartGameConfirmation =>
       'คุณต้องการสร้างเกมใหม่โดยใช้การตั้งค่าเดิมหรือไม่?';
+
+  @override
+  String get resetToDefault => 'รีเซ็ตเป็นค่าเริ่มต้น';
+
+  @override
+  String get resetToDefaultConfirmation =>
+      'คุณต้องการรีเซ็ตการตั้งค่าเกมทั้งหมดเป็นค่าเริ่มต้นหรือไม่?';
+
+  @override
+  String get reset => 'รีเซ็ต';
 
   @override
   String get duplicateGame => 'คัดลอกเกม';

@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'daos/app_settings_dao.dart';
 import 'daos/calculation_dao.dart';
 import 'daos/games_dao.dart';
+import 'daos/golf_course_dao.dart';
 import 'daos/history_dao.dart';
 import 'daos/result_view_dao.dart';
 import 'daos/score_entry_dao.dart';
@@ -15,6 +16,7 @@ import 'tables/app_settings_table.dart';
 import 'tables/computed_hole_results_table.dart';
 import 'tables/game_rule_settings_table.dart';
 import 'tables/games_table.dart';
+import 'tables/golf_courses_table.dart';
 import 'tables/hole_configs_table.dart';
 import 'tables/hole_scores_table.dart';
 import 'tables/players_table.dart';
@@ -34,6 +36,7 @@ part 'app_database.g.dart';
     HoleScoresTable,
     ComputedHoleResultsTable,
     SettlementSnapshotsTable,
+    GolfCoursesTable,
   ],
   daos: [
     AppSettingsDao,
@@ -42,13 +45,14 @@ part 'app_database.g.dart';
     ScoreEntryDao,
     CalculationDao,
     ResultViewDao,
+    GolfCourseDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -100,9 +104,14 @@ class AppDatabase extends _$AppDatabase {
               );
             }
           }
+
+          if (from < 7) {
+            await m.createTable(golfCoursesTable);
+          }
         },
         beforeOpen: (details) async {
           await appSettingsDao.ensureSeeded();
+          await golfCourseDao.ensureSeeded();
 
           final hasThemeModeCode = await _hasColumn(
             appSettingsTable.actualTableName,
