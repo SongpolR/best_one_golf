@@ -14,8 +14,8 @@ if (hasReleaseKeystore) {
 
 android {
     namespace = "com.songpolr.best_one_golf"
-    compileSdk = 35
-    ndkVersion = "25.1.8937393"
+    compileSdk = 36
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
