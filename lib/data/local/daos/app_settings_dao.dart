@@ -1,5 +1,9 @@
+import 'dart:ui';
+
 import 'package:drift/drift.dart';
 
+import '../../../core/enums/app_currency.dart';
+import '../../../core/enums/app_language.dart';
 import '../app_database.dart';
 import '../tables/app_settings_table.dart';
 
@@ -22,13 +26,18 @@ class AppSettingsDao extends DatabaseAccessor<AppDatabase>
     final existing = await select(appSettingsTable).getSingleOrNull();
     if (existing != null) return;
 
+    final deviceLocale = PlatformDispatcher.instance.locale.languageCode;
+    final language = AppLanguage.fromCode(deviceLocale);
+    final currency =
+        language == AppLanguage.th ? AppCurrency.thb : AppCurrency.usd;
+
     await into(appSettingsTable).insert(
-      const AppSettingsTableCompanion(
-        id: Value(1),
-        languageCode: Value('th'),
-        currencyCode: Value('THB'),
-        themeModeCode: Value('system'),
-        adsRemoved: Value(false),
+      AppSettingsTableCompanion(
+        id: const Value(1),
+        languageCode: Value(language.code),
+        currencyCode: Value(currency.code),
+        themeModeCode: const Value('system'),
+        adsRemoved: const Value(false),
       ),
     );
   }
